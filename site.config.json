@@ -1,0 +1,16 @@
+{
+  "name": "Andromon",
+  "formerName": "Droid Desk",
+  "url": "https://example.com",
+  "lang": "en",
+  "locale": "en_US",
+  "title": "Andromon: Android Phone Manager for Windows, Mac & Linux",
+  "description": "Manage your Android phone from your computer with Andromon: mirror the screen, send texts, move files and photos, back up, and remove bloatware. Free.",
+  "tagline": "Your Android phone, on your computer",
+  "themeColor": "#E3F786",
+  "repoPc": "https://github.com/Deshan555/Andromon_PC",
+  "repoAndroid": "https://github.com/Deshan555/Andromon-android",
+  "releases": "https://github.com/Deshan555/Andromon_PC/releases",
+  "directDownloads": false,
+  "includeGuide": true
+}

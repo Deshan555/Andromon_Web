@@ -1,0 +1,114 @@
+{
+  "overview": {
+    "variants": [
+      {
+        "file": "overview-960.webp",
+        "w": 960,
+        "h": 600
+      },
+      {
+        "file": "overview-1600.webp",
+        "w": 1600,
+        "h": 1000
+      }
+    ]
+  },
+  "mirror": {
+    "variants": [
+      {
+        "file": "mirror-720.webp",
+        "w": 720,
+        "h": 450
+      },
+      {
+        "file": "mirror-1280.webp",
+        "w": 1280,
+        "h": 800
+      }
+    ]
+  },
+  "messages": {
+    "variants": [
+      {
+        "file": "messages-720.webp",
+        "w": 720,
+        "h": 450
+      },
+      {
+        "file": "messages-1280.webp",
+        "w": 1280,
+        "h": 800
+      }
+    ]
+  },
+  "photos": {
+    "variants": [
+      {
+        "file": "photos-720.webp",
+        "w": 720,
+        "h": 450
+      },
+      {
+        "file": "photos-1280.webp",
+        "w": 1280,
+        "h": 800
+      }
+    ]
+  },
+  "apps": {
+    "variants": [
+      {
+        "file": "apps-720.webp",
+        "w": 720,
+        "h": 450
+      },
+      {
+        "file": "apps-1280.webp",
+        "w": 1280,
+        "h": 800
+      }
+    ]
+  },
+  "phone-home": {
+    "variants": [
+      {
+        "file": "phone-home-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-home-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-cleaner": {
+    "variants": [
+      {
+        "file": "phone-cleaner-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-cleaner-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-battery": {
+    "variants": [
+      {
+        "file": "phone-battery-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-battery-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  }
+}
