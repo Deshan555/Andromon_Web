@@ -89,7 +89,7 @@ function header(ctx, home) {
     <a class="brand" href="${base}" title="${esc(site.name)} home">${wordmark(ctx, 126)}</a>
     <nav class="nav" aria-label="Main">
       <a href="${h}#features">Features</a>
-      <a href="${h}#companion">Phone app</a>
+      <a href="${base}android/">Phone app</a>
       <a href="${h}#how-it-works">How it works</a>
       <a href="${h}#faq">FAQ</a>
       <a href="${base}compare/">Compare</a>
@@ -114,7 +114,7 @@ function footer(ctx) {
         <h2>Product</h2>
         <ul>
           <li><a href="${base}#features">Features</a></li>
-          <li><a href="${base}#companion">Phone app</a></li>
+          <li><a href="${base}android/">Phone app</a></li>
           <li><a href="${base}#download">Download</a></li>
           <li><a href="${base}#faq">FAQ</a></li>
           <li><a href="${base}compare/">Compare</a></li>
@@ -339,6 +339,7 @@ ${header(ctx, true)}
       <ul class="care">
         ${c.companion.items.map(([t, d]) => `<li><h3>${esc(t)}</h3><p>${esc(d)}</p></li>`).join('\n        ')}
       </ul>
+      <p class="more"><a class="btn btn-lime" href="${base}android/">More about the phone app${icon('arrow')}</a></p>
     </div>
   </div>
 </section>
@@ -528,4 +529,160 @@ ${footer(ctx)}
 `;
 }
 
-module.exports = { home, notFound, compare };
+
+// ---------- /android/: the companion app on the phone ----------
+function androidPage(ctx) {
+  const { site, content, base, abs } = ctx;
+  const c = content.android;
+  const page = abs('android/');
+  const guideUrl = `${site.repoAndroid}/blob/main/docs/USER_GUIDE.md`;
+  const shotUrl = (k) => { const v = ctx.images[k].variants.slice(-1)[0]; return abs('img/' + v.file); };
+  const data = ld({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'MobileApplication', '@id': page + '#app', name: `${site.name} Companion`, url: page,
+        description: c.description, operatingSystem: 'Android 8.0 or later', applicationCategory: 'UtilitiesApplication',
+        isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        license: 'https://www.gnu.org/licenses/gpl-3.0.html', codeRepository: site.repoAndroid,
+        screenshot: ['phone-home', 'phone-cleaner', 'phone-battery', 'phone-stats'].map(shotUrl),
+        isPartOf: { '@id': abs('') + '#app' },
+      },
+      { '@type': 'BreadcrumbList', itemListElement: [
+        { '@type': 'ListItem', position: 1, name: site.name, item: abs('') },
+        { '@type': 'ListItem', position: 2, name: 'Phone app', item: page },
+      ] },
+      { '@type': 'FAQPage', mainEntity: c.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+    ],
+  }) + '\n';
+  const phone = (k, alt, sizes, cls = '') => `<figure class="handheld${cls}">${picture(ctx, k, alt, { sizes })}</figure>`;
+
+  const spotlights = c.spotlights.map((s) => `<article class="spot spot-phone" id="${s.id}">
+      <div class="spot-text">
+        <p class="kicker">${esc(s.kicker)}</p>
+        <h2>${esc(s.h)}</h2>
+        <p>${esc(s.p)}</p>
+        <ul class="ticks">
+          ${s.list.map((l) => `<li>${icon('check')}<span>${esc(l)}</span></li>`).join('\n          ')}
+        </ul>
+      </div>
+      ${phone(s.img, s.alt, '(min-width: 861px) 290px, 70vw', ' shot')}
+    </article>`).join('\n    ');
+
+  return head(ctx, { title: c.title, description: c.description, canonical: page, extra: data }) +
+`</head>
+<body>
+${header(ctx, false)}
+<main id="main">
+
+<section class="hero and-hero" aria-labelledby="and-h">
+  <div class="wrap and-grid">
+    <div class="and-text">
+      <p class="kicker">${esc(c.kicker)}</p>
+      <h1 id="and-h">${esc(c.h1)}</h1>
+      <p class="lead">${esc(c.lead)}</p>
+      <div class="cta">
+        <a class="btn btn-dark" href="#get">${icon('download')}How to get it</a>
+        <a class="btn btn-light" href="${guideUrl}" rel="noopener">Read the phone app guide${icon('arrow')}</a>
+      </div>
+      <ul class="points">
+        ${c.points.map((p) => `<li>${icon('check')}${esc(p)}</li>`).join('\n        ')}
+      </ul>
+    </div>
+    <div class="phones and-phones">
+      ${c.hero.map(([k, alt], i) => `<figure>${picture(ctx, 'phone-' + k, alt, { sizes: '(min-width: 901px) 190px, 30vw', eager: i === 0 })}</figure>`).join('\n      ')}
+      ${mascot(ctx, 'toolkit-checklist', 'm-comp', 150)}
+    </div>
+  </div>
+</section>
+
+<section aria-label="What the phone app does">
+  <div class="wrap">
+    ${spotlights}
+  </div>
+</section>
+
+<section class="features" id="tools" aria-labelledby="tools-h">
+  <div class="wrap">
+    <div class="head-row">
+      <div class="head">
+        <h2 id="tools-h">${esc(c.toolsTitle)}</h2>
+        <p class="lead">${esc(c.toolsLead)}</p>
+      </div>
+      ${mascot(ctx, 'magnifier-inspector', 'm-side', 170)}
+    </div>
+    <ul class="why">
+      ${c.tools.map(([ic, t, d]) => `<li><span class="ico">${icon(ic)}</span><h3>${esc(t)}</h3><p>${esc(d)}</p></li>`).join('\n      ')}
+    </ul>
+    <div class="gallery" tabindex="0" role="region" aria-label="Screens of the phone app, scrolls sideways">
+      ${c.gallery.map(([k, name]) => `<figure>${picture(ctx, 'phone-' + k, `The companion app's ${name} screen`, { sizes: '200px' })}<figcaption>${esc(name)}</figcaption></figure>`).join('\n      ')}
+    </div>
+  </div>
+</section>
+
+<section class="companion" id="privacy" aria-labelledby="priv-h">
+  <div class="wrap">
+    <p class="kicker">Privacy</p>
+    <h2 id="priv-h">${esc(c.privacy.h)}</h2>
+    <p class="lead" style="margin-top:16px">${esc(c.privacy.p)}</p>
+    <ul class="care built">
+      ${c.privacy.items.map(([t, d]) => `<li><h3>${esc(t)}</h3><p>${esc(d)}</p></li>`).join('\n      ')}
+    </ul>
+  </div>
+</section>
+
+<section id="get" aria-labelledby="get-h">
+  <div class="wrap">
+    <div class="head-row">
+      <div class="head">
+        <p class="kicker">Set up in a few minutes</p>
+        <h2 id="get-h" style="margin-top:12px">${esc(c.get.h)}</h2>
+      </div>
+      ${mascot(ctx, 'laptop-assistant', 'm-side', 170)}
+    </div>
+    <ol class="steps">
+      ${c.get.items.map(([t, d]) => `<li><h3>${esc(t)}</h3><p>${esc(d)}</p></li>`).join('\n      ')}
+    </ol>
+    <p class="get-note">${esc(c.get.note)}</p>
+  </div>
+</section>
+
+<section class="faq" id="faq" aria-labelledby="faq-h">
+  <div class="wrap faq-grid">
+    <div>
+      <h2 id="faq-h">Questions about the phone app</h2>
+      <p class="lead">Every screen and option is explained, with screenshots, in the <a href="${guideUrl}" rel="noopener">phone app guide</a>.</p>
+    </div>
+    <div>
+      ${c.faq.map(([q, a], i) => `<details${i === 0 ? ' open' : ''}><summary><h3>${esc(q)}</h3>${icon('chevron')}</summary><p>${esc(a)}</p></details>`).join('\n      ')}
+    </div>
+  </div>
+</section>
+
+<section aria-label="Get ${esc(site.name)}">
+  <div class="wrap">
+    <div class="cmp-cta">
+      <div class="cmp-cta-lead">
+        ${mascot(ctx, 'jetpack-flying', 'm-cta', 120)}
+        <div>
+          <h2>Get ${esc(site.name)} for your computer</h2>
+          <p class="lead">The companion comes with it. Free for Windows, macOS and Linux.</p>
+        </div>
+      </div>
+      <div class="cta" style="margin-top:0">
+        <a class="btn btn-dark" href="${base}#download">${icon('download')}<span data-dl>Download ${esc(site.name)}</span></a>
+        <a class="btn btn-light" href="${site.repoAndroid}" rel="noopener">Source code${icon('arrow')}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+${footer(ctx)}
+<script>${OS_SCRIPT}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
+</body>
+</html>
+`;
+}
+
+module.exports = { home, notFound, compare, androidPage };

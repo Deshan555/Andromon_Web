@@ -43,7 +43,7 @@ const guideSrc = path.join(ROOT, 'user-guide');
 const guide = !!site.includeGuide && fs.existsSync(path.join(guideSrc, 'index.html'));
 
 const ctx = { site, content: require('./src/content')(site), release, css, base, abs, images, guide };
-const { home, notFound, compare } = require('./src/page');
+const { home, notFound, compare, androidPage } = require('./src/page');
 
 // ---------- write ----------
 fs.rmSync(DIST, { recursive: true, force: true });
@@ -58,6 +58,9 @@ fs.writeFileSync(path.join(DIST, '404.html'), notFound(ctx));
 const compareHtml = compare(ctx);
 fs.mkdirSync(path.join(DIST, 'compare'), { recursive: true });
 fs.writeFileSync(path.join(DIST, 'compare/index.html'), compareHtml);
+const androidHtml = androidPage(ctx);
+fs.mkdirSync(path.join(DIST, 'android'), { recursive: true });
+fs.writeFileSync(path.join(DIST, 'android/index.html'), androidHtml);
 
 // The user guide, copied in as /guide/ with a canonical address of its own.
 if (guide) {
@@ -68,7 +71,7 @@ if (guide) {
 }
 
 const today = new Date().toISOString().slice(0, 10);
-const pages = [{ loc: abs(''), priority: '1.0' }, { loc: abs('compare/'), priority: '0.8' }, ...(guide ? [{ loc: abs('guide/'), priority: '0.7' }] : [])];
+const pages = [{ loc: abs(''), priority: '1.0' }, { loc: abs('android/'), priority: '0.9' }, { loc: abs('compare/'), priority: '0.8' }, ...(guide ? [{ loc: abs('guide/'), priority: '0.7' }] : [])];
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
   pages.map((p) => `  <url><loc>${p.loc}</loc><lastmod>${today}</lastmod><priority>${p.priority}</priority></url>`).join('\n') +
@@ -109,11 +112,13 @@ function check(name, html) {
 }
 const { title, desc } = check('index.html', homeHtml);
 const cmp = check('compare/index.html', compareHtml);
+const and = check('android/index.html', androidHtml);
 if (!fs.existsSync(path.join(DIST, 'img/og.png'))) problems.push('img/og.png is missing (run: npm run images).');
 
 const kb = (f) => (fs.statSync(path.join(DIST, f)).size / 1024).toFixed(1) + ' KB';
 console.log(`Built dist/  index.html ${kb('index.html')}, title ${title.length} chars, description ${desc.length} chars`);
 console.log(`            compare/index.html ${kb('compare/index.html')}, title ${cmp.title.length} chars, description ${cmp.desc.length} chars`);
+console.log(`            android/index.html ${kb('android/index.html')}, title ${and.title.length} chars, description ${and.desc.length} chars`);
 console.log(`Site address: ${site.url}${release ? `   Release: v${release.version}` : ''}${guide ? '   Guide: /guide/' : ''}`);
 if (placeholder) console.warn('NOTE: "url" in site.config.json is still https://example.com. robots.txt blocks search engines until you set it.');
 if (problems.length) {

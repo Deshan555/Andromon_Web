@@ -111,6 +111,202 @@
       }
     ]
   },
+  "phone-tools": {
+    "variants": [
+      {
+        "file": "phone-tools-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-tools-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-stats": {
+    "variants": [
+      {
+        "file": "phone-stats-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-stats-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-transfer": {
+    "variants": [
+      {
+        "file": "phone-transfer-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-transfer-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-memory": {
+    "variants": [
+      {
+        "file": "phone-memory-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-memory-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-network": {
+    "variants": [
+      {
+        "file": "phone-network-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-network-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-saver": {
+    "variants": [
+      {
+        "file": "phone-saver-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-saver-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-freezer": {
+    "variants": [
+      {
+        "file": "phone-freezer-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-freezer-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-apps": {
+    "variants": [
+      {
+        "file": "phone-apps-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-apps-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-storage": {
+    "variants": [
+      {
+        "file": "phone-storage-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-storage-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-permissions": {
+    "variants": [
+      {
+        "file": "phone-permissions-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-permissions-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-hardware": {
+    "variants": [
+      {
+        "file": "phone-hardware-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-hardware-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-recover": {
+    "variants": [
+      {
+        "file": "phone-recover-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-recover-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-fdroid": {
+    "variants": [
+      {
+        "file": "phone-fdroid-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-fdroid-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
+  "phone-settings": {
+    "variants": [
+      {
+        "file": "phone-settings-270.webp",
+        "w": 270,
+        "h": 600
+      },
+      {
+        "file": "phone-settings-540.webp",
+        "w": 540,
+        "h": 1200
+      }
+    ]
+  },
   "mascot-gear-thumbs-up": {
     "variants": [
       {

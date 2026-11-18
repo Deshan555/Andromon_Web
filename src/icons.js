@@ -29,6 +29,15 @@ const P = {
   check: '<path d="M20 6 9 17l-5-5"/>',
   arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   chevron: '<path d="m6 9 6 6 6-6"/>',
+  battery: '<rect x="2" y="7" width="16" height="10" rx="2"/><path d="M22 11v2M6 11v2M10 11v2"/>',
+  snowflake: '<path d="M12 2v20M2 12h20M5 5l14 14M19 5 5 19M9 3l3 3 3-3M9 21l3-3 3 3M3 9l3 3-3 3M21 9l-3 3 3 3"/>',
+  cpu: '<rect x="5" y="5" width="14" height="14" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>',
+  shield: '<path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/>',
+  lock: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  phoneapp: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>',
+  eyeoff: '<path d="M10.7 5.1A10.7 10.7 0 0 1 21.9 11.6a1 1 0 0 1 0 .7 10.8 10.8 0 0 1-1.4 2.4M14.1 14.2a3 3 0 0 1-4.2-4.2M17.5 17.5a10.8 10.8 0 0 1-15.4-5.2 1 1 0 0 1 0-.7 10.8 10.8 0 0 1 4.4-5.1M2 2l20 20"/>',
+  zip: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5M10 6h1M10 10h1M10 14h1M11 18a1 1 0 1 0-2 0v-1h2z"/>',
+  chart: '<path d="M3 3v16a2 2 0 0 0 2 2h16M8 17v-5M13 17V9M18 17v-8"/>',
 };
 
 module.exports = (name, cls = 'ic') => {

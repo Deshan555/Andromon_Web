@@ -33,6 +33,21 @@ const SHOTS = {
   'phone-home': [path.join(PHONE, 'pc-link.png'), [270, 540]], // the companion opens on its PC link screen
   'phone-cleaner': [path.join(PHONE, 'cleaner.png'), [270, 540]],
   'phone-battery': [path.join(PHONE, 'battery.png'), [270, 540]],
+  // the Android app's own page (/android/)
+  'phone-tools': [path.join(PHONE, 'tools.png'), [270, 540]],
+  'phone-stats': [path.join(PHONE, 'stats.png'), [270, 540]],
+  'phone-transfer': [path.join(PHONE, 'transfer.png'), [270, 540]],
+  'phone-memory': [path.join(PHONE, 'memory.png'), [270, 540]],
+  'phone-network': [path.join(PHONE, 'network.png'), [270, 540]],
+  'phone-saver': [path.join(PHONE, 'saver.png'), [270, 540]],
+  'phone-freezer': [path.join(PHONE, 'freezer.png'), [270, 540]],
+  'phone-apps': [path.join(PHONE, 'apps.png'), [270, 540]],
+  'phone-storage': [path.join(PHONE, 'storage.png'), [270, 540]],
+  'phone-permissions': [path.join(PHONE, 'permissions.png'), [270, 540]],
+  'phone-hardware': [path.join(PHONE, 'hardware.png'), [270, 540]],
+  'phone-recover': [path.join(PHONE, 'recover.png'), [270, 540]],
+  'phone-fdroid': [path.join(PHONE, 'fdroid.png'), [270, 540]],
+  'phone-settings': [path.join(PHONE, 'settings.png'), [270, 540]],
 };
 // The mascot (static/assets/andromon-<name>.png, 512 px, transparent) -> mascot-<name>. The PNGs
 // themselves are only the source: build.js leaves static/assets out of the site.
