@@ -90,9 +90,6 @@ function header(ctx, home) {
     <nav class="nav" aria-label="Main">
       <a href="${h}#features">Features</a>
       <a href="${base}android/">Phone app</a>
-      <a href="${h}#how-it-works">How it works</a>
-      <a href="${h}#faq">FAQ</a>
-      <a href="${base}compare/">Compare</a>
       ${ctx.guide ? `<a href="${base}guide/">User guide</a>` : ''}
       ${site.preview ? `<a href="${site.preview}" target="_blank" rel="noopener">Online preview</a>` : ''}
     </nav>

@@ -83,8 +83,7 @@ footer .brand .wordmark { height: 50px; }
 .nav a { text-decoration: none; color: var(--soft); padding: 8px 0; }
 .nav a:hover { color: var(--ink); }
 .nav a { white-space: nowrap; }
-@media (max-width: 1240px) { .nav { gap: 18px; font-size: .9rem; } }
-@media (max-width: 1080px) { .nav { display: none; } }
+@media (max-width: 900px) { .nav { display: none; } }
 
 /* Hero */
 .hero { padding-top: clamp(32px, 6vw, 72px); padding-bottom: 0; text-align: center; }
