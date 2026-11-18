@@ -590,7 +590,6 @@ ${header(ctx, false)}
     </div>
     <div class="phones and-phones">
       ${c.hero.map(([k, alt], i) => `<figure>${picture(ctx, 'phone-' + k, alt, { sizes: '(min-width: 901px) 190px, 30vw', eager: i === 0 })}</figure>`).join('\n      ')}
-      ${mascot(ctx, 'toolkit-checklist', 'm-comp', 150)}
     </div>
   </div>
 </section>

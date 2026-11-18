@@ -208,9 +208,6 @@ footer a:hover { color: #fff; text-decoration: underline; }
 .head-row .head { margin-bottom: 0; }
 .m-side { width: clamp(110px, 13vw, 170px); flex: none; margin-bottom: -8px; }
 .phones { position: relative; }
-.phones .m-comp { border: 0; border-radius: 0; background: none; }
-.m-comp { position: absolute; right: 6%; bottom: 100%; margin-bottom: -18px; width: clamp(96px, 11vw, 150px); filter: drop-shadow(0 14px 26px rgba(0,0,0,.45)); }
-@media (max-width: 900px) { .m-comp { position: static; order: -1; grid-column: 1 / -1; justify-self: end; width: 110px; margin: 0 4% -14px 0; } }
 .download .box { position: relative; }
 .m-download { position: absolute; right: clamp(20px, 4vw, 56px); top: -64px; width: 190px; }
 .m-faq { width: 200px; margin-top: 32px; }
@@ -382,7 +379,6 @@ table.cmp { width: 100%; min-width: 880px; border-collapse: collapse; font-size:
 .and-hero h1 { margin: 14px 0 0; max-width: 14em; font-size: clamp(2.1rem, 4.6vw, 3.6rem); }
 .and-hero .lead { margin: 20px 0 0; }
 .and-hero .cta, .and-hero .points { justify-content: flex-start; }
-.and-phones { padding-top: clamp(90px, 10vw, 150px); }
 .handheld { justify-self: center; width: min(290px, 72vw); margin: 0; }
 .handheld.shot { border: 6px solid #111; border-radius: 34px; background: #000; overflow: hidden; }
 .handheld img { display: block; width: 100%; height: auto; }
@@ -402,5 +398,4 @@ table.cmp { width: 100%; min-width: 880px; border-collapse: collapse; font-size:
   .and-grid, .spot-phone { grid-template-columns: 1fr; }
   .and-hero { text-align: center; } .and-hero h1, .and-hero .lead { margin-inline: auto; }
   .and-hero .cta, .and-hero .points { justify-content: center; }
-  .and-phones { padding-top: 0; }
 }
