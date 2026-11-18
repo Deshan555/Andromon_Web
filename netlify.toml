@@ -1,0 +1,7 @@
+# Netlify: build the site, then publish dist/ (the HTML is made by build.js; it isn't in the repo).
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"

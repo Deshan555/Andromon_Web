@@ -13,7 +13,9 @@ const DIST = path.join(WEB, 'dist');
 const read = (p) => fs.readFileSync(p, 'utf8');
 
 const site = JSON.parse(read(path.join(WEB, 'site.config.json')));
-site.url = (process.env.SITE_URL || site.url).replace(/\/+$/, '');
+// SITE_URL wins; on Netlify's production deploys its own address (URL) replaces the placeholder.
+const netlifyUrl = process.env.CONTEXT === 'production' ? process.env.URL : '';
+site.url = (process.env.SITE_URL || (/\/\/example\.com/.test(site.url) && netlifyUrl) || site.url).replace(/\/+$/, '');
 const base = new URL(site.url + '/').pathname; // "/" or "/sub/path/"
 const abs = (p) => site.url + '/' + p;
 const placeholder = /\/\/example\.com/.test(site.url);
