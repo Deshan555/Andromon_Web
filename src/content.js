@@ -121,26 +121,13 @@ module.exports = (site) => {
 
     companion: {
       h: 'A phone-care app comes with it',
-      p: `${N} installs a small companion app on the phone when a feature needs it. It also works on its own as a cleaner and health check, with no ads.`,
+      p: `${N} installs a small companion app on the phone when a feature needs it. It also works on its own, as a cleaner and health check for the phone.`,
       shots: [
         ['home', 'Companion app home screen showing storage, memory and PC link tiles'],
         ['cleaner', 'Companion app Cleaner screen showing junk files found on the phone'],
         ['battery', 'Companion app Battery screen showing battery level, temperature and history'],
       ],
-      items: [
-        ['Cleaner', 'Junk files, leftovers of removed apps, duplicates and large files.'],
-        ['Battery', 'Condition, temperature, charge cycles and a seven-day history.'],
-        ['Freezer', 'Stop apps that keep running in the background when you don\'t use them.'],
-        ['Memory', 'What is using RAM right now, and one tap to free it.'],
-        ['Storage analyzer', 'Folder sizes, largest first, so you see where the space went.'],
-        ['Permission audit', 'Which apps can use the camera, microphone, location and more.'],
-        ['Hardware test', '13 guided checks for screen, touch, sound, sensors and buttons.'],
-        ['Network', 'Connection details, speed test, ping and DNS records.'],
-        ['Recover', 'Find deleted photos and files still in trash and recycle folders.'],
-        ['App trackers', 'See the tracking and ad libraries inside any installed app.'],
-        ['F-Droid', 'Browse, install and update open-source apps on the phone.'],
-        ['Zip files', 'Compress and extract zips, with an optional password.'],
-      ],
+      points: ['Junk cleaner and storage analyzer', 'Battery health, Freezer and Battery saver', 'Screen time and data use per app', 'Free, with no ads and no account'],
     },
 
     steps: {

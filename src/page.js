@@ -330,16 +330,15 @@ ${header(ctx, true)}
   <div class="wrap comp">
     <div class="phones">
       ${c.companion.shots.map(([k, alt]) => `<figure>${picture(ctx, 'phone-' + k, alt, { sizes: '(min-width: 901px) 190px, 30vw' })}</figure>`).join('\n      ')}
-      ${mascot(ctx, 'toolkit-checklist', 'm-comp', 150)}
     </div>
     <div>
       <p class="kicker">On the phone</p>
       <h2 id="companion-h">${esc(c.companion.h)}</h2>
       <p class="lead" style="margin-top:16px">${esc(c.companion.p)}</p>
-      <ul class="care">
-        ${c.companion.items.map(([t, d]) => `<li><h3>${esc(t)}</h3><p>${esc(d)}</p></li>`).join('\n        ')}
+      <ul class="ticks">
+        ${c.companion.points.map((t) => `<li>${icon('check')}<span>${esc(t)}</span></li>`).join('\n        ')}
       </ul>
-      <p class="more"><a class="btn btn-lime" href="${base}android/">More about the phone app${icon('arrow')}</a></p>
+      <a class="learn" href="${base}android/">Learn more about the phone app${icon('arrow')}</a>
     </div>
   </div>
 </section>

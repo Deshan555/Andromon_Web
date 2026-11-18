@@ -392,7 +392,11 @@ table.cmp { width: 100%; min-width: 880px; border-collapse: collapse; font-size:
 .gallery img { display: block; width: 100%; height: auto; border-radius: 20px; border: 4px solid #000; background: #000; }
 .gallery figcaption { margin-top: 10px; text-align: center; font-size: .9rem; color: var(--soft); }
 .gallery:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 12px; }
-.companion .more { margin-top: 28px; }
+.companion .ticks { margin-top: 24px; color: var(--dark-ink); }
+.learn { display: inline-flex; align-items: center; gap: 8px; margin-top: 28px; font-weight: 500; color: var(--lime); text-decoration: none; }
+.learn .ic { width: 18px; height: 18px; transition: transform .2s var(--ease); }
+.learn:hover { text-decoration: underline; text-underline-offset: 4px; }
+.learn:hover .ic { transform: translateX(3px); }
 .get-note { margin-top: 22px; max-width: 46em; color: var(--soft); font-size: .95rem; }
 @media (max-width: 900px) {
   .and-grid, .spot-phone { grid-template-columns: 1fr; }
