@@ -135,6 +135,11 @@ function picture(ctx, key, alt, { sizes, cls = '', eager = false }) {
   return `<img${cls ? ` class="${cls}"` : ''} src="${ctx.base}img/${last.file}" srcset="${srcset}" sizes="${sizes}" width="${last.w}" height="${last.h}" alt="${esc(alt)}"${eager ? ' fetchpriority="high" decoding="async"' : ' loading="lazy" decoding="async"'}>`;
 }
 
+// The Andromon mascot (static/assets, made into WebP by npm run images). It only decorates, so alt is empty.
+function mascot(ctx, name, cls, px) {
+  return picture(ctx, 'mascot-' + name, '', { sizes: `${px}px`, cls: `mascot ${cls}` });
+}
+
 function downloads(ctx) {
   const { site, content, release } = ctx;
   const cards = content.download.os.map((os) => {
@@ -157,6 +162,7 @@ function downloads(ctx) {
   return `<section class="download" id="download" aria-labelledby="download-h">
   <div class="wrap">
     <div class="box">
+      ${mascot(ctx, 'relaxed-beanbag', 'm-download', 190)}
       <h2 id="download-h">${esc(content.download.h)}</h2>
       <p class="lead">${esc(content.download.p)}</p>
       <ul class="os">
@@ -271,9 +277,12 @@ ${header(ctx, true)}
     <ul class="points">
       ${c.hero.points.map((p) => `<li>${icon('check')}${esc(p)}</li>`).join('\n      ')}
     </ul>
+    <div class="stage-box">
+    ${mascot(ctx, 'jetpack-flying', 'm-hero', 180)}
     <div class="stage">
       ${picture(ctx, 'overview', `${site.name} on a computer showing a connected Android phone's battery, storage and shortcuts to screen mirror, files, photos, apps and messages`, { sizes: '(min-width: 1220px) 1100px, 92vw', cls: 'desk', eager: true })}
       ${picture(ctx, 'phone-home', `The ${site.name} companion app on an Android phone`, { sizes: '(min-width: 1220px) 224px, 19vw', cls: 'handset' })}
+    </div>
     </div>
   </div>
 </section>
@@ -297,9 +306,12 @@ ${header(ctx, true)}
 
 <section class="features" id="features" aria-labelledby="features-h">
   <div class="wrap">
-    <div class="head">
-      <h2 id="features-h">${esc(c.featuresTitle)}</h2>
-      <p class="lead">${esc(c.featuresLead)}</p>
+    <div class="head-row">
+      <div class="head">
+        <h2 id="features-h">${esc(c.featuresTitle)}</h2>
+        <p class="lead">${esc(c.featuresLead)}</p>
+      </div>
+      ${mascot(ctx, 'gear-thumbs-up', 'm-side', 170)}
     </div>
     <div class="groups">
       ${groups}
@@ -311,6 +323,7 @@ ${header(ctx, true)}
   <div class="wrap comp">
     <div class="phones">
       ${c.companion.shots.map(([k, alt]) => `<figure>${picture(ctx, 'phone-' + k, alt, { sizes: '(min-width: 901px) 190px, 30vw' })}</figure>`).join('\n      ')}
+      ${mascot(ctx, 'toolkit-checklist', 'm-comp', 150)}
     </div>
     <div>
       <p class="kicker">On the phone</p>
@@ -325,9 +338,12 @@ ${header(ctx, true)}
 
 <section id="how-it-works" aria-labelledby="how-h">
   <div class="wrap">
-    <div class="head">
-      <p class="kicker">Set up in a few minutes</p>
-      <h2 id="how-h" style="margin-top:12px">${esc(c.steps.h)}</h2>
+    <div class="head-row">
+      <div class="head">
+        <p class="kicker">Set up in a few minutes</p>
+        <h2 id="how-h" style="margin-top:12px">${esc(c.steps.h)}</h2>
+      </div>
+      ${mascot(ctx, 'laptop-assistant', 'm-side', 170)}
     </div>
     <ol class="steps">
       ${c.steps.items.map(([t, d]) => `<li><h3>${esc(t)}</h3><p>${esc(d)}</p></li>`).join('\n      ')}
@@ -342,6 +358,7 @@ ${downloads(ctx)}
     <div>
       <h2 id="faq-h">Questions and answers</h2>
       ${ctx.guide ? `<p class="lead">Every page and option is explained, with screenshots, in the <a href="${base}guide/">user guide</a>.</p>` : ''}
+      ${mascot(ctx, 'magnifier-inspector', 'm-faq', 200)}
     </div>
     <div>
       ${c.faq.map(([q, a], i) => `<details${i === 0 ? ' open' : ''}><summary><h3>${esc(q)}</h3>${icon('chevron')}</summary><p>${esc(a)}</p></details>`).join('\n      ')}
@@ -365,6 +382,7 @@ function notFound(ctx) {
 ${header(ctx, false)}
 <main id="main" class="lost">
   <div class="wrap">
+    ${mascot(ctx, 'magnifier-inspector', 'm-lost', 170)}
     <p class="kicker">Error 404</p>
     <h1 style="margin-top:12px">This page doesn't exist</h1>
     <p class="lead" style="margin:18px auto 0">The link may be old, or the address may have a typo.</p>
@@ -480,9 +498,12 @@ ${header(ctx, false)}
 <section aria-label="Try ${esc(site.name)}">
   <div class="wrap">
     <div class="cmp-cta">
-      <div>
-        <h2>Try ${esc(site.name)} with your own phone</h2>
-        <p class="lead">Free for Windows, macOS and Linux. No account, no ads.</p>
+      <div class="cmp-cta-lead">
+        ${mascot(ctx, 'gear-thumbs-up', 'm-cta', 120)}
+        <div>
+          <h2>Try ${esc(site.name)} with your own phone</h2>
+          <p class="lead">Free for Windows, macOS and Linux. No account, no ads.</p>
+        </div>
       </div>
       <div class="cta" style="margin-top:0">
         <a class="btn btn-dark" href="${base}#download">${icon('download')}<span data-dl>Download ${esc(site.name)}</span></a>

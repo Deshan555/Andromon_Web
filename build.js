@@ -48,7 +48,9 @@ const { home, notFound, compare } = require('./src/page');
 // ---------- write ----------
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(DIST, { recursive: true });
-fs.cpSync(path.join(WEB, 'static'), DIST, { recursive: true, filter: (p) => !/images\.json$|\.DS_Store$/.test(p) });
+// static/assets holds the mascot's source PNGs; the site uses the WebP copies in static/img (npm run images).
+const ASSETS = path.join(WEB, 'static', 'assets');
+fs.cpSync(path.join(WEB, 'static'), DIST, { recursive: true, filter: (p) => !/images\.json$|\.DS_Store$/.test(p) && p !== ASSETS && !p.startsWith(ASSETS + path.sep) });
 
 const homeHtml = home(ctx);
 fs.writeFileSync(path.join(DIST, 'index.html'), homeHtml);

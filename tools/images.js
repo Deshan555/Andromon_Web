@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Prepares the homepage's pictures from the apps' own screenshots and icon:
 //   static/img/*.webp        screenshots in two widths
+//   static/img/mascot-*.webp the mascot pictures from static/assets, in two widths, transparent
 //   static/img/icon-*.png    favicon, touch icon and manifest icons
 //   static/favicon.ico
 //   static/img/og.png        1200x630 picture for link previews
@@ -32,6 +33,13 @@ const SHOTS = {
   'phone-cleaner': [path.join(PHONE, 'cleaner.png'), [270, 540]],
   'phone-battery': [path.join(PHONE, 'battery.png'), [270, 540]],
 };
+// The mascot (static/assets/andromon-<name>.png, 512 px, transparent) -> mascot-<name>. The PNGs
+// themselves are only the source: build.js leaves static/assets out of the site.
+const ASSETS = path.join(WEB, 'static/assets');
+for (const f of fs.existsSync(ASSETS) ? fs.readdirSync(ASSETS).sort() : []) {
+  const m = /^andromon-(.+)\.png$/.exec(f);
+  if (m) SHOTS['mascot-' + m[1]] = [path.join(ASSETS, f), [200, 400]];
+}
 
 const run = (cmd, args) => execFileSync(cmd, args, { stdio: ['ignore', 'pipe', 'pipe'] });
 function pngSize(file) {
@@ -47,7 +55,7 @@ for (const [key, [src, widths]] of Object.entries(SHOTS)) {
   for (const w of widths.filter((x) => x <= sw)) {
     const h = Math.round((sh * w) / sw);
     const file = `${key}-${w}.webp`;
-    run('cwebp', ['-quiet', '-q', '86', '-sharp_yuv', '-resize', String(w), String(h), src, '-o', path.join(OUT, file)]);
+    run('cwebp', ['-quiet', '-q', '86', '-alpha_q', '100', '-sharp_yuv', '-resize', String(w), String(h), src, '-o', path.join(OUT, file)]);
     manifest[key].variants.push({ file, w, h });
   }
   console.log(key.padEnd(14), manifest[key].variants.map((v) => `${v.w}w ${(fs.statSync(path.join(OUT, v.file)).size / 1024).toFixed(0)} KB`).join(', '));

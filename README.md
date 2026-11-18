@@ -25,7 +25,8 @@ Upload the contents of `dist/` to any static host (Cloudflare Pages, Netlify, Gi
 | `src/page.js` | The HTML, meta tags and structured data |
 | `src/style.css` | The design: brand colours, light and dark, phone to desktop |
 | `src/icons.js` | Line icons |
-| `tools/images.js` | Makes `static/img` from `pc/docs/screenshots`, `android/docs/screenshots` and `pc/build/icon.png` |
+| `static/assets` | The mascot pictures (`andromon-<name>.png`, transparent). Only the source: `npm run images` turns them into `static/img/mascot-<name>-200/400.webp`, and the build leaves this folder out of the site |
+| `tools/images.js` | Makes `static/img` from `pc/docs/screenshots`, `android/docs/screenshots` `static/assets` and `pc/build/icon.png` |
 | `build.js` | Puts it together, writes `sitemap.xml`, `robots.txt`, `site.webmanifest`, `404.html`, and checks the result |
 
 `npm run images` needs `cwebp` and ImageMagick (`brew install webp imagemagick`), and Google Chrome for the link-preview picture (`og.png`). The pictures it makes are kept in `static/img`, so a normal build needs none of these.

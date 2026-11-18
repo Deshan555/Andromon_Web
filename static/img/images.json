@@ -110,5 +110,89 @@
         "h": 1200
       }
     ]
+  },
+  "mascot-gear-thumbs-up": {
+    "variants": [
+      {
+        "file": "mascot-gear-thumbs-up-200.webp",
+        "w": 200,
+        "h": 200
+      },
+      {
+        "file": "mascot-gear-thumbs-up-400.webp",
+        "w": 400,
+        "h": 400
+      }
+    ]
+  },
+  "mascot-jetpack-flying": {
+    "variants": [
+      {
+        "file": "mascot-jetpack-flying-200.webp",
+        "w": 200,
+        "h": 212
+      },
+      {
+        "file": "mascot-jetpack-flying-400.webp",
+        "w": 400,
+        "h": 423
+      }
+    ]
+  },
+  "mascot-laptop-assistant": {
+    "variants": [
+      {
+        "file": "mascot-laptop-assistant-200.webp",
+        "w": 200,
+        "h": 199
+      },
+      {
+        "file": "mascot-laptop-assistant-400.webp",
+        "w": 400,
+        "h": 398
+      }
+    ]
+  },
+  "mascot-magnifier-inspector": {
+    "variants": [
+      {
+        "file": "mascot-magnifier-inspector-200.webp",
+        "w": 200,
+        "h": 205
+      },
+      {
+        "file": "mascot-magnifier-inspector-400.webp",
+        "w": 400,
+        "h": 410
+      }
+    ]
+  },
+  "mascot-relaxed-beanbag": {
+    "variants": [
+      {
+        "file": "mascot-relaxed-beanbag-200.webp",
+        "w": 200,
+        "h": 217
+      },
+      {
+        "file": "mascot-relaxed-beanbag-400.webp",
+        "w": 400,
+        "h": 434
+      }
+    ]
+  },
+  "mascot-toolkit-checklist": {
+    "variants": [
+      {
+        "file": "mascot-toolkit-checklist-200.webp",
+        "w": 200,
+        "h": 200
+      },
+      {
+        "file": "mascot-toolkit-checklist-400.webp",
+        "w": 400,
+        "h": 400
+      }
+    ]
   }
 }
