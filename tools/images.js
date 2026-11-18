@@ -2,6 +2,7 @@
 // Prepares the homepage's pictures from the apps' own screenshots and icon:
 //   static/img/*.webp        screenshots in two widths
 //   static/img/mascot-*.webp the mascot pictures from static/assets, in two widths, transparent
+//   static/img/wordmark-*.webp the logo with the name (static/assets/logo.png), for the header and footer
 //   static/img/icon-*.png    favicon, touch icon and manifest icons
 //   static/favicon.ico
 //   static/img/og.png        1200x630 picture for link previews
@@ -67,6 +68,20 @@ for (const [name, size] of [['icon-192.png', 192], ['icon-512.png', 512], ['appl
   run('magick', [ICON, '-resize', `${size}x${size}`, '-strip', path.join(OUT, name)]);
 }
 run('cwebp', ['-quiet', '-q', '90', '-resize', '72', '72', ICON, '-o', path.join(OUT, 'logo-72.webp')]);
+// The wordmark (static/assets/logo.png: the robot and "Andromon", transparent) for the header and footer,
+// cut to what is visible: its edges hold faint pixels, so the cut is taken from the alpha above 16 %.
+{
+  const LOGO = path.join(WEB, 'static/assets/logo.png');
+  const [, cw, ch, cx, cy] = /(\d+)x(\d+)\+(\d+)\+(\d+)/.exec(run('magick', [LOGO, '-alpha', 'extract', '-threshold', '16%', '-format', '%@', 'info:']).toString()).map(Number);
+  manifest.wordmark = { variants: [] };
+  for (const w of [160, 320, 480]) {
+    const h = Math.round((ch * w) / cw), file = `wordmark-${w}.webp`;
+    run('cwebp', ['-quiet', '-q', '90', '-alpha_q', '100', '-crop', String(cx), String(cy), String(cw), String(ch), '-resize', String(w), String(h), LOGO, '-o', path.join(OUT, file)]);
+    manifest.wordmark.variants.push({ file, w, h });
+  }
+  fs.writeFileSync(path.join(OUT, 'images.json'), JSON.stringify(manifest, null, 2) + '\n');
+  console.log('wordmark      ', manifest.wordmark.variants.map((v) => `${v.w}w ${(fs.statSync(path.join(OUT, v.file)).size / 1024).toFixed(0)} KB`).join(', '));
+}
 run('magick', [ICON, '-define', 'icon:auto-resize=48,32,16', path.join(WEB, 'static/favicon.ico')]);
 console.log('icons          ok');
 

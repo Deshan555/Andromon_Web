@@ -72,13 +72,21 @@ ${extra}<meta property="og:type" content="website">
 `;
 }
 
+// The logo with the name in it (static/assets/logo.png, made into WebP by npm run images).
+function wordmark(ctx, px, lazy) {
+  const im = ctx.images.wordmark;
+  if (!im) throw new Error('Missing image: wordmark (run: npm run images)');
+  const last = im.variants[im.variants.length - 1];
+  return `<img class="wordmark" src="${ctx.base}img/${last.file}" srcset="${im.variants.map((v) => `${ctx.base}img/${v.file} ${v.w}w`).join(', ')}" sizes="${px}px" width="${last.w}" height="${last.h}" alt="${esc(ctx.site.name)}"${lazy ? ' loading="lazy"' : ''} decoding="async">`;
+}
+
 function header(ctx, home) {
   const { site, base } = ctx;
   const h = home ? '' : base;
   return `<a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="${base}" aria-label="${esc(site.name)} home"><img src="${base}img/logo-72.webp" alt="" width="36" height="36">${esc(site.name)}</a>
+    <a class="brand" href="${base}" title="${esc(site.name)} home">${wordmark(ctx, 126)}</a>
     <nav class="nav" aria-label="Main">
       <a href="${h}#features">Features</a>
       <a href="${h}#companion">Phone app</a>
@@ -98,7 +106,7 @@ function footer(ctx) {
   return `<footer>
   <div class="wrap">
     <div>
-      <a class="brand" href="${base}"><img src="${base}img/logo-72.webp" alt="" width="36" height="36" loading="lazy">${esc(site.name)}</a>
+      <a class="brand" href="${base}">${wordmark(ctx, 150, true)}</a>
       <p>An Android phone manager for Windows, macOS and Linux. Mirror, text, transfer, back up and clean up, over USB or Wi‑Fi.</p>
     </div>
     <nav aria-label="Footer">

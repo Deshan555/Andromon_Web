@@ -194,5 +194,24 @@
         "h": 400
       }
     ]
+  },
+  "wordmark": {
+    "variants": [
+      {
+        "file": "wordmark-160.webp",
+        "w": 160,
+        "h": 54
+      },
+      {
+        "file": "wordmark-320.webp",
+        "w": 320,
+        "h": 108
+      },
+      {
+        "file": "wordmark-480.webp",
+        "w": 480,
+        "h": 162
+      }
+    ]
   }
 }

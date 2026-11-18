@@ -77,7 +77,8 @@ section { padding: clamp(56px, 8vw, 104px) 0; }
 .top .wrap { display: flex; align-items: center; gap: 24px; }
 .top .theme-toggle { margin-right: -10px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.15rem; text-decoration: none; margin-right: auto; }
-.brand img { width: 36px; height: 36px; border-radius: 10px; }
+.brand .wordmark { display: block; width: auto; height: 46px; }
+footer .brand .wordmark { height: 50px; }
 .nav { display: flex; gap: 26px; font-size: .95rem; }
 .nav a { text-decoration: none; color: var(--soft); padding: 8px 0; }
 .nav a:hover { color: var(--ink); }
