@@ -94,6 +94,7 @@ function header(ctx, home) {
       <a href="${h}#faq">FAQ</a>
       <a href="${base}compare/">Compare</a>
       ${ctx.guide ? `<a href="${base}guide/">User guide</a>` : ''}
+      ${site.preview ? `<a href="${site.preview}" target="_blank" rel="noopener">Online preview</a>` : ''}
     </nav>
     ${THEME_BUTTON}
     <a class="btn btn-dark btn-sm" href="${h}#download">${icon('download')}Download</a>
@@ -125,6 +126,7 @@ function footer(ctx) {
         <ul>
           ${ctx.guide ? `<li><a href="${base}guide/">User guide</a></li>` : ''}
           <li><a href="${site.releases}" rel="noopener">Releases</a></li>
+          ${site.preview ? `<li><a href="${site.preview}" target="_blank" rel="noopener">Online preview</a></li>` : ''}
           <li><a href="${site.repoPc}" rel="noopener">Desktop app on GitHub</a></li>
           <li><a href="${site.repoAndroid}" rel="noopener">Android app on GitHub</a></li>
         </ul>
@@ -176,6 +178,7 @@ function downloads(ctx) {
       <ul class="os">
         ${cards}
       </ul>
+      ${site.preview ? `<p class="preview">Want to try it first? Open the <a href="${site.preview}" target="_blank" rel="noopener">online preview</a> in Chrome or Edge on your computer, with nothing to install.</p>` : ''}
       <p class="meta">${version}Downloads are hosted on <a href="${site.releases}" rel="noopener">GitHub Releases</a>.${renamed}</p>
     </div>
   </div>
@@ -281,6 +284,7 @@ ${header(ctx, true)}
       <a class="btn btn-dark" href="#download">${icon('download')}<span data-dl>Download ${esc(site.name)}</span></a>
       <a class="btn btn-light" href="#features">See what it does${icon('arrow')}</a>
     </div>
+    ${site.preview ? `<p class="try">Or <a href="${site.preview}" target="_blank" rel="noopener">try the online preview</a> in your browser, with nothing to install.</p>` : ''}
     <ul class="points">
       ${c.hero.points.map((p) => `<li>${icon('check')}${esc(p)}</li>`).join('\n      ')}
     </ul>

@@ -11,6 +11,7 @@
   "repoPc": "https://github.com/Deshan555/Andromon_PC",
   "repoAndroid": "https://github.com/Deshan555/Andromon-android",
   "releases": "https://github.com/Deshan555/Andromon_PC/releases",
+  "preview": "https://preandroidmon.netlify.app/",
   "directDownloads": false,
   "includeGuide": true
 }
