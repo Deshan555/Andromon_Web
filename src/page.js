@@ -275,7 +275,6 @@ ${header(ctx, true)}
 
 <section class="hero" aria-labelledby="hero-h">
   <div class="wrap">
-    <p class="pill">${esc(c.hero.eyebrow)}</p>
     <h1 id="hero-h">${esc(c.hero.h1)}</h1>
     <p class="lead">${esc(c.hero.lead)}</p>
     <div class="cta">
@@ -437,7 +436,6 @@ ${header(ctx, false)}
 
 <section class="hero cmp-hero" aria-labelledby="cmp-h">
   <div class="wrap">
-    <p class="pill">${esc(c.kicker)}</p>
     <h1 id="cmp-h">${esc(c.h1)}</h1>
     <p class="lead">${esc(c.lead)}</p>
     <div class="cta">

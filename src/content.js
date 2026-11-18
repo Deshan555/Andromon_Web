@@ -6,7 +6,6 @@ module.exports = (site) => {
   const N = site.name;
   return {
     hero: {
-      eyebrow: 'Free for Windows, macOS and Linux',
       h1: 'The Android phone manager for your computer',
       lead: `${N} puts your phone's screen, messages, files, photos and apps in one desktop window. Plug the phone in and it connects by itself, over USB or Wi‑Fi. No account, no root, nothing to set up on the phone first.`,
       points: ['Connects as soon as you plug in', 'Works over USB or Wi‑Fi', 'No account or sign-in', 'No root needed'],
