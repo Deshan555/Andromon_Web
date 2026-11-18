@@ -6,6 +6,25 @@ const icon = require('./icons');
 // homepage and the guide; picking what the computer already uses forgets it, so the page follows the
 // computer again.
 const THEME_HEAD = `(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})();`;
+// The first visit of a browser session opens on a short splash (the logo and a bar that fills as the
+// page loads). Decided before anything is drawn, so a later page view never flashes it.
+const SPLASH_HEAD = `(function(){try{if(!sessionStorage.getItem('splash'))document.documentElement.classList.add('splashing')}catch(e){}})();`;
+// Runs right after the splash in <body>: fills the bar as the page's first pictures and fonts arrive,
+// fades the splash out once the page has loaded (at least 0.6 s, at most 4 s), marks pictures that are
+// still loading so they show a shimmering skeleton, and registers the offline cache (sw.js).
+const SITE_SCRIPT = (base) => `(function(){
+var d=document,r=d.documentElement,t0=Date.now(),done=false;
+function finish(){if(done)return;done=true;try{sessionStorage.setItem('splash','1')}catch(e){}
+var wait=Math.max(0,600-(Date.now()-t0));setTimeout(function(){var s=d.querySelector('.splash');if(s)s.style.setProperty('--p','1');r.classList.add('splash-out');setTimeout(function(){r.classList.remove('splashing','splash-out')},450)},wait)}
+if(r.classList.contains('splashing')){
+  var bar=function(p){var s=d.querySelector('.splash');if(s)s.style.setProperty('--p',String(p))};bar(.15);
+  d.addEventListener('DOMContentLoaded',function(){bar(.5);var im=[].filter.call(d.images,function(i){return i.loading!=='lazy'}),n=im.length,k=0;
+    im.forEach(function(i){if(i.complete)k++;else i.addEventListener('load',step),i.addEventListener('error',step)});function step(){k++;bar(.5+.45*k/Math.max(n,1))}bar(.5+.45*k/Math.max(n,1))});
+  addEventListener('load',finish);setTimeout(finish,4000);
+}
+d.addEventListener('DOMContentLoaded',function(){[].forEach.call(d.querySelectorAll('main img:not(.mascot)'),function(i){if(i.complete&&i.naturalWidth)return;i.classList.add('sk');var off=function(){i.classList.remove('sk')};i.addEventListener('load',off);i.addEventListener('error',off)})});
+if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',function(){navigator.serviceWorker.register('${base}sw.js').catch(function(){})});
+})();`;
 const THEME_SCRIPT = `(function(){
 var root=document.documentElement,btn=document.querySelector('.theme-toggle');if(!btn)return;
 var sys=matchMedia('(prefers-color-scheme: dark)');
@@ -39,7 +58,7 @@ function head(ctx, { title, description, canonical, index = true, extra = '' }) 
 <html lang="${site.lang}">
 <head>
 <meta charset="utf-8">
-<script>${THEME_HEAD}</script>
+<script>${THEME_HEAD}${SPLASH_HEAD}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
@@ -83,7 +102,10 @@ function wordmark(ctx, px, lazy) {
 function header(ctx, home) {
   const { site, base } = ctx;
   const h = home ? '' : base;
-  return `<a class="skip" href="#main">Skip to content</a>
+  const wm = ctx.images.wordmark.variants.find((v) => v.w === 320) || ctx.images.wordmark.variants[0];
+  return `<div class="splash" aria-hidden="true"><img src="${base}img/${wm.file}" width="${wm.w}" height="${wm.h}" alt="" fetchpriority="high"><span class="splash-bar"><i></i></span></div>
+<script>${SITE_SCRIPT(base)}</script>
+<a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="wrap">
     <a class="brand" href="${base}" title="${esc(site.name)} home">${wordmark(ctx, 126)}</a>

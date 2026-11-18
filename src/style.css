@@ -404,3 +404,30 @@ table.cmp { width: 100%; min-width: 880px; border-collapse: collapse; font-size:
   .and-hero { text-align: center; } .and-hero h1, .and-hero .lead { margin-inline: auto; }
   .and-hero .cta, .and-hero .points { justify-content: center; }
 }
+
+/* ---------- start-up splash (first page view of a session; SPLASH_HEAD and SITE_SCRIPT in page.js) ---------- */
+.splash { display: none; }
+.splashing .splash { display: grid; place-items: center; align-content: center; gap: 34px; position: fixed; inset: 0; z-index: 1000;
+  background: radial-gradient(120% 90% at 50% 0%, #1d2016 0%, #111317 62%); transition: opacity .4s ease; --p: 0; }
+.splashing body { overflow: hidden; }
+.splash img { width: min(300px, 70vw); height: auto; }
+.splash-bar { width: min(240px, 60vw); height: 6px; border-radius: 99px; background: rgba(255,255,255,.1); overflow: hidden; }
+.splash-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #9CD237, #E3F786);
+  transform-origin: 0 50%; transform: scaleX(var(--p)); transition: transform .35s var(--ease); }
+.splash-out .splash { opacity: 0; pointer-events: none; }
+/* The hero's entrance waits for the splash to go, so it isn't spent behind it. */
+.splashing:not(.splash-out) .hero * { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: no-preference) {
+  .splash img { animation: splash-in .7s var(--ease) both; }
+  @keyframes splash-in { from { opacity: 0; transform: translateY(10px) scale(.97); } }
+}
+
+/* ---------- skeleton: a picture still loading shows a soft shimmering block of its own size ---------- */
+img.sk { background-color: var(--line); background-image: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+  background-size: 220% 100%; background-repeat: no-repeat; }
+:root[data-theme="dark"] img.sk { background-image: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.07) 50%, transparent 70%); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) img.sk { background-image: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.07) 50%, transparent 70%); } }
+@media (prefers-reduced-motion: no-preference) {
+  img.sk { animation: sk 1.3s linear infinite; }
+  @keyframes sk { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+}

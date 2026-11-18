@@ -91,8 +91,59 @@ fs.writeFileSync(path.join(DIST, 'site.webmanifest'), JSON.stringify({
 }, null, 2) + '\n');
 
 // Long caching for files that don't change (Netlify and Cloudflare Pages read this file).
-fs.writeFileSync(path.join(DIST, '_headers'),
-  `/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/img/*\n  Cache-Control: public, max-age=604800\n/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n`);
+// Pages are checked on every visit (the build changes them); fonts never change; pictures keep their
+// names, so they are kept a week and refreshed in the background for a month after that. sw.js must
+// always be fetched fresh, or a new deploy wouldn't reach people who visited before.
+fs.writeFileSync(path.join(DIST, '_headers'), [
+  '/fonts/*', '  Cache-Control: public, max-age=31536000, immutable',
+  '/img/*', '  Cache-Control: public, max-age=604800, stale-while-revalidate=2592000',
+  '/favicon.ico', '  Cache-Control: public, max-age=86400, stale-while-revalidate=604800',
+  '/site.webmanifest', '  Cache-Control: public, max-age=86400',
+  '/sw.js', '  Cache-Control: no-cache',
+  '/*', '  X-Content-Type-Options: nosniff', '  Referrer-Policy: strict-origin-when-cross-origin',
+].join('\n') + '\n');
+
+// Offline cache (sw.js, registered by every page). Its version is a hash of the built site, so each
+// deploy that changes anything starts a fresh cache and drops the old one.
+{
+  const hash = require('crypto').createHash('sha256');
+  const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)).forEach((e) => {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) walk(p); else if (e.name !== 'sw.js') hash.update(path.relative(DIST, p)).update(fs.readFileSync(p));
+  });
+  walk(DIST);
+  const version = hash.digest('hex').slice(0, 12);
+  const pages = ['', 'android/', 'compare/'].map((p) => base + p);
+  const core = [...pages, base + 'fonts/poppins-400.woff2', base + 'fonts/poppins-500.woff2', base + 'fonts/poppins-600.woff2'];
+  fs.writeFileSync(path.join(DIST, 'sw.js'), `// Andromon website offline cache, made by build.js. Version ${version}.
+// Pages: from the network first, so a new deploy shows at once; the cached copy when offline or slow.
+// Fonts and pictures: from the cache first, fetched once and kept. Everything else: the cached copy at
+// once, refreshed in the background.
+const CACHE = 'andromon-${version}';
+const CORE = ${JSON.stringify(core)};
+self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting())); });
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k.startsWith('andromon-') && k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+});
+const put = (req, res) => { if (res && res.ok && res.type === 'basic') { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); } return res; };
+self.addEventListener('fetch', (e) => {
+  const req = e.request, url = new URL(req.url);
+  if (req.method !== 'GET' || url.origin !== location.origin) return;
+  if (req.mode === 'navigate') {
+    e.respondWith(Promise.race([
+      fetch(req).then((res) => put(req, res)),
+      new Promise((ok) => setTimeout(ok, 3500)).then(() => caches.match(req, { ignoreSearch: true }).then((hit) => hit || Promise.reject(new Error('slow')))),
+    ]).catch(() => caches.match(req, { ignoreSearch: true }).then((hit) => hit || caches.match('${base}'))));
+    return;
+  }
+  if (/\\/(img|fonts)\\//.test(url.pathname)) {
+    e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((res) => put(req, res))));
+    return;
+  }
+  e.respondWith(caches.match(req).then((hit) => { const net = fetch(req).then((res) => put(req, res)).catch(() => hit); return hit || net; }));
+});
+`);
+}
 
 // ---------- checks ----------
 const problems = [];
