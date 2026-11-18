@@ -1,0 +1,1272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andromon user guide</title>
+<meta name="description" content="One guide for Andromon on the computer and Andromon Companion on the phone.">
+<meta name="theme-color" content="#E9E9E6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151617" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="img/icon.png">
+<link rel="preload" href="fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: Poppins; font-style: normal; font-weight: 400; font-display: swap; src: url(fonts/poppins-400.woff2) format('woff2'); }
+@font-face { font-family: Poppins; font-style: normal; font-weight: 500; font-display: swap; src: url(fonts/poppins-500.woff2) format('woff2'); }
+@font-face { font-family: Poppins; font-style: normal; font-weight: 600; font-display: swap; src: url(fonts/poppins-600.woff2) format('woff2'); }
+@font-face { font-family: Poppins; font-style: normal; font-weight: 700; font-display: swap; src: url(fonts/poppins-700.woff2) format('woff2'); }
+
+/* The same colours as the website and the apps: warm greys, lime and green. */
+:root {
+  --bg: #E9E9E6; --surface: #F3F3F0; --card: #FFFFFF; --ink: #292A2C; --soft: #5E5F62; --faint: #8A8B8E;
+  --line: #DCDCD8; --lime: #E3F786; --green: #9CD237; --lime-soft: #EEF6CF; --accent: #3F6A0A; --link: #3F6A0A;
+  --dark: #292A2C; --chip: #ECECE8;
+  --shadow: 0 24px 48px -28px rgba(41, 42, 44, .35);
+  --r: 24px; --top: 64px;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --fab: #292A2C; --fab-ink: #FFFFFF; --fab-hover: #000000;
+  color-scheme: light dark;
+}
+/* Light by default. A choice made with the header's sun/moon button is kept in data-theme on <html>;
+   without one, the page follows the computer's setting. */
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+    --bg: #151617; --surface: #1E1F21; --card: #232427; --ink: #F2F2F0; --soft: #A9AAAD; --faint: #75767A;
+    --line: #34353A; --lime-soft: #2A3020; --accent: #B7E356; --link: #C6EC50;
+    --dark: #0F1011; --chip: #2C2D31;
+    --shadow: 0 24px 48px -28px rgba(0, 0, 0, .8);
+    --fab: #E3F786; --fab-ink: #292A2C; --fab-hover: #EEFBA6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151617; --surface: #1E1F21; --card: #232427; --ink: #F2F2F0; --soft: #A9AAAD; --faint: #75767A;
+    --line: #34353A; --lime-soft: #2A3020; --accent: #B7E356; --link: #C6EC50;
+    --dark: #0F1011; --chip: #2C2D31;
+    --shadow: 0 24px 48px -28px rgba(0, 0, 0, .8);
+    --fab: #E3F786; --fab-ink: #292A2C; --fab-hover: #EEFBA6;
+  }
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--top) + 16px); -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15.5px/1.7 Poppins, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: var(--link); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+img { max-width: 100%; height: auto; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; border-radius: 8px; }
+.skip { position: absolute; left: -999px; top: 8px; z-index: 30; padding: 10px 16px; border-radius: 99px; background: var(--dark); color: #fff; }
+.skip:focus { left: 8px; }
+kbd { display: inline-block; min-width: 20px; padding: 0 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; background: var(--card); font: 600 11.5px/18px Poppins, system-ui, sans-serif; text-align: center; color: var(--soft); }
+
+/* ---------- top bar ---------- */
+.top {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 12px; height: var(--top); padding: 0 20px 0 12px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  transition: box-shadow .35s var(--ease);
+}
+.top.scrolled { box-shadow: 0 1px 0 var(--line), 0 14px 30px -24px rgba(0, 0, 0, .4); }
+.brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; font-weight: 600; font-size: 16.5px; white-space: nowrap; }
+.brand img { border-radius: 10px; }
+.brand span { padding: 2px 10px; border-radius: 99px; background: var(--lime); color: #292A2C; font-size: 12px; font-weight: 600; letter-spacing: .02em; }
+#menu { display: grid; place-items: center; width: 40px; height: 40px; flex: none; border: 0; border-radius: 12px; background: none; cursor: pointer; transition: background-color .2s ease; }
+#menu:hover { background: var(--chip); }
+
+.search { position: relative; display: flex; align-items: center; gap: 8px; flex: 1; max-width: 440px; margin-left: auto; height: 42px; padding: 0 8px 0 14px; border-radius: 99px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line); transition: box-shadow .25s ease; }
+.search:focus-within { box-shadow: inset 0 0 0 2px var(--green), 0 10px 30px -18px rgba(0, 0, 0, .35); }
+.search > svg { flex: none; color: var(--faint); }
+#q { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font-size: 14.5px; }
+#q::placeholder { color: var(--faint); }
+.search:focus-within kbd { display: none; }
+#results { position: absolute; top: 50px; right: 0; width: min(580px, calc(100vw - 24px)); max-height: min(70vh, 580px); overflow-y: auto; padding: 8px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .35); }
+#results .count { padding: 6px 12px 8px; font-size: 12.5px; color: var(--soft); }
+#results a { display: block; padding: 10px 12px; border-radius: 14px; color: var(--ink); text-decoration: none; }
+#results a:hover, #results a.sel { background: var(--lime-soft); }
+#results .where { display: block; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+#results strong { display: block; font-weight: 600; }
+#results .snip { display: block; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
+mark { padding: 0 2px; border-radius: 4px; background: var(--lime); color: #1B1C1D; }
+.hit { border-radius: 8px; animation: hit 3s ease-out; }
+tr.hit td { animation: hit 3s ease-out; box-shadow: none !important; }
+@keyframes hit { 0%, 60% { background: var(--lime); box-shadow: 0 0 0 6px var(--lime); color: #292A2C; } 100% { background: transparent; box-shadow: 0 0 0 6px transparent; } }
+
+/* ---------- layout and contents ---------- */
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); max-width: 1320px; margin: 0 auto; }
+.nav-hidden .layout { grid-template-columns: minmax(0, 1fr); max-width: 1020px; }
+.nav-hidden nav { display: none; }
+nav { position: sticky; top: var(--top); height: calc(100vh - var(--top)); overflow-y: auto; padding: 18px 14px 48px 18px; font-size: 14px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+nav .group { display: flex; align-items: center; gap: 10px; width: 100%; margin: 18px 0 6px; padding: 6px 8px; border: 0; border-radius: 12px; background: none; cursor: pointer; text-align: left; font-size: 13px; font-weight: 600; color: var(--ink); }
+nav .group:first-child { margin-top: 0; }
+nav .group .n { display: grid; place-items: center; width: 26px; height: 26px; flex: none; border-radius: 8px; background: linear-gradient(135deg, var(--lime), var(--green)); color: #292A2C; font-size: 11px; font-weight: 700; }
+nav .group .t { flex: 1; }
+nav .group > svg { color: var(--faint); }
+nav .group:hover, nav .fold:hover { background: var(--chip); }
+nav svg { transition: transform .25s var(--ease); }
+nav [aria-expanded="false"] svg { transform: rotate(-90deg); }
+nav ul { list-style: none; margin: 0; padding: 0; }
+nav > ul { margin-left: 21px; padding-left: 12px; border-left: 1px solid var(--line); }
+nav li.has-sub { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+nav li.has-sub > ul { grid-column: 1 / -1; }
+nav .fold { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 8px; background: none; color: var(--faint); cursor: pointer; }
+nav ul ul { margin: 0 0 6px 10px; font-size: 13px; }
+nav a { position: relative; display: block; padding: 5px 10px; border-radius: 10px; color: var(--ink); text-decoration: none; line-height: 1.45; transition: background-color .2s ease, color .2s ease; }
+nav ul ul a { color: var(--soft); padding: 3px 10px; }
+nav a:hover { background: var(--chip); text-decoration: none; }
+nav a.on { background: var(--lime); color: #292A2C; font-weight: 600; }
+nav a.on::before { content: ''; position: absolute; left: -13px; top: 6px; bottom: 6px; width: 3px; border-radius: 3px; background: var(--green); }
+nav ul ul a.on::before { display: none; }
+
+/* ---------- opening ---------- */
+main { min-width: 0; padding: 24px 36px 72px; }
+.hero { position: relative; overflow: hidden; padding: clamp(28px, 5vw, 56px); border-radius: calc(var(--r) + 6px); background: linear-gradient(135deg, var(--lime), var(--green)); color: #292A2C; }
+.hero::after { content: ''; position: absolute; right: -80px; top: -80px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .55), transparent 70%); pointer-events: none; }
+.eyebrow { margin: 0 0 10px; font-size: 12.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #3F6A0A; }
+h1 { margin: 0; max-width: 14em; font-size: clamp(2.1rem, 4.4vw, 3.4rem); font-weight: 400; line-height: 1.08; letter-spacing: -.025em; }
+.lede { position: relative; margin: 18px 0 0; max-width: 62ch; font-size: clamp(1rem, 1.5vw, 1.15rem); color: #3d3e40; }
+.lede strong { color: #292A2C; font-weight: 600; }
+.versions { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; padding: 0; list-style: none; }
+.versions li { display: inline-flex; align-items: center; gap: 7px; padding: 6px 14px; border-radius: 99px; background: rgba(255, 255, 255, .6); font-size: 13.5px; font-weight: 500; }
+.versions li.hint { background: none; padding-left: 4px; color: #3d3e40; font-weight: 400; }
+.versions kbd { background: rgba(255, 255, 255, .7); border-color: rgba(41, 42, 44, .2); color: #292A2C; }
+
+.jump { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+.jump a { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 20px; border-radius: var(--r); background: var(--card); border: 1px solid var(--line); color: var(--soft); text-decoration: none; font-size: 13.5px; line-height: 1.45; transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .3s ease; }
+.jump .ico { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 10px; border-radius: 14px; background: var(--lime-soft); color: var(--accent); transition: background-color .3s ease, color .3s ease, transform .5s var(--ease); }
+.jump .num { position: absolute; top: 18px; right: 20px; font-size: 13px; font-weight: 600; color: var(--faint); }
+.jump strong { font-size: 16.5px; font-weight: 600; color: var(--ink); }
+.jump .count { margin-top: auto; padding-top: 10px; font-size: 12.5px; font-weight: 500; color: var(--accent); }
+.jump a:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: transparent; text-decoration: none; }
+.jump a:hover .ico { background: var(--lime); color: #292A2C; transform: rotate(-6deg) scale(1.06); }
+
+/* ---------- parts and topics ---------- */
+.part-title { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 72px 0 20px; padding: 0 4px 18px; border-bottom: 1px solid var(--line); font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 400; line-height: 1.15; letter-spacing: -.02em; }
+.part-title .num { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, var(--lime), var(--green)); color: #292A2C; font-size: 18px; font-weight: 600; letter-spacing: 0; }
+.part-title .label { flex-basis: 100%; order: -1; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.part-title em { padding: 4px 12px; border-radius: 99px; background: var(--chip); font-style: normal; font-size: 13px; font-weight: 500; letter-spacing: 0; color: var(--soft); }
+
+.topic { margin: 0 0 18px; padding: clamp(22px, 3.4vw, 40px); border-radius: var(--r); background: var(--card); border: 1px solid var(--line); }
+.topic > h3 + * { margin-top: 0; }
+h1, h2, h3, h4, h5 { scroll-margin-top: calc(var(--top) + 16px); }
+h3 { margin: 0 0 16px; font-size: clamp(1.45rem, 2.4vw, 1.85rem); font-weight: 400; line-height: 1.2; letter-spacing: -.015em; }
+h4 { position: relative; margin: 40px 0 12px; padding-top: 28px; border-top: 1px solid var(--line); font-size: 19px; font-weight: 600; line-height: 1.35; }
+h4::before { content: ''; position: absolute; left: 0; top: -1px; width: 48px; height: 3px; border-radius: 0 0 3px 3px; background: var(--green); }
+h5 { margin: 26px 0 8px; font-size: 16px; font-weight: 600; }
+.anchor { margin-left: 8px; padding: 0 4px; border-radius: 6px; color: var(--faint); text-decoration: none; font-weight: 400; opacity: 0; transition: opacity .2s ease, color .2s ease; }
+.anchor::before { content: '#'; }
+.anchor.copied::before { content: 'Link copied'; font-size: 12px; font-weight: 600; color: var(--accent); }
+h3:hover .anchor, h4:hover .anchor, h5:hover .anchor, .anchor:focus-visible, .anchor.copied { opacity: 1; }
+.anchor:hover { color: var(--accent); }
+p, ul, ol { margin: 0 0 14px; }
+main ul, main ol { padding-left: 22px; }
+main li { margin-bottom: 7px; }
+main li::marker { color: var(--accent); }
+code { padding: 1px 6px; border-radius: 6px; background: var(--chip); font: .88em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+pre { overflow-x: auto; margin: 0 0 16px; padding: 16px 18px; border-radius: 16px; background: var(--dark); color: #E9E9E6; font: 13px/1.55 ui-monospace, Menlo, Consolas, monospace; }
+.note { position: relative; padding: 14px 18px 14px 50px; border-radius: 16px; background: var(--lime-soft); font-size: 14.5px; }
+.note::before { content: 'i'; position: absolute; left: 16px; top: 15px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--green); color: #292A2C; font: 700 13px/1 Georgia, serif; }
+
+.badge { display: inline-block; vertical-align: 2px; padding: 1px 9px; border-radius: 999px; background: var(--lime); color: #292A2C; font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+
+/* screenshots: a click opens them in the viewer */
+figure { margin: 0 0 18px; }
+.shot { display: block; width: fit-content; max-width: 100%; border-radius: 16px; cursor: zoom-in; }
+.shot img { display: block; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); transition: transform .5s var(--ease), box-shadow .5s var(--ease); }
+.shot:hover img { transform: translateY(-3px); box-shadow: 0 34px 60px -30px rgba(41, 42, 44, .5); }
+.shot.phone img { width: 250px; border: 6px solid #1B1C1D; border-radius: 30px; background: #1B1C1D; }
+.shots { display: flex; flex-wrap: wrap; gap: 22px; margin: 4px 0 20px; }
+.shots figure { margin: 0; }
+figcaption { margin-top: 10px; max-width: 250px; font-size: 13px; line-height: 1.45; color: var(--soft); text-align: center; }
+
+.table { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--line); border-radius: 16px; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; line-height: 1.55; }
+th, td { padding: 11px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+th { background: var(--surface); font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+tbody tr { transition: background-color .2s ease; }
+tbody tr:hover { background: var(--surface); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { min-width: 140px; font-weight: 500; }
+
+.duo { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; margin: 0 0 20px; }
+.duo .box { padding: 20px; border-radius: 20px; background: var(--lime-soft); }
+.duo .box strong { display: block; font-size: 17px; font-weight: 600; }
+.duo .box span { font-size: 13.5px; color: var(--soft); }
+.duo .box p { margin: 8px 0 0; font-size: 14.5px; }
+.duo .wire { max-width: 160px; padding: 10px 6px; border-top: 2px dashed var(--green); border-bottom: 2px dashed var(--green); text-align: center; font-size: 14px; font-weight: 600; line-height: 1.3; }
+.duo .wire small { display: block; font-weight: 400; color: var(--soft); }
+
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--line); }
+.pager a { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: 16px; border: 1px solid var(--line); color: var(--ink); text-decoration: none; font-weight: 500; line-height: 1.4; transition: background-color .25s ease, border-color .25s ease, transform .45s var(--ease); }
+.pager a.next { text-align: right; align-items: flex-end; }
+.pager small { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.pager a:hover { background: var(--lime-soft); border-color: transparent; text-decoration: none; }
+.pager a.prev:hover { transform: translateX(-3px); }
+.pager a.next:hover { transform: translateX(3px); }
+
+footer { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 40px; padding: 22px 26px; border-radius: var(--r); background: var(--dark); color: #B9BABC; font-size: 13.5px; }
+footer img { border-radius: 8px; }
+footer p { margin: 0; flex: 1; }
+footer strong { color: #fff; font-weight: 600; }
+footer a { color: var(--lime); }
+
+/* ---------- back to top, viewer ---------- */
+#totop { position: fixed; right: 22px; bottom: 22px; z-index: 15; display: grid; place-items: center; width: 46px; height: 46px; border: 0; border-radius: 50%; background: var(--fab); color: var(--fab-ink); box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .5); cursor: pointer; opacity: 0; transform: translateY(16px) scale(.9); pointer-events: none; transition: opacity .35s var(--ease), transform .45s var(--ease), background-color .2s ease; }
+#totop.show { opacity: 1; transform: none; pointer-events: auto; }
+#totop:hover { background: var(--fab-hover); }
+
+#viewer { position: fixed; inset: 0; z-index: 40; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 24px; background: rgba(15, 16, 17, .82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: #fff; }
+#viewer[hidden] { display: none; }
+#viewer figure { display: grid; justify-items: center; gap: 12px; margin: 0; max-height: 100%; }
+#viewer img { max-width: 100%; max-height: calc(100vh - 110px); width: auto; height: auto; border-radius: 16px; box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .8); cursor: zoom-out; }
+#viewer img.phone { border: 6px solid #1B1C1D; border-radius: 32px; }
+#viewer figcaption { max-width: 60ch; margin: 0; font-size: 14px; color: #D8D9DA; }
+#viewer button { display: grid; place-items: center; width: 48px; height: 48px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .12); color: #fff; cursor: pointer; transition: background-color .2s ease; }
+#viewer button:hover { background: rgba(255, 255, 255, .24); }
+#viewer .x { position: absolute; top: 18px; right: 18px; }
+
+/* ---------- motion (off when the system asks for reduced motion) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .hero > * { animation: rise .9s var(--ease) both; }
+  .hero h1 { animation-delay: .06s; }
+  .hero .lede { animation-delay: .12s; }
+  .hero .versions { animation-delay: .18s; }
+  .jump a { animation: rise .9s var(--ease) both; }
+  .jump a:nth-child(1) { animation-delay: .2s; }
+  .jump a:nth-child(2) { animation-delay: .26s; }
+  .jump a:nth-child(3) { animation-delay: .32s; }
+  .jump a:nth-child(4) { animation-delay: .38s; }
+  #viewer:not([hidden]) { animation: fade .3s ease both; }
+  #viewer:not([hidden]) img { animation: pop .45s var(--ease) both; }
+  @supports (animation-timeline: scroll()) {
+    .top::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, var(--green), var(--lime)); transform-origin: 0 50%; animation: progress linear both; animation-timeline: scroll(root); }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jump a:hover, .pager a:hover, .shot:hover img, #totop { transform: none !important; }
+}
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* ---------- narrow screens ---------- */
+@media (max-width: 1100px) { .jump { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+  :root { --top: 58px; }
+  .top { padding: 0 10px 0 6px; gap: 6px; }
+  .brand { font-size: 0; gap: 0; }
+  .brand span { display: none; }
+  .search kbd { display: none; }
+  #results { position: fixed; top: 64px; left: 10px; right: 10px; width: auto; }
+  #q { font-size: 16px; }
+  .layout { display: block; }
+  nav { display: none; position: fixed; inset: var(--top) 0 0 0; z-index: 19; height: auto; padding: 20px; background: var(--bg); font-size: 16px; }
+  nav ul ul { font-size: 15px; }
+  nav a { padding: 7px 10px; }
+  nav ul ul a { padding: 5px 10px; }
+  .nav-open nav { display: block; }
+  .nav-open { overflow: hidden; }
+  main { padding: 14px 12px 56px; }
+  .hero { border-radius: var(--r); }
+  .versions li.hint { display: none; }
+  .part-title { margin-top: 48px; }
+  .part-title .num { width: 44px; height: 44px; font-size: 16px; }
+  .topic { border-radius: 20px; }
+  .duo { grid-template-columns: 1fr; }
+  .duo .wire { max-width: none; border: 0; border-left: 2px dashed var(--green); margin-left: 24px; padding: 4px 12px; text-align: left; }
+  .shot.phone img { width: min(250px, 66vw); }
+  th, td { padding: 9px 11px; }
+  td:first-child { min-width: 108px; }
+  .pager { grid-template-columns: 1fr; }
+  .pager a.next { text-align: left; align-items: flex-start; }
+  #viewer { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+  #viewer .go { position: absolute; bottom: 18px; }
+  #viewer .go.prev { left: 18px; }
+  #viewer .go.next { right: 18px; }
+  #viewer img { max-height: calc(100vh - 160px); }
+  #totop { right: 14px; bottom: 14px; }
+}
+@media (max-width: 520px) { .jump { grid-template-columns: minmax(0, 1fr); } }
+
+@media print {
+  .top, nav, .jump, .pager, #totop, #viewer, .anchor { display: none !important; }
+  .layout { display: block; }
+  body { background: #fff; color: #000; }
+  .hero { background: none; padding: 0; }
+  .topic { padding: 0; border: 0; break-inside: auto; }
+  .shot img { box-shadow: none; }
+  .part-title { border-bottom: 2px solid #000; }
+}
+
+/* Light / dark switch in the header. It shows a moon in light mode and a sun in dark mode. */
+.theme-toggle { position: relative; display: grid; place-items: center; width: 42px; height: 42px; flex: none; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--card); color: var(--ink); cursor: pointer; transition: background-color .25s ease, border-color .25s ease, transform .4s cubic-bezier(.22, 1, .36, 1); }
+.theme-toggle:hover { border-color: var(--green); transform: rotate(-12deg); }
+.theme-toggle svg { position: absolute; width: 20px; height: 20px; transition: opacity .35s ease, transform .5s cubic-bezier(.22, 1, .36, 1); }
+.theme-toggle .sun { opacity: 0; transform: rotate(-90deg) scale(.5); }
+:root[data-theme="dark"] .theme-toggle .sun { opacity: 1; transform: none; }
+:root[data-theme="dark"] .theme-toggle .moon { opacity: 0; transform: rotate(90deg) scale(.5); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .theme-toggle .sun { opacity: 1; transform: none; }
+  :root:not([data-theme]) .theme-toggle .moon { opacity: 0; transform: rotate(90deg) scale(.5); }
+}
+/* the new theme spreads in a circle from the switch (browsers with view transitions) */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+@media (prefers-reduced-motion: reduce) { .theme-toggle, .theme-toggle svg { transition: none; } .theme-toggle:hover { transform: none; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#top">Skip to the guide</a>
+<header class="top">
+  <button id="menu" type="button" aria-expanded="true" aria-controls="nav" aria-label="Show or hide the contents" title="Show or hide the contents (Ctrl/⌘ + B)"><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  <a class="brand" href="#top"><img src="img/icon.png" alt="" width="34" height="34">Andromon <span>Guide</span></a>
+  <div class="search" role="search">
+    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="9" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <input id="q" type="search" placeholder="Search the guide" aria-label="Search the whole guide" autocomplete="off" spellcheck="false">
+    <kbd>/</kbd>
+    <div id="results" hidden></div>
+  </div>
+  <button class="theme-toggle" type="button" aria-label="Switch between light and dark mode"><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+</header>
+<div class="layout">
+<nav id="nav" aria-label="Contents">
+<button class="group" type="button" aria-expanded="true" aria-controls="nav-part-1"><span class="n">01</span><span class="t">Getting started</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<ul id="nav-part-1">
+  <li><a href="#how">How the two apps work together</a></li>
+  <li class="has-sub"><a href="#connect">Connecting a phone</a><button class="fold" type="button" aria-expanded="true" aria-controls="nav-sub-1-2" aria-label="Show or hide the pages of Connecting a phone"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-sub-1-2"><li><a href="#pc-with-a-usb-cable">With a USB cable</a></li><li><a href="#pc-without-a-cable-android-11-and-newer">Without a cable (Android 11 and newer)</a></li></ul></li>
+  <li><a href="#companion">Getting the companion app</a></li>
+</ul>
+<button class="group" type="button" aria-expanded="true" aria-controls="nav-part-2"><span class="n">02</span><span class="t">On the computer</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<ul id="nav-part-2">
+  <li><a href="#pc-the-window">The window</a></li>
+  <li><a href="#pc-overview">Overview</a></li>
+  <li class="has-sub"><a href="#pc-communication">Communication</a><button class="fold" type="button" aria-expanded="true" aria-controls="nav-sub-2-3" aria-label="Show or hide the pages of Communication"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-sub-2-3"><li><a href="#pc-messages">Messages</a></li><li><a href="#pc-contacts">Contacts</a></li><li><a href="#pc-call-log">Call log</a></li><li><a href="#pc-calendar">Calendar</a></li><li><a href="#pc-notifications">Notifications</a></li></ul></li>
+  <li class="has-sub"><a href="#pc-files-media">Files &amp; media</a><button class="fold" type="button" aria-expanded="true" aria-controls="nav-sub-2-4" aria-label="Show or hide the pages of Files &amp; media"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-sub-2-4"><li><a href="#pc-files">Files</a></li><li><a href="#pc-photos">Photos</a></li><li><a href="#pc-music">Music</a></li><li><a href="#pc-backup-restore">Backup &amp; restore</a></li><li><a href="#wifi">Wi‑Fi transfer</a></li></ul></li>
+  <li class="has-sub"><a href="#pc-device">Device</a><button class="fold" type="button" aria-expanded="true" aria-controls="nav-sub-2-5" aria-label="Show or hide the pages of Device"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-sub-2-5"><li><a href="#pc-apps">Apps</a></li><li><a href="#pc-debloat">Debloat</a></li><li><a href="#pc-revanced">ReVanced</a></li><li><a href="#pc-f-droid">F-Droid</a></li><li><a href="#pc-controls">Controls</a></li><li><a href="#pc-shizuku">Shizuku</a></li><li><a href="#pc-screen-mirror">Screen mirror</a></li><li><a href="#pc-screenshot">Screenshot</a></li></ul></li>
+  <li class="has-sub"><a href="#pc-developer">Developer</a><button class="fold" type="button" aria-expanded="true" aria-controls="nav-sub-2-6" aria-label="Show or hide the pages of Developer"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-sub-2-6"><li><a href="#pc-test-automation">Test automation</a></li><li><a href="#pc-app-testing">App testing</a></li><li><a href="#pc-developer-page">Developer</a></li><li><a href="#pc-shell">Shell</a></li></ul></li>
+  <li><a href="#pc-settings">Settings</a></li>
+</ul>
+<button class="group" type="button" aria-expanded="true" aria-controls="nav-part-3"><span class="n">03</span><span class="t">On the phone</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<ul id="nav-part-3">
+  <li><a href="#phone-finding-your-way-around">Finding your way around</a></li>
+  <li><a href="#phone-pc-link">PC link</a></li>
+  <li><a href="#phone-tools">Tools</a></li>
+  <li><a href="#phone-stats">Stats</a></li>
+  <li><a href="#phone-cleaner">Cleaner</a></li>
+  <li><a href="#phone-network">Network</a></li>
+  <li><a href="#wifi">Transfer: receive and send</a></li>
+  <li><a href="#phone-memory">Memory</a></li>
+  <li><a href="#phone-battery">Battery</a></li>
+  <li><a href="#phone-battery-saver">Battery saver</a></li>
+  <li><a href="#phone-freezer">Freezer</a></li>
+  <li><a href="#phone-apps">Apps</a></li>
+  <li><a href="#phone-storage">Storage</a></li>
+  <li><a href="#phone-permissions">Permissions</a></li>
+  <li><a href="#phone-hardware-test">Hardware test</a></li>
+  <li><a href="#phone-settings">Settings</a></li>
+  <li><a href="#phone-privileged-access-shizuku-helper-root">Privileged access (Shizuku, helper, root)</a></li>
+  <li><a href="#phone-notification-buttons-and-quick-settings-tiles">Notification buttons and quick-settings tiles</a></li>
+  <li><a href="#phone-privacy">Privacy</a></li>
+</ul>
+<button class="group" type="button" aria-expanded="true" aria-controls="nav-part-4"><span class="n">04</span><span class="t">Both together</span><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<ul id="nav-part-4">
+  <li class="has-sub"><a href="#wifi">Wi‑Fi file transfer</a><button class="fold" type="button" aria-expanded="true" aria-controls="nav-sub-4-1" aria-label="Show or hide the pages of Wi‑Fi file transfer"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul id="nav-sub-4-1"><li><a href="#wifi-computer">On the computer</a></li><li><a href="#wifi-phone">On the phone</a></li></ul></li>
+  <li><a href="#help">If something doesn't work</a></li>
+</ul>
+</nav>
+<main id="top">
+<section class="hero">
+  <p class="eyebrow">User guide</p>
+  <h1>Andromon user guide</h1>
+  <p class="lede">One guide for both apps: <strong>Andromon</strong> on your Windows, macOS or Linux computer and <strong>Andromon Companion</strong> on your Android phone. It shows every page and screen and explains what each option does.</p>
+  <ul class="versions">
+    <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/></svg>Andromon 0.1.0</li>
+    <li><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 18h.01"/></svg>Companion 0.33.0</li>
+    <li class="hint">Press <kbd>/</kbd> to search</li>
+  </ul>
+</section>
+<div class="jump">
+  <a href="#part-1"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22v-5M9 8V2M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z"/></svg></span><span class="num">01</span><strong>Getting started</strong><span class="blurb">Connect a phone, with or without a cable</span><span class="count">3 topics</span></a>
+  <a href="#part-2"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/></svg></span><span class="num">02</span><strong>On the computer</strong><span class="blurb">Every page of Andromon</span><span class="count">7 topics</span></a>
+  <a href="#part-3"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 18h.01"/></svg></span><span class="num">03</span><strong>On the phone</strong><span class="blurb">Every screen of the companion</span><span class="count">18 topics</span></a>
+  <a href="#part-4"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/></svg></span><span class="num">04</span><strong>Both together</strong><span class="blurb">Wi‑Fi file transfer and fixing problems</span><span class="count">2 topics</span></a>
+</div>
+
+<section class="part">
+<h2 class="part-title" id="part-1" data-title="Getting started"><span class="num" aria-hidden="true">01</span><span class="label">Part 1</span>Getting started</h2>
+<section class="topic">
+<h3 id="how">How the two apps work together</h3>
+
+<p>Andromon is two apps that work as one.</p>
+<div class="duo">
+  <div class="box"><strong>Andromon</strong><span>on your Windows or macOS computer</span>
+    <p>Manages the phone from the computer: messages, contacts, files, photos, apps, the phone's screen and more.</p></div>
+  <div class="wire"><span>USB cable or Wi‑Fi</span><small>adb, Android's own debugging link</small></div>
+  <div class="box"><strong>Andromon Companion</strong><span>on your Android phone</span>
+    <p>Reads what Android only gives to apps on the phone, and has phone-care tools you use on the phone itself.</p></div>
+</div>
+<ul>
+<li>Andromon talks to the phone over <strong>adb</strong>, the debugging link built into Android (a USB cable, or Wireless debugging on Android 11 and newer). Nothing has to be installed on the computer besides Andromon.</li>
+<li>Pages that work with Android directly (Files, Apps, Controls, Screen mirror, Screenshot, Shell…) need nothing on the phone.</li>
+<li>Android only lets <strong>apps on the phone</strong> read SMS, contacts, the call log, the calendar and notifications. The companion is that app: Andromon asks, the companion reads and answers. The pages that need it (Messages, Contacts, Call log, Calendar, Notifications, Photos, Music) are marked <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a> in this guide.</li>
+<li>Andromon offers to install the companion the first time you open one of these pages; you click <strong>Install companion</strong> once.</li>
+<li>The companion checks that each request comes from adb. Other apps on the phone, and other devices on the network, can't talk to it.</li>
+<li>While a computer is linked, the phone shows a <strong>"Connected to Andromon"</strong> notification. The link stops when you press <strong>Stop</strong> on it, switch it off on the <a href="#phone-pc-link">PC link</a> screen, or after 15 idle minutes.</li>
+<li>The companion's phone-care tools (memory, cleaner, battery, freezer, network tests, storage, permissions, hardware test) work on their own, without a computer. A few of them can do more with <a href="#phone-privileged-access-shizuku-helper-root">privileged access</a>.</li>
+</ul>
+<p class="note">The screenshots were taken with an Android 12 emulator and made-up sample data.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><span></span><a class="next" href="#connect"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Connecting a phone</a></div>
+</section>
+<section class="topic">
+<h3 id="connect">Connecting a phone</h3>
+<figure><a class="shot pc" href="img/pc/welcome.png" target="_blank"><img src="img/pc/welcome.png" alt="Welcome screen" width="1920" height="1200" loading="lazy"></a></figure>
+<h4 id="pc-with-a-usb-cable">With a USB cable</h4>
+<ol>
+<li>On the phone: <strong>Settings › About phone</strong>, tap <strong>Build number</strong> 7 times. This switches on Developer options.</li>
+<li><strong>Settings › System › Developer options</strong>: turn on <strong>USB debugging</strong>.</li>
+<li>Plug in the cable, click <strong>Connect phone</strong> (the plug button at the top right), pick the phone, then tap <strong>Allow</strong> on the phone. Tick &quot;Always allow from this computer&quot; to skip this next time. After the first time, Andromon connects by itself as soon as the phone is plugged in, or when it opens with the phone already plugged in. While the phone is connected, Andromon closes adb in other programs (Android SDK, Android Studio, scrcpy) so nothing else can use the phone. Both can be turned off in <strong>Settings › Phone link</strong>.</li>
+</ol>
+<h4 id="pc-without-a-cable-android-11-and-newer">Without a cable (Android 11 and newer)</h4>
+<div class="table"><table><thead><tr><th>Way</th><th>Steps</th></tr></thead><tbody>
+<tr><td>Easiest</td><td>Connect once with the cable and click <strong>Use this phone without the cable</strong> on the Overview. Afterwards, turn on the Wi‑Fi connection in the companion (<strong>PC link › Wi‑Fi</strong>) and the phone appears under <strong>Your phones over Wi‑Fi</strong>.</td></tr>
+<tr><td>QR code</td><td>Click <strong>Connect over Wi‑Fi</strong>. On the phone: <strong>Developer options › Wireless debugging › Pair device with QR code</strong>, and scan the code Andromon shows.</td></tr>
+<tr><td>6-digit code</td><td>In the same window, choose <strong>Pair with a 6-digit code</strong> and type the address and code from the phone's <strong>Pair device with pairing code</strong> screen.</td></tr>
+<tr><td>By address</td><td><strong>Connect by address</strong>: type the IP address and port from the Wireless debugging screen. For networks that hide devices from each other.</td></tr>
+</tbody></table></div>
+<p>You pair only once. The computer and the phone must be on the same Wi‑Fi.</p>
+<p>The dot next to &quot;Andromon&quot; in the sidebar is green while a phone is connected. <strong>Disconnect</strong> (top right) ends the session.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#how"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>How the two apps work together</a><a class="next" href="#companion"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Getting the companion app</a></div>
+</section>
+<section class="topic">
+<h3 id="companion">Getting the companion app</h3>
+<p>You don't install it yourself. Connect the phone to Andromon with the USB cable and open <strong>Messages</strong>, <strong>Contacts</strong>, <strong>Call log</strong>, <strong>Photos</strong> or <strong>Music</strong> there; Andromon offers <strong>Install companion</strong> and does the rest, including the permissions. Installing this way matters: Android refuses the SMS and call-log permissions for apps installed by tapping an APK file.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#connect"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Connecting a phone</a><a class="next" href="#pc-the-window"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>The window</a></div>
+</section>
+</section>
+
+<section class="part">
+<h2 class="part-title" id="part-2" data-title="On the computer"><span class="num" aria-hidden="true">02</span><span class="label">Part 2</span>On the computer<em>Andromon</em></h2>
+<section class="topic">
+<h3 id="pc-the-window">The window</h3>
+<ul>
+<li><strong>Sidebar:</strong> the pages, in four groups. Click a group's heading to fold it; <strong>Developer</strong> starts folded. Pages that need a phone are greyed out until one is connected. <strong>Wi‑Fi transfer</strong>, <strong>F-Droid</strong> and <strong>Settings</strong> work without a phone.</li>
+<li><strong>Collapse</strong> (bottom of the sidebar, or Ctrl/⌘ + B) shrinks the sidebar to icons.</li>
+<li><strong>Downloads button</strong> (the arrow at the top right) lists what Andromon is downloading or has downloaded: the ReVanced tools, the F-Droid catalogue and apps, the debloat list.</li>
+<li>A <strong>spinning circle</strong> in the top bar means Andromon is talking to the phone.</li>
+<li>Buttons that delete or change something important ask twice: the first click turns the button into <strong>Confirm?</strong>, the second click does it.</li>
+</ul>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#companion"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Getting the companion app</a><a class="next" href="#pc-overview"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Overview</a></div>
+</section>
+<section class="topic">
+<h3 id="pc-overview">Overview</h3>
+<figure><a class="shot pc" href="img/pc/overview.png" target="_blank"><img src="img/pc/overview.png" alt="Overview" width="1920" height="1200" loading="lazy"></a></figure>
+<div class="table"><table><thead><tr><th>Part</th><th>What it shows or does</th></tr></thead><tbody>
+<tr><td>Name and chips</td><td>The phone's model, Android version, how it is connected (USB or Wi‑Fi) and how long it has been on.</td></tr>
+<tr><td><strong>Battery</strong> and <strong>Storage</strong> cards</td><td>Charge level, temperature and charging state; used and free space.</td></tr>
+<tr><td>Shortcuts</td><td>One click to Screen mirror, Screenshot, Files, Photos, Apps and Messages.</td></tr>
+<tr><td><strong>This phone</strong></td><td>Android version, security patch, device, processor type, serial number, screen size. Click a row to copy its value.</td></tr>
+<tr><td><strong>Phone links</strong> <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a></td><td><strong>Now playing on phone</strong> (cover, play/pause, next/previous, seek), <strong>Send to phone</strong> (a link or text opens on the phone or arrives as a notification), <strong>Shared clipboard</strong> (copy to the phone's clipboard, or fetch the phone's), <strong>Find my phone</strong> (rings at full volume for up to 2 minutes, even on silent).</td></tr>
+<tr><td><strong>Use this phone without the cable</strong></td><td>The one-time Wi‑Fi setup described above.</td></tr>
+</tbody></table></div>
+<p><strong>Refresh</strong> reads everything again.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#pc-the-window"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>The window</a><a class="next" href="#pc-communication"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Communication</a></div>
+</section>
+<section class="topic">
+<h3 id="pc-communication">Communication</h3>
+<h4 id="pc-messages">Messages <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a></h4>
+<figure><a class="shot pc" href="img/pc/messages.png" target="_blank"><img src="img/pc/messages.png" alt="Messages" width="1920" height="1200" loading="lazy"></a></figure>
+<ul>
+<li>The left column lists conversations (SMS and MMS together), newest first. Click one to read it; pictures in MMS open or save with a click.</li>
+<li><strong>Search</strong> looks through texts, names, numbers and attachment names.</li>
+<li>Type at the bottom and click <strong>Send</strong> to reply. The message is sent <strong>by the phone</strong> as a normal SMS, so your usual SMS charges apply. Sending MMS is not supported.</li>
+<li><strong>New message</strong> starts a conversation with any number.</li>
+<li><strong>Export XML</strong> saves all messages in the format the &quot;SMS Backup &amp; Restore&quot; app uses; <strong>Export CSV</strong> saves a spreadsheet file.</li>
+<li><strong>Restore…</strong> reads such an XML file, shows what it holds and adds the text messages that aren't on the phone yet.</li>
+</ul>
+<h4 id="pc-contacts">Contacts <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a></h4>
+<figure><a class="shot pc" href="img/pc/contacts.png" target="_blank"><img src="img/pc/contacts.png" alt="Contacts" width="1920" height="1200" loading="lazy"></a></figure>
+<ul>
+<li>Click a name to <strong>edit</strong> it: name, numbers, e‑mail addresses, company, birthday, note, favourite, photo.</li>
+<li><strong>New contact</strong> adds one. Tick contacts to <strong>delete</strong> several at once.</li>
+<li><strong>Find duplicates</strong> groups contacts that share a phone number, e‑mail address or name. For each group you choose which one to keep; the others' details are merged into it.</li>
+<li><strong>Import vCard</strong> / <strong>Export vCard</strong> move contacts in and out as <code>.vcf</code> files, photos included. Import can skip contacts that already exist.</li>
+<li><strong>Call</strong> dials the number on the phone (click twice to confirm).</li>
+</ul>
+<h4 id="pc-call-log">Call log <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a></h4>
+<figure><a class="shot pc" href="img/pc/calls.png" target="_blank"><img src="img/pc/calls.png" alt="Call log" width="1920" height="1200" loading="lazy"></a></figure>
+<ul>
+<li>Filter by <strong>All / Incoming / Outgoing / Missed</strong>, search by number or name.</li>
+<li><strong>Export CSV</strong> saves the list; <strong>Restore…</strong> adds the calls from such a file that aren't in the log yet.</li>
+<li><strong>Call alerts on this computer</strong> (the switch at the top): while a phone is connected, incoming calls pop up in Andromon with <strong>Answer</strong>, <strong>Decline</strong> and <strong>Silence</strong>. Answering picks up on the phone; you still talk on the phone. Missed calls stay on screen with <strong>Call back</strong> and <strong>Message</strong>.</li>
+</ul>
+<h4 id="pc-calendar">Calendar <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a></h4>
+<figure><a class="shot pc" href="img/pc/calendar.png" target="_blank"><img src="img/pc/calendar.png" alt="Calendar" width="1920" height="1200" loading="lazy"></a></figure>
+<ul>
+<li>Shows the phone's calendars one month at a time; the arrows change the month, <strong>Today</strong> jumps back.</li>
+<li>Switch individual calendars on and off, search all events, click an event for its details.</li>
+<li><strong>Export .ics</strong> saves the calendars that are switched on. <strong>Import .ics</strong> adds events to a calendar you choose, or to a new calendar kept only on the phone.</li>
+</ul>
+<h4 id="pc-notifications">Notifications <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a></h4>
+<figure><a class="shot pc" href="img/pc/notifs.png" target="_blank"><img src="img/pc/notifs.png" alt="Notifications" width="1920" height="1200" loading="lazy"></a></figure>
+<ul>
+<li>Off until you turn on <strong>Phone notifications on this computer</strong>. Andromon then gives the companion Android's &quot;Notification access&quot;.</li>
+<li>Every notification on the phone (chat apps, SMS, e‑mail…) appears here and as a pop-up.</li>
+<li><strong>Reply</strong> from the computer where the app supports it, press the notification's own buttons (&quot;Mark as read&quot;…), <strong>dismiss</strong> one or <strong>clear all</strong>.</li>
+<li>Mute pop-ups per app, search, and filter by app.</li>
+</ul>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#pc-overview"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Overview</a><a class="next" href="#pc-files-media"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Files &amp; media</a></div>
+</section>
+<section class="topic">
+<h3 id="pc-files-media">Files &amp; media</h3>
+<h4 id="pc-files">Files</h4>
+<figure><a class="shot pc" href="img/pc/files.png" target="_blank"><img src="img/pc/files.png" alt="Files" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Browse the phone's storage starting at <code>/sdcard</code>. Click a folder to open it, <strong>Up</strong> to go back. Files can be downloaded to the computer or deleted, and <strong>Upload here</strong> copies files from the computer into the open folder.</p>
+<h4 id="pc-photos">Photos <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a></h4>
+<figure><a class="shot pc" href="img/pc/photos.png" target="_blank"><img src="img/pc/photos.png" alt="Photos" width="1920" height="1200" loading="lazy"></a></figure>
+<ul>
+<li>Filter by <strong>All / Photos / Videos</strong> and by album, sort by date or size, search by name.</li>
+<li>Click a picture to view it full screen (← → keys move on).</li>
+<li>Click the circle on a thumbnail (or Ctrl/⌘-click) to select. Selected items can be <strong>copied to a folder on the computer</strong> or <strong>deleted</strong>.</li>
+<li><strong>Add to phone…</strong> puts pictures from the computer into the album you are viewing; they show up in the phone's gallery at once.</li>
+<li><strong>Find duplicates</strong> finds identical files and keeps the oldest copy.</li>
+</ul>
+<h4 id="pc-music">Music <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a></h4>
+<figure><a class="shot pc" href="img/pc/music.png" target="_blank"><img src="img/pc/music.png" alt="Music" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Tabs for <strong>Songs, Artists, Albums</strong> and <strong>Folders</strong>. Click a song to play it on the computer. Select songs to copy them to the computer or delete them. <strong>Add music…</strong> copies songs to the phone. <strong>Include recordings &amp; ringtones</strong> widens the list. <strong>Find duplicates</strong> works as in Photos.</p>
+<h4 id="pc-backup-restore">Backup &amp; restore <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a></h4>
+<p>A page with three cards.</p>
+<div class="table"><table><thead><tr><th>Card</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Back up this phone</strong></td><td>Tick what to save: contacts, messages, call log, calendar, the list of apps, app installers, photos and videos. <strong>Back up now</strong> writes them into a new dated folder on the computer. Nothing on the phone is changed.</td></tr>
+<tr><td><strong>Restore from a backup</strong></td><td><strong>Restore from a backup…</strong> opens a backup folder, shows what it holds and lets you pick the parts to put back. Only what isn't on the phone yet is added; nothing is deleted or replaced. Apps come back without their data.</td></tr>
+<tr><td><strong>Automatic photo copy</strong></td><td>Shows whether new photos are copied to the computer each time the phone connects, and what the last copy did. The switch and its folder are in <strong>Settings › Phone link</strong>.</td></tr>
+</tbody></table></div>
+<p class="note"><strong>Wi‑Fi transfer</strong> is described for both apps under <a href="#wifi">Wi‑Fi file transfer</a>.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#pc-communication"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Communication</a><a class="next" href="#pc-device"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Device</a></div>
+</section>
+<section class="topic">
+<h3 id="pc-device">Device</h3>
+<h4 id="pc-apps">Apps</h4>
+<figure><a class="shot pc" href="img/pc/apps.png" target="_blank"><img src="img/pc/apps.png" alt="Apps" width="1920" height="1200" loading="lazy"></a></figure>
+<ul>
+<li><strong>User / System / All</strong> chooses which apps are listed; search by name or package.</li>
+<li><strong>Install:</strong> drop an <code>.apk</code>, several split <code>.apk</code> files, or an <code>.apks</code> / <code>.xapk</code> / <code>.apkm</code> bundle on the dashed box. A preview shows the app's name, version, required Android version, whether it fits the phone's processor, and its permissions before anything is installed.</li>
+<li><strong>Open</strong> starts the app on the phone.</li>
+<li><strong>Manage</strong> opens a panel: version and install dates, <strong>force stop</strong>, <strong>clear data</strong>, <strong>disable / enable</strong>, <strong>export APK</strong>, <strong>uninstall</strong>, and switches for each runtime permission.</li>
+<li><strong>Clear app caches</strong> frees the caches of all apps at once.</li>
+</ul>
+<h4 id="pc-debloat">Debloat</h4>
+<figure><a class="shot pc" href="img/pc/debloat.png" target="_blank"><img src="img/pc/debloat.png" alt="Debloat" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Removes apps that came pre-installed. <strong>Download the list</strong> fetches a community list (Universal Android Debloater Next Generation) that says what each pre-installed package does and how safe it is to remove.</p>
+<div class="table"><table><thead><tr><th>Option</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><strong>Recommended / Advanced / Expert / Unsafe</strong></td><td>The list's safety rating. Start with Recommended.</td></tr>
+<tr><td><strong>Remove</strong></td><td>Uninstalls the package for your user. The files stay on the system partition, so it can be restored.</td></tr>
+<tr><td><strong>Disable</strong></td><td>Switches the package off without removing it.</td></tr>
+<tr><td><strong>Restore</strong></td><td>Brings back a removed or disabled package.</td></tr>
+</tbody></table></div>
+<p>A factory reset also brings everything back.</p>
+<h4 id="pc-revanced">ReVanced</h4>
+<figure><a class="shot pc" href="img/pc/revanced.png" target="_blank"><img src="img/pc/revanced.png" alt="ReVanced" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Patches an app with <a href="https://revanced.app" target="_blank" rel="noopener">ReVanced</a> on the computer and installs the result.</p>
+<ol>
+<li><strong>Download the patcher</strong> (about 60 MB). Needs <strong>Java 17 or newer</strong> on the computer; the page tells you if it is missing.</li>
+<li>Choose an app from the phone, or drop an <code>.apk</code> file.</li>
+<li>Tick the patches you want (ReVanced's own choice is pre-ticked) and set their options.</li>
+<li><strong>Patch</strong>, then <strong>Install on the phone</strong> or <strong>Save the APK…</strong>.</li>
+</ol>
+<p>The page can also install <strong>GmsCore</strong> (needed to sign in with a Google account in patched YouTube) and <strong>ReVanced Manager</strong>. Apps the Play Store installed in several parts can't be taken from the phone: drop a full APK instead. Andromon never downloads the apps themselves.</p>
+<h4 id="pc-f-droid">F-Droid</h4>
+<figure><a class="shot pc" href="img/pc/fdroid.png" target="_blank"><img src="img/pc/fdroid.png" alt="F-Droid" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Browse and install free and open-source apps from <a href="https://f-droid.org" target="_blank" rel="noopener">F-Droid</a>.</p>
+<ul>
+<li><strong>Download the catalogue</strong> (about 25 MB) once; <strong>Check for new apps</strong> updates it later.</li>
+<li><strong>Search</strong>, pick a <strong>category</strong>, sort by <strong>Recently updated / Newest / A to Z</strong>.</li>
+<li>Click an app for its screenshots, description, version, size, permissions, F-Droid's notes about it (ads, tracking…), every version and its links.</li>
+<li>Click a <strong>screenshot</strong> to see it at full size; the arrow keys or the ‹ › buttons step through, <strong>Esc</strong> closes. If an app shows no screenshots and the page says the catalogue is from before they were kept, press <strong>Check for new apps</strong> once.</li>
+<li><strong>Install</strong> downloads the newest stable version that fits the phone and installs it.</li>
+<li><strong>On this phone</strong> lists the phone's apps that F-Droid has. <strong>Updates</strong> lists those with a newer version; update one at a time or <strong>Update all</strong>.</li>
+<li>Without a phone you can still browse and <strong>Save the APK…</strong> to the computer.</li>
+</ul>
+<p>An app installed from the Play Store is often signed with a different key than F-Droid's build. Android then refuses the update and nothing changes; the page says so.</p>
+<h4 id="pc-controls">Controls</h4>
+<figure><a class="shot pc" href="img/pc/controls.png" target="_blank"><img src="img/pc/controls.png" alt="Controls" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Switches for the phone's own settings. Every change applies to the phone at once.</p>
+<div class="table"><table><thead><tr><th>Group</th><th>Options</th></tr></thead><tbody>
+<tr><td><strong>Connectivity</strong></td><td>Wi‑Fi, mobile data, Bluetooth, airplane mode, location</td></tr>
+<tr><td><strong>Display</strong></td><td>Dark theme, auto-rotate, auto brightness, brightness, animations, show taps, screen timeout, font size, resolution and DPI override (with reset)</td></tr>
+<tr><td><strong>System</strong></td><td>Do Not Disturb, stay awake while charging, media volume</td></tr>
+<tr><td><strong>Power</strong></td><td>Wake, lock, restart (normal, recovery, bootloader), power off</td></tr>
+</tbody></table></div>
+<h4 id="pc-shizuku">Shizuku</h4>
+<p><a href="https://shizuku.rikka.app" target="_blank" rel="noopener">Shizuku</a> is a free app that lends other apps on the phone the rights of adb. The companion uses it so its Freezer, Memory and Battery saver work later without the computer. This page shows whether Shizuku is installed and running.</p>
+<div class="table"><table><thead><tr><th>Button</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Start Shizuku</strong></td><td>Starts Shizuku over the connection. It keeps running after you unplug, until the phone restarts; on a phone that isn't rooted, start it again after every restart.</td></tr>
+<tr><td><strong>Open Shizuku on the phone</strong></td><td>Opens the Shizuku app on the phone's screen.</td></tr>
+<tr><td><strong>Get Shizuku</strong></td><td>Shown when the phone doesn't have it: opens Shizuku's download page in your browser.</td></tr>
+<tr><td><strong>Check again</strong></td><td>Reads the state again.</td></tr>
+</tbody></table></div>
+<p>After the first start, give the companion its permission: in the companion, <strong>Settings › Privileged access › Grant permission</strong>.</p>
+<p>Below it on the same page is <strong>Phone RAM manager</strong>, Andromon's own helper for phones without Shizuku: it starts a small helper on the phone so the companion's Memory screen can list and stop apps. It lasts until the phone restarts.</p>
+<h4 id="pc-screen-mirror">Screen mirror</h4>
+<figure><a class="shot pc" href="img/pc/mirror.png" target="_blank"><img src="img/pc/mirror.png" alt="Screen mirror" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Shows the phone's screen live and lets you use it with the mouse and keyboard.</p>
+<div class="table"><table><thead><tr><th>Before starting</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Quality</strong></td><td>Fast (720p), Balanced (1080p) or Sharp (full resolution). Lower is smoother on a slow connection.</td></tr>
+<tr><td><strong>Show</strong></td><td>The phone's screen, or its back or front camera (Android 12+).</td></tr>
+<tr><td><strong>Play the phone's sound here</strong></td><td>Sends the phone's sound to the computer (Android 11+).</td></tr>
+<tr><td><strong>Turn the phone's screen off while mirroring</strong></td><td>The phone's own display stays dark while you use it from the computer.</td></tr>
+</tbody></table></div>
+<p>While mirroring: click = tap, drag = swipe, wheel = scroll, right-click or Esc = Back, and typing goes to the phone. Text copied on either side is shared. The panel on the right has <strong>Back, Home, Recents, Vol −, Vol +, Power, Notifications, Rotate, Screen off, Save frame, Mute, Full screen</strong> and <strong>Record</strong> (saves an MP4 with picture and sound). <strong>Stop mirroring</strong> ends it.</p>
+<h4 id="pc-screenshot">Screenshot</h4>
+<figure><a class="shot pc" href="img/pc/screen.png" target="_blank"><img src="img/pc/screen.png" alt="Screenshot" width="1920" height="1200" loading="lazy"></a></figure>
+<p><strong>Take screenshot</strong> captures what is on the phone's screen; <strong>Save PNG</strong> saves it to the computer.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#pc-files-media"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Files &amp; media</a><a class="next" href="#pc-developer"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Developer</a></div>
+</section>
+<section class="topic">
+<h3 id="pc-developer">Developer</h3>
+<p>These pages are for people who build or test apps.</p>
+<h4 id="pc-test-automation">Test automation</h4>
+<figure><a class="shot pc" href="img/pc/tests.png" target="_blank"><img src="img/pc/tests.png" alt="Test automation" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Record a test by using an app on the live phone picture (tap, long-press, swipe, type, Back/Home), then run it again whenever the app changes. Steps remember buttons by their name, not their position. You can add checks (&quot;this text is shown&quot;), waits and screenshots, edit and reorder steps, <strong>Run all</strong>, and export an HTML report or JUnit XML. Tests can be imported and exported as JSON.</p>
+<h4 id="pc-app-testing">App testing</h4>
+<figure><a class="shot pc" href="img/pc/qa.png" target="_blank"><img src="img/pc/qa.png" alt="App testing" width="1920" height="1200" loading="lazy"></a></figure>
+<div class="table"><table><thead><tr><th>Tab</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Performance tests</strong></td><td>Measures startup time (cold, warm, hot), scrolling smoothness and memory over repeated use, with limits and history.</td></tr>
+<tr><td><strong>Security scan</strong></td><td>Checks an installed app or an APK file for common problems.</td></tr>
+<tr><td><strong>API calls</strong></td><td>Shows the HTTP/HTTPS requests the phone makes, through a proxy on the computer.</td></tr>
+<tr><td><strong>API tester</strong></td><td>Send requests yourself; keep them in collections with tests.</td></tr>
+<tr><td><strong>Traces</strong></td><td>Perfetto traces, method traces and heap dumps.</td></tr>
+</tbody></table></div>
+<h4 id="pc-developer-page">Developer</h4>
+<figure><a class="shot pc" href="img/pc/dev.png" target="_blank"><img src="img/pc/dev.png" alt="Developer" width="1920" height="1200" loading="lazy"></a></figure>
+<div class="table"><table><thead><tr><th>Tab</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Logcat</strong></td><td>Live log with level filter, search, per-app filter, pause, save and a crash finder.</td></tr>
+<tr><td><strong>Dev settings</strong></td><td>Android's developer options as switches.</td></tr>
+<tr><td><strong>App tools</strong></td><td>Per app: permissions, save APK, intents and deep links, private storage.</td></tr>
+<tr><td><strong>Capture</strong></td><td>Screen recordings and bug reports.</td></tr>
+<tr><td><strong>Performance</strong></td><td>Live CPU, memory and frame graphs.</td></tr>
+<tr><td><strong>Network</strong></td><td>Port forwarding and a proxy setting.</td></tr>
+<tr><td><strong>Input</strong></td><td>Type text on the phone and press its keys.</td></tr>
+<tr><td><strong>Fake location</strong></td><td>Pick a place on a map (or search for it) and make the phone report that position; show where the phone is now. The map and search come from OpenStreetMap, so they need internet.</td></tr>
+<tr><td><strong>Phones</strong></td><td>Use several phones at once.</td></tr>
+</tbody></table></div>
+<h4 id="pc-shell">Shell</h4>
+<figure><a class="shot pc" href="img/pc/shell.png" target="_blank"><img src="img/pc/shell.png" alt="Shell" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Runs any <code>adb shell</code> command and shows its output. The chips under the box are ready-made commands (battery, the app on screen, memory, storage…). <strong>Save as snippet</strong> keeps your own; ↑ and ↓ walk through earlier commands.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#pc-device"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Device</a><a class="next" href="#pc-settings"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Settings</a></div>
+</section>
+<section class="topic">
+<h3 id="pc-settings">Settings</h3>
+<figure><a class="shot pc" href="img/pc/settings.png" target="_blank"><img src="img/pc/settings.png" alt="Settings" width="1920" height="1200" loading="lazy"></a></figure>
+<div class="table"><table><thead><tr><th>Section</th><th>Option</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Appearance</strong></td><td>Mode</td><td>Light, dark, or the same as the computer.</td></tr>
+<tr><td></td><td>Colour theme</td><td>Lime, Ocean, Sunset, Violet or Graphite: the colour of highlights, cards and the logo.</td></tr>
+<tr><td></td><td>Collapse the sidebar</td><td>Shows only icons (also Ctrl/⌘ + B).</td></tr>
+<tr><td><strong>Phone link</strong></td><td>Connect when a phone is plugged in</td><td>Connects without a click when a phone's cable is plugged in, and to a phone already plugged in when Andromon opens. A phone you disconnect yourself isn't connected again until it is unplugged.</td></tr>
+<tr><td></td><td>Keep other programs off the phone</td><td>Desktop app. While a phone is connected, closes adb run by other programs (Android SDK, Android Studio, scrcpy, a terminal) and keeps closing it if it starts again. Never closes a browser (a WebADB tab is named so you can close it) or another copy of Andromon. Turn it off if you use Android Studio or <code>adb</code> alongside Andromon.</td></tr>
+<tr><td></td><td>Call alerts</td><td>Incoming calls pop up on the computer.</td></tr>
+<tr><td></td><td>Notification pop-ups</td><td>A pop-up for each new phone notification (when Notifications is on).</td></tr>
+<tr><td></td><td>Connect over Wi‑Fi automatically</td><td>Connects to a paired phone as soon as it appears on the network.</td></tr>
+<tr><td><strong>Screen mirror</strong></td><td>Picture quality, Show, sound, screen off, frame rate</td><td>The defaults used each time mirroring starts; the same choices as on the mirror page.</td></tr>
+<tr><td><strong>Saving files</strong></td><td>Ask where to save each file</td><td>On: a save window for every screenshot, recording and export. Off: files go straight into one folder you choose.</td></tr>
+<tr><td><strong>Downloads and sources</strong></td><td>ReVanced tools, F-Droid catalogue, debloat list</td><td>What has been downloaded, from where and how large; update or remove each.</td></tr>
+</tbody></table></div>
+<p>Settings are stored on this computer only.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#pc-developer"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Developer</a><a class="next" href="#phone-finding-your-way-around"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Finding your way around</a></div>
+</section>
+</section>
+
+<section class="part">
+<h2 class="part-title" id="part-3" data-title="On the phone"><span class="num" aria-hidden="true">03</span><span class="label">Part 3</span>On the phone<em>Andromon Companion</em></h2>
+<section class="topic">
+<h3 id="phone-finding-your-way-around">Finding your way around</h3>
+<ul>
+<li>The first time you open the app, a short <strong>welcome tour</strong> explains what it does. <strong>Skip</strong> ends it; <strong>Settings › About › Welcome tour</strong> shows it again.</li>
+</ul>
+<ul>
+<li>The <strong>dark bar at the bottom</strong> has five buttons, each with its name: <strong>PC link, Transfer, Tools, Stats, Settings</strong>. The open one's icon sits on a white pill. The app opens on <strong>PC link</strong>.</li>
+<li>Tapping the button of the screen you are on scrolls it back to the top (in Settings, it also goes back to the list of pages).</li>
+<li>Every tool (<strong>Memory, Cleaner, Network, Battery, Battery saver, Freezer, Apps, Storage, F-Droid, Recover, Permissions, Hardware</strong>) opens from a tile on <strong>Tools</strong>. While one is open, <strong>Tools</strong> is highlighted in the bar.</li>
+<li>Android's <strong>Back</strong> gesture returns to where you came from: from a tool to Tools (or to Stats, when you opened an app from Stats), and from the other bar screens to PC link. From PC link, Back leaves the app.</li>
+<li>Each screen has one green card at the top with the most important figure, and lighter cards below with details and options.</li>
+<li>The round button at the top right of a screen refreshes it or opens its main action.</li>
+</ul>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#pc-settings"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Settings</a><a class="next" href="#phone-pc-link"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>PC link</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-pc-link">PC link</h3>
+<figure><a class="shot phone" href="img/phone/pc-link.png" target="_blank"><img src="img/phone/pc-link.png" alt="PC link" width="540" height="1200" loading="lazy"></a></figure>
+<p>The screen the app opens on: the link to Andromon on your computer.</p>
+<div class="table"><table><thead><tr><th>Part</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Green card</strong></td><td><strong>Linked</strong> (a computer is talking to the phone), <strong>Ready</strong> (the link is on and waiting) or <strong>Off</strong>. When linked, it shows the computer's name, whether it is connected over USB or Wi‑Fi, and for how long. Until Andromon has said its name, it says &quot;Your computer&quot;. <strong>Start / Stop</strong> switches the link on or off. Andromon can also start it itself over USB.</td></tr>
+<tr><td><strong>Quick actions</strong></td><td><strong>Send files</strong> picks files and opens Transfer › Send. <strong>Send clipboard</strong> sends what is copied on the phone to the computer (or, when no computer is listening on the link, puts it in Transfer › Send to go over Wi‑Fi). <strong>Receive files</strong> opens Transfer › Receive. <strong>Scan code</strong> scans the code Andromon's Wi‑Fi transfer page shows. <strong>Connect over Wi‑Fi</strong> jumps to the Wi‑Fi card below.</td></tr>
+<tr><td><strong>Today</strong></td><td>Time linked, requests from the computer and files moved today. <strong>PC link stats</strong> opens Stats › PC link.</td></tr>
+<tr><td><strong>Recent activity</strong></td><td>What the computer did lately (&quot;Read your messages&quot;, &quot;Sent 3 files to Studio Mac&quot;), newest first; repeats are counted instead of listed again. <strong>See all</strong> shows the last 40.</td></tr>
+<tr><td><strong>What the computer can read</strong></td><td>How many messages, contacts and calls Andromon can see, and each data permission. <strong>Allow</strong> asks for the missing ones. If you refused one with &quot;Don't ask again&quot;, Android won't ask any more: the row and the button then say <strong>App info</strong>, which opens the page where you can allow it.</td></tr>
+<tr><td><strong>USB cable</strong></td><td><strong>How</strong> unfolds the four steps: a cable that carries data, USB debugging on, click Connect in Andromon, tap Allow.</td></tr>
+<tr><td><strong>Wi‑Fi</strong></td><td>After the one-time setup in Andromon (<strong>Use this phone without the cable</strong>), a single button turns the Wi‑Fi connection on and off. Before the setup it lists the steps (also for pairing by hand in Wireless debugging). If Developer options are off, it says how to turn them on (Settings › About phone › tap Build number seven times), with a button to About phone. Needs Android 11 or newer.</td></tr>
+</tbody></table></div>
+<p>Turn the Wi‑Fi connection off when you are done; it also switches itself off when the phone leaves the Wi‑Fi network or restarts. The activity list and the figures stay on the phone for 30 days; <strong>Settings › PC link › Clear link history</strong> removes them.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-finding-your-way-around"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Finding your way around</a><a class="next" href="#phone-tools"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Tools</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-tools">Tools</h3>
+<figure><a class="shot phone" href="img/phone/tools.png" target="_blank"><img src="img/phone/tools.png" alt="Tools" width="540" height="1200" loading="lazy"></a></figure>
+<ul>
+<li>The line under <strong>Tools</strong> sums up the phone's state (&quot;Your phone is in great shape&quot;). It comes from free storage, free memory and battery condition. When something costs points, it is listed on the green card with a link to the screen that helps.</li>
+<li>The <strong>green card</strong> shows one fact at a time (health, storage, memory, battery, uptime, network, installed apps, screen, Android version); tap it for the next. The arrow at its top right opens the screen that says more, when there is one.</li>
+<li><strong>Storage</strong> shows what apps, media and documents use, and how much is free. The arrow opens the Storage screen (folder sizes); <strong>Free up space with the Cleaner</strong> opens the Cleaner.</li>
+<li>Each <strong>tile</strong> opens a tool and shows its current state (for example &quot;46% of RAM in use&quot;).</li>
+</ul>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-pc-link"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>PC link</a><a class="next" href="#phone-stats"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Stats</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-stats">Stats</h3>
+<figure><a class="shot phone" href="img/phone/stats.png" target="_blank"><img src="img/phone/stats.png" alt="Stats" width="540" height="1200" loading="lazy"></a></figure>
+<p>How apps use the phone, from Android's own records. The chips at the top choose the kind; <strong>Today / 7 days</strong> chooses the time where it applies. Each kind has a green card with the total, a bar chart and a list of apps with their share; tap an app for its details (the same as in Apps).</p>
+<div class="table"><table><thead><tr><th>Kind</th><th>What it shows</th><th>Good to know</th></tr></thead><tbody>
+<tr><td><strong>Usage</strong></td><td>Screen time and how often each app was opened, when it was last used, and screen time per day for the last 7 days.</td><td>An app counts while it is on screen; the home screen and the system bars don't count. Needs usage access.</td></tr>
+<tr><td><strong>Data</strong></td><td>Mobile data and Wi‑Fi per app, and per day for the last 7 days.</td><td>As Android counts it, in 2-hour blocks: &quot;Today&quot; can include a little of late yesterday. Apps you uninstalled are grouped as &quot;Removed apps&quot;. Needs usage access.</td></tr>
+<tr><td><strong>Battery</strong></td><td>Each app's use since the last full charge, in mAh, as Android estimates it.</td><td>Android only shares this with privileged access (Settings › Privileged access); without it the screen says so and offers the setup.</td></tr>
+<tr><td><strong>Storage</strong></td><td>App, data and cache size of every app, the biggest first.</td><td>Needs usage access. Caches can be cleared from Andromon on the computer (Apps › Clear app caches).</td></tr>
+<tr><td><strong>PC link</strong></td><td>Sessions, time linked, requests by kind, files and bytes sent and received over Wi‑Fi, clipboard shares and the computers that connected.</td><td>Kept on the phone for 30 days.</td></tr>
+</tbody></table></div>
+<p>When usage access is off, Stats says so and offers <strong>Allow usage access</strong>.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-tools"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Tools</a><a class="next" href="#phone-cleaner"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Cleaner</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-cleaner">Cleaner</h3>
+<figure><a class="shot phone" href="img/phone/cleaner.png" target="_blank"><img src="img/phone/cleaner.png" alt="Cleaner" width="540" height="1200" loading="lazy"></a></figure>
+<p>Finds files that can be deleted safely.</p>
+<ul>
+<li>The screen scans when it opens; the refresh button scans again.</li>
+<li><strong>Junk found</strong> lists groups: app caches on shared storage, thumbnail caches, log and temp files, empty folders, leftovers of uninstalled apps, installers (APKs) you no longer need, old screenshots, duplicates and large files.</li>
+<li>Tap a group to see its files. Tick the groups (or single files) you want gone. Groups that could hold something you want (leftovers, duplicates, large files) start <strong>unticked</strong>.</li>
+<li><strong>Clean now</strong> deletes what is ticked, after asking once more.</li>
+<li><strong>Storage</strong> at the bottom shows how full the phone and each SD card are.</li>
+</ul>
+<p>Good to know: apps' private caches, usually the largest part, can't be cleared by any app. Andromon on the computer can do it (<strong>Apps › Clear app caches</strong>). Which rules run is set under <strong>Settings › Cleaning rules</strong>, and the size that counts as a &quot;large file&quot; under <strong>Settings › Large files</strong>.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-stats"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Stats</a><a class="next" href="#phone-network"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Network</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-network">Network</h3>
+<figure><a class="shot phone" href="img/phone/network.png" target="_blank"><img src="img/phone/network.png" alt="Network" width="540" height="1200" loading="lazy"></a></figure>
+<ul>
+<li>The <strong>green card</strong> shows the connection (Wi‑Fi or mobile data), whether the internet works, signal, IP address, gateway, DNS and whether the connection is metered.</li>
+<li><strong>Speed test</strong> measures ping, download and upload. It uses up to about 125 MB on Wi‑Fi and 35 MB on mobile data. <strong>Settings › Save data on speed tests</strong> always runs the shorter test.</li>
+<li><strong>Ping</strong> checks how fast a host answers; <strong>DNS lookup</strong> shows the addresses behind a name.</li>
+</ul>
+<p class="note"><strong>Transfer (receive and send)</strong> is described for both apps under <a href="#wifi">Wi‑Fi file transfer</a>.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-cleaner"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Cleaner</a><a class="next" href="#phone-memory"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Memory</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-memory">Memory</h3>
+<figure><a class="shot phone" href="img/phone/memory.png" target="_blank"><img src="img/phone/memory.png" alt="Memory" width="540" height="1200" loading="lazy"></a></figure>
+<ul>
+<li>The <strong>green card</strong> shows how much RAM is in use and a verdict (&quot;Normal · plenty of free memory&quot;).</li>
+<li><strong>Available</strong> and <strong>Swap used</strong> are the figures behind it; <strong>Last minute</strong> is a live chart.</li>
+<li><strong>Running apps</strong> lists the apps in memory with their size and state (In use, Visible, Running, Recent, Cached). <strong>Stop</strong> force-stops one app; <strong>Free memory</strong> closes all background apps.</li>
+</ul>
+<p>The running-apps list needs <a href="#phone-privileged-access-shizuku-helper-root">privileged access</a>: Android doesn't show other apps' memory to normal apps. Without it, <strong>Boost</strong> closes background apps on Android 13 and older; Android 14 and newer don't allow even that.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-network"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Network</a><a class="next" href="#phone-battery"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Battery</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-battery">Battery</h3>
+<figure><a class="shot phone" href="img/phone/battery.png" target="_blank"><img src="img/phone/battery.png" alt="Battery" width="540" height="1200" loading="lazy"></a></figure>
+<div class="table"><table><thead><tr><th>Part</th><th>What it shows or does</th></tr></thead><tbody>
+<tr><td><strong>Green card</strong></td><td>Charge level and whether the phone is charging (with time to full on Android 9+).</td></tr>
+<tr><td><strong>Condition</strong></td><td>Android's own verdict on the battery (&quot;Good&quot;).</td></tr>
+<tr><td><strong>Details</strong></td><td>Temperature, voltage, power source, health, technology, charge cycles (Android 14+).</td></tr>
+<tr><td><strong>Battery Saver</strong> switch</td><td>Turns Android's Battery Saver on or off. If the app isn't allowed to change it, the Battery saver screen opens and says what is missing.</td></tr>
+<tr><td><strong>Battery saver tools</strong></td><td>Opens the Battery saver screen.</td></tr>
+<tr><td><strong>Freezer</strong></td><td>Opens the Freezer.</td></tr>
+<tr><td><strong>History</strong></td><td>Charts of level and temperature over <strong>24 h</strong> or <strong>7 days</strong>, average drain per hour, when the phone was last full, and an estimate of the time left. The app samples about every 15 minutes, so the charts fill up over time.</td></tr>
+<tr><td><strong>App battery use</strong></td><td>Android's estimate per app since the last full charge. Needs privileged access.</td></tr>
+</tbody></table></div>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-memory"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Memory</a><a class="next" href="#phone-battery-saver"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Battery saver</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-battery-saver">Battery saver</h3>
+<figure><a class="shot phone" href="img/phone/saver.png" target="_blank"><img src="img/phone/saver.png" alt="Battery saver" width="540" height="1200" loading="lazy"></a></figure>
+<p>Each part says what it needs and is greyed out with the reason while that is missing.</p>
+<div class="table"><table><thead><tr><th>Part</th><th>What it does</th><th>Needs</th></tr></thead><tbody>
+<tr><td><strong>Battery Saver</strong> (Turn on / Turn off)</td><td>Android's own Battery Saver: limits background activity.</td><td>Privileged access, or a permission Andromon grants over USB</td></tr>
+<tr><td><strong>Turn on automatically</strong></td><td>Battery Saver switches on by itself below the level you choose.</td><td>The same</td></tr>
+<tr><td><strong>Deep sleep now</strong></td><td>Puts the phone into Android's deep idle mode at once. Ends when the screen turns on.</td><td>Privileged access</td></tr>
+<tr><td><strong>When the screen turns off</strong></td><td>Deep sleep every time the screen goes off (not while charging).</td><td>Privileged access</td></tr>
+<tr><td><strong>Charging</strong></td><td>Charging current and power, a reminder at a charge level you choose (70–95%), a fully-charged alert and an overheating alert.</td><td>Notifications</td></tr>
+<tr><td><strong>Awake now</strong></td><td>Apps that keep the phone awake, with <strong>Stop</strong>.</td><td>Privileged access</td></tr>
+<tr><td><strong>App limits</strong></td><td>Per app: how much Android lets it run in the background (Active, Rare, Restricted) and a background restriction.</td><td>Privileged access</td></tr>
+</tbody></table></div>
+<p><strong>Set up privileged access</strong> opens the right part of Settings.</p>
+<p>Good to know: Android turns Battery Saver off while charging. Phones with their own power saving mode (Samsung and others) may ignore the switch; the screen says so. In deep sleep, notifications and syncing are delayed; calls, SMS and alarms still arrive.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-battery"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Battery</a><a class="next" href="#phone-freezer"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Freezer</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-freezer">Freezer</h3>
+<figure><a class="shot phone" href="img/phone/freezer.png" target="_blank"><img src="img/phone/freezer.png" alt="Freezer" width="540" height="1200" loading="lazy"></a></figure>
+<p>Stops apps that run in the background without being used. &quot;Freezing&quot; is the same as <strong>Force stop</strong> in Android's App info: the app stays stopped until you open it again. Nothing is uninstalled, and a frozen app shows no notifications.</p>
+<div class="table"><table><thead><tr><th>Part</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Apps to freeze</strong></td><td>How many apps are waiting to be frozen right now. <strong>Freeze now</strong> stops them.</td></tr>
+<tr><td><strong>How apps are stopped</strong></td><td>The method in use: <strong>privileged access</strong> (silent, no screens), the <strong>accessibility method</strong>, or <strong>by hand</strong> (App info opens for each app and you press Force stop).</td></tr>
+<tr><td><strong>Accessibility method</strong></td><td>For phones without privileged access: the app presses &quot;Force stop&quot; for you in App info. You also have to switch the service on in Android's Accessibility settings.</td></tr>
+<tr><td><strong>App list</strong></td><td>Every app with a line saying why it will or won't be frozen. Tap an app to choose its mode.</td></tr>
+<tr><td><strong>Automatic</strong></td><td>Freeze <strong>when the screen turns off</strong> (at once or after a delay) and <strong>when the battery drops below</strong> a level. Both need privileged access to act silently.</td></tr>
+<tr><td><strong>Shortcuts</strong></td><td>Add a <strong>Freeze now</strong> shortcut to the home screen or a quick-settings tile.</td></tr>
+</tbody></table></div>
+<p><strong>Modes per app</strong></p>
+<div class="table"><table><thead><tr><th>Mode</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><strong>Always</strong></td><td>Frozen every time, whenever it is running.</td></tr>
+<tr><td><strong>When unused</strong></td><td>Frozen only if you haven't used it for a while (7 days by default). Needs usage access. This is the default for apps you installed.</td></tr>
+<tr><td><strong>Never</strong></td><td>Left alone. System apps, the keyboard, the phone and SMS apps start here.</td></tr>
+</tbody></table></div>
+<p>Apps you are using right now (on screen, playing music, navigating) are skipped. Freezing an app you open many times a day costs more battery than it saves.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-battery-saver"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Battery saver</a><a class="next" href="#phone-apps"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Apps</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-apps">Apps</h3>
+<figure><a class="shot phone" href="img/phone/apps.png" target="_blank"><img src="img/phone/apps.png" alt="Apps" width="540" height="1200" loading="lazy"></a></figure>
+<ul>
+<li><strong>User / System / All</strong> chooses the list; the magnifier searches; the <strong>Size</strong> button changes the order (size, name, install date, last update, screen time, least recently used).</li>
+<li>Tap an app for its details: version, install and update dates, where it was installed from, app/data/cache size, screen time and last use.</li>
+<li>Actions per app: <strong>Open</strong>, <strong>App info</strong>, <strong>Play Store</strong>, <strong>Export APK</strong> (to <code>Download/Andromon/APKs</code>) and <strong>Uninstall</strong>.</li>
+<li>Tick the circles to uninstall several apps in a row. Android asks for each one.</li>
+</ul>
+<p>Sizes and usage figures need usage access (Andromon allows it at install).</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-freezer"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Freezer</a><a class="next" href="#phone-storage"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Storage</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-storage">Storage</h3>
+<figure><a class="shot phone" href="img/phone/storage.png" target="_blank"><img src="img/phone/storage.png" alt="Storage" width="540" height="1200" loading="lazy"></a></figure>
+<p>A folder browser that shows what takes up space.</p>
+<ul>
+<li>Folders and files are listed <strong>largest first</strong>, each with a bar for its share.</li>
+<li>Tap a folder to go in; Back goes up. Tap a file to open it.</li>
+<li>The <strong>three dots</strong> delete a file or folder after a confirmation that names its path and size. Deleted items don't go to a recycle bin.</li>
+<li>With an SD card, a chip at the top switches between the storages.</li>
+</ul>
+<p>Installed apps and Android itself aren't visible to a file browser, so the folders add up to less than &quot;used&quot;.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-apps"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Apps</a><a class="next" href="#phone-permissions"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Permissions</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-permissions">Permissions</h3>
+<figure><a class="shot phone" href="img/phone/permissions.png" target="_blank"><img src="img/phone/permissions.png" alt="Permissions" width="540" height="1200" loading="lazy"></a></figure>
+<p>Shows which apps may use sensitive things.</p>
+<ul>
+<li>One row per group: Camera, Microphone, Location, Contacts, SMS, Call log, Phone, Files and media, Notification access, Accessibility services, Device admin, Display over other apps, Install unknown apps, All files access.</li>
+<li>The number is how many apps are <strong>allowed</strong>; the line below says how many only <strong>asked</strong>.</li>
+<li><strong>User apps / System / All</strong> chooses which apps are counted.</li>
+<li>Tap a group to see its apps. Tap an app to open Android's App info, where you can take the permission away.</li>
+<li>With privileged access, the list also shows <strong>when each app last used</strong> the camera, microphone, location, contacts, SMS and call log.</li>
+</ul>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-storage"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Storage</a><a class="next" href="#phone-hardware-test"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Hardware test</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-hardware-test">Hardware test</h3>
+<figure><a class="shot phone" href="img/phone/hardware.png" target="_blank"><img src="img/phone/hardware.png" alt="Hardware test" width="540" height="1200" loading="lazy"></a></figure>
+<p>A checklist of 13 guided checks. Tap <strong>Run</strong> on a row.</p>
+<div class="table"><table><thead><tr><th>Check</th><th>How it works</th></tr></thead><tbody>
+<tr><td>Display colours</td><td>Full-screen white, black, red, green and blue to spot dead pixels.</td></tr>
+<tr><td>Touch grid</td><td>Paint every square to find dead touch areas.</td></tr>
+<tr><td>Multi-touch</td><td>Counts how many fingers the screen follows.</td></tr>
+<tr><td>Speaker, Earpiece</td><td>Play a tone; you say whether you heard it.</td></tr>
+<tr><td>Microphone</td><td>Records 4 seconds and plays them back. Nothing is saved.</td></tr>
+<tr><td>Vibration, Volume buttons, Flashlight</td><td>Try each and confirm.</td></tr>
+<tr><td>Sensors</td><td>Live values of the motion, light, proximity and other sensors.</td></tr>
+<tr><td>Cameras, Wi‑Fi / Bluetooth / GPS / NFC, Fingerprint</td><td>Lists what the phone reports having.</td></tr>
+</tbody></table></div>
+<p>Where the phone can tell the result, it fills it in; otherwise you tap <strong>Passed</strong> or <strong>Failed</strong>. <strong>Share summary</strong> sends the results as text.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-permissions"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Permissions</a><a class="next" href="#phone-settings"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Settings</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-settings">Settings</h3>
+<div class="shots"><figure><a class="shot phone" href="img/phone/settings.png" target="_blank"><img src="img/phone/settings.png" alt="Settings" width="540" height="1200" loading="lazy"></a><figcaption>Appearance, PC link, Tools</figcaption></figure><figure><a class="shot phone" href="img/phone/settings-access.png" target="_blank"><img src="img/phone/settings-access.png" alt="Settings, access" width="540" height="1200" loading="lazy"></a><figcaption>Access, Privileged access</figcaption></figure></div>
+<div class="table"><table><thead><tr><th>Section</th><th>Option</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Appearance</strong></td><td>Theme</td><td>Light, dark, or the same as the phone.</td></tr>
+<tr><td></td><td>Blur personal data</td><td>Off by default. On: names (computers, Wi‑Fi devices, this phone's name), IP addresses and text you send are blurred on every screen, so screenshots of the app are safe to share. Lines that mix normal text with personal data (ping output, transfer status) blur only when they contain some. Tap a blurred value to see it for a few seconds. Android 11 and older cover it with a grey bar instead of a blur.</td></tr>
+<tr><td><strong>PC link</strong></td><td>Start when the app opens</td><td>On: opening the app also starts the link to Andromon. Andromon can always start the link over USB, even when this is off.</td></tr>
+<tr><td></td><td>Clear link history</td><td>Removes the PC link screen's recent activity, the PC link figures in Stats and the names of the computers that connected.</td></tr>
+<tr><td><strong>Tools</strong></td><td>Cleaning rules</td><td>Which of the Cleaner's rules run (17 in all).</td></tr>
+<tr><td></td><td>Large files</td><td>The size from which the Cleaner lists a file as large (50 MB to 1 GB).</td></tr>
+<tr><td></td><td>Save data on speed tests</td><td>Always runs the shorter speed test, also on Wi‑Fi.</td></tr>
+<tr><td><strong>Access</strong></td><td>All files access, Usage access, Notifications, App permissions</td><td>The state of each access the app uses. Tap one to open its Android setting. Stats needs Usage access.</td></tr>
+<tr><td><strong>Privileged access</strong></td><td>In use, Shizuku, Get Shizuku, Prefer, Finish setup</td><td>See the next section.</td></tr>
+<tr><td><strong>About</strong></td><td>Privacy, Licence, Third-party notices</td><td>What the app does with data, and the licences.</td></tr>
+</tbody></table></div>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-hardware-test"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Hardware test</a><a class="next" href="#phone-privileged-access-shizuku-helper-root"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Privileged access (Shizuku, helper, root)</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-privileged-access-shizuku-helper-root">Privileged access (Shizuku, helper, root)</h3>
+<p>Some features need more rights than Android gives a normal app: the Memory screen's running apps, the Freezer's silent freezing, Deep sleep, app limits, per-app battery use and last-use times in Permissions. The app can borrow these rights in three ways:</p>
+<div class="table"><table><thead><tr><th>Way</th><th>How to turn it on</th><th>Lasts</th></tr></thead><tbody>
+<tr><td><strong>Shizuku</strong></td><td>Install the free <a href="https://shizuku.rikka.app" target="_blank" rel="noopener">Shizuku</a> app and start it (its own guide explains how; Andromon's <strong>Shizuku</strong> page also has <strong>Start Shizuku</strong>). Then tap <strong>Grant permission</strong> in the companion's Settings. No computer is needed afterwards.</td><td>Until the phone restarts (always on rooted phones)</td></tr>
+<tr><td><strong>Andromon helper</strong></td><td>In Andromon on the computer: <strong>Shizuku › Phone RAM manager</strong>.</td><td>Until the phone restarts</td></tr>
+<tr><td><strong>Root</strong></td><td>On rooted phones: <strong>Memory › Use root instead</strong>.</td><td>Until the phone restarts</td></tr>
+</tbody></table></div>
+<p>Under <strong>Settings › Privileged access</strong>:</p>
+<ul>
+<li><strong>In use</strong> shows which way is active right now, or &quot;None&quot;, and why, in full.</li>
+<li><strong>Shizuku</strong> shows its state: not installed, not running, waiting for permission, or ready.</li>
+<li><strong>Prefer</strong> chooses between Automatic (Shizuku first), Shizuku, or the helper/root.</li>
+<li><strong>Finish setup without a computer</strong> lets the app grant itself, through Shizuku, the permissions Andromon would normally grant over USB.</li>
+</ul>
+<p>Whichever way is used, the app can only run a fixed list of commands (list processes, stop an app, read battery statistics and so on). It can't touch other apps' private data.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-settings"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Settings</a><a class="next" href="#phone-notification-buttons-and-quick-settings-tiles"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Notification buttons and quick-settings tiles</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-notification-buttons-and-quick-settings-tiles">Notification buttons and quick-settings tiles</h3>
+<ul>
+<li><strong>&quot;Connected to Andromon&quot; notification:</strong> <strong>Stop</strong> ends the link; <strong>Send clipboard to PC</strong> copies the phone's clipboard to the computer.</li>
+<li><strong>&quot;From your computer&quot; notification:</strong> appears when you send a link or text from Andromon. Tapping it opens the link or copies the text.</li>
+<li><strong>Find my phone:</strong> when started from Andromon, the phone rings at full volume and shows <strong>Found it</strong>.</li>
+<li><strong>Receive notification:</strong> shows progress and <strong>Accept / Decline</strong> for incoming transfers.</li>
+<li><strong>Quick-settings tiles</strong> (add them by editing the quick-settings panel): <strong>PC link</strong>, <strong>Receive files</strong>, <strong>Send clipboard to PC</strong> and <strong>Freeze now</strong>.</li>
+</ul>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-privileged-access-shizuku-helper-root"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Privileged access (Shizuku, helper, root)</a><a class="next" href="#phone-privacy"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Privacy</a></div>
+</section>
+<section class="topic">
+<h3 id="phone-privacy">Privacy</h3>
+<ul>
+<li>Messages, contacts, the call log, calendar and notifications go <strong>only to Andromon</strong> on computers you connected or paired, through the adb link.</li>
+<li>The app uses the network only for the Network screen's tests and for Wi‑Fi receive and send while you have them on.</li>
+<li>There are no accounts, no ads and no analytics. The app is free software (GPL-3.0); the licences are under <strong>Settings › About</strong>.</li>
+</ul>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-notification-buttons-and-quick-settings-tiles"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Notification buttons and quick-settings tiles</a><a class="next" href="#wifi"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>Wi‑Fi file transfer</a></div>
+</section>
+</section>
+
+<section class="part">
+<h2 class="part-title" id="part-4" data-title="Both together"><span class="num" aria-hidden="true">04</span><span class="label">Part 4</span>Both together</h2>
+<section class="topic">
+<h3 id="wifi">Wi‑Fi file transfer</h3>
+
+<p>Moves files between the phone and the computer over Wi‑Fi, in both directions, with no cable and no debugging. Turn it on on both sides: the <strong>Wi‑Fi transfer</strong> page in Andromon and the <strong>Transfer</strong> screen in the companion (Receive).</p>
+<h4 id="wifi-computer">On the computer</h4>
+<figure><a class="shot pc" href="img/pc/wifi.png" target="_blank"><img src="img/pc/wifi.png" alt="Wi‑Fi transfer" width="1920" height="1200" loading="lazy"></a></figure>
+<p>Sends and receives files over the local network, with no cable and no debugging. Works without a connected phone.</p>
+<div class="table"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Wi‑Fi transfer</strong> switch</td><td>Makes this computer visible to phones on the same Wi‑Fi. Nothing listens on the network while it is off.</td></tr>
+<tr><td><strong>Transfer method</strong></td><td><strong>Same Wi‑Fi</strong> sends through your router. <strong>Direct link</strong> has the computer join a private Wi‑Fi the phone opens for the transfer (faster for big files; only with the companion). <strong>Auto</strong> picks Direct link for large transfers on slow Wi‑Fi.</td></tr>
+<tr><td><strong>Received files go to</strong></td><td>The folder for incoming files; <strong>Change…</strong> picks another, <strong>Open folder</strong> shows it.</td></tr>
+<tr><td><strong>Nearby devices</strong></td><td>A radar with this computer in the middle and every phone that is ready to receive around it, next to a list of the same devices with their details. Click a device on the radar (or <strong>Send files…</strong> in the list), or drop files on it. While files move, dots flow between the two and a ring round the device fills up.</td></tr>
+</tbody></table></div>
+<p>On the phone, open the companion's <strong>Receive</strong> screen and turn receiving on. Every incoming transfer has to be accepted before anything is saved.</p>
+<h4 id="wifi-phone">On the phone</h4>
+<figure><a class="shot phone" href="img/phone/transfer.png" target="_blank"><img src="img/phone/transfer.png" alt="Transfer" width="540" height="1200" loading="lazy"></a></figure>
+<p>Moves files between the phone and a computer over Wi‑Fi, without a cable. The switch at the top chooses <strong>Receive</strong> or <strong>Send</strong>; Transfer opens on the side you used last.</p>
+<h5 id="wifi-phone-receive">Receive</h5>
+<div class="table"><table><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody>
+<tr><td><strong>Turn on receiving</strong></td><td>Makes the phone visible to computers on the same Wi‑Fi. Nothing listens on the network while it is off. It turns itself off after 30 minutes without transfers.</td></tr>
+<tr><td><strong>Saved to</strong></td><td>Received files go to <code>Download/Andromon</code>.</td></tr>
+<tr><td><strong>Direct link</strong></td><td>Lets the computer join a private Wi‑Fi the phone opens just for the transfer. Faster for big files than going through the router.</td></tr>
+<tr><td><strong>Received</strong></td><td>The files you received; tap one to open it. <strong>Downloads</strong> opens the folder.</td></tr>
+</tbody></table></div>
+<p>Every transfer asks first: <strong>Accept</strong> or <strong>Decline</strong>, on the screen or in the notification. Nothing is saved without your consent.</p>
+<h5 id="wifi-phone-send">Send</h5>
+<ul>
+<li>Pick <strong>Files</strong> or <strong>Photos</strong>, or use <strong>Share › Andromon</strong> from the gallery or any other app.</li>
+<li>The screen lists the computers it finds on the Wi‑Fi. <strong>Refresh</strong> searches again; <strong>Enter address</strong> adds one by IP address (the <strong>×</strong> next to the field closes it again); <strong>Scan code</strong> reads the code Andromon shows.</li>
+<li>Tap a computer, then <strong>Send</strong>. The Send button always stays just above the bottom bar. The computer has to accept.</li>
+</ul>
+<p>On the computer, open Andromon's <strong>Wi‑Fi transfer</strong> page and turn it on.</p>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#phone-privacy"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Privacy</a><a class="next" href="#help"><small>Next<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></small>If something doesn't work</a></div>
+</section>
+<section class="topic">
+<h3 id="help">If something doesn't work</h3>
+<div class="table"><table><thead><tr><th>Problem</th><th>Try this</th></tr></thead><tbody>
+<tr><td><strong>No Android phone found</strong></td><td>Use a cable that carries data (some only charge). Check that USB debugging is on. Close other phone tools (Android Studio, scrcpy, another adb). On Windows, phones with Android 9 or older may need the maker's USB driver.</td></tr>
+<tr><td>The phone never asks &quot;Allow USB debugging?&quot;</td><td>Unplug and plug in again with the phone unlocked. In Developer options, <strong>Revoke USB debugging authorisations</strong>, then reconnect.</td></tr>
+<tr><td>A page marked  <a class="badge" href="#companion" title="Needs the Andromon Companion on the phone">Companion</a> says the companion is missing or outdated</td><td>Click <strong>Install companion</strong> (or <strong>Update</strong>). It takes a few seconds over the cable.</td></tr>
+<tr><td>The phone isn't listed for Wi‑Fi</td><td>Both devices must be on the same Wi‑Fi. Wireless debugging switches itself off when the phone leaves the network or restarts: turn it on again in the companion's <strong>PC link</strong> screen. On guest or office networks use <strong>Connect by address</strong>.</td></tr>
+<tr><td>An install is refused</td><td>Look at the phone: it may be asking to allow the install (&quot;Install via USB&quot;, Play Protect). &quot;Signed with a different key&quot; means the app is already there from another source: uninstall it first.</td></tr>
+<tr><td>Screen mirror has no sound</td><td>Sound needs Android 11 or newer.</td></tr>
+</tbody></table></div>
+<div class="pager" role="navigation" aria-label="Previous and next topic"><a class="prev" href="#wifi"><small><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Previous</small>Wi‑Fi file transfer</a><span></span></div>
+</section>
+</section>
+<footer>
+  <img src="img/icon.png" alt="" width="28" height="28">
+  <p><strong>Andromon 0.1.0</strong> · Andromon Companion 0.33.0</p>
+  <a href="#top">Back to the top</a>
+</footer>
+</main>
+</div>
+<button id="totop" type="button" aria-label="Back to the top" title="Back to the top"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+<div id="viewer" hidden role="dialog" aria-modal="true" aria-label="Screenshot">
+  <button class="x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  <button class="go prev" type="button" aria-label="Previous screenshot"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+  <figure><img alt=""><figcaption></figcaption></figure>
+  <button class="go next" type="button" aria-label="Next screenshot"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+</div>
+<script>
+(function () {
+  var doc = document, body = doc.body;
+  var nav = doc.getElementById('nav'), menu = doc.getElementById('menu');
+  var narrow = window.matchMedia('(max-width: 900px)');
+  function load(key) { try { return JSON.parse(localStorage.getItem(key)); } catch (e) { return null; } }
+  function save(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* private mode */ } }
+
+  // ----- collapsible navigation -----
+  // The whole bar: hidden/shown with the menu button (or Ctrl/⌘ + B).
+  function navShown() { return narrow.matches ? body.classList.contains('nav-open') : !body.classList.contains('nav-hidden'); }
+  function showNav(show) {
+    if (narrow.matches) body.classList.toggle('nav-open', show);
+    else { body.classList.toggle('nav-hidden', !show); save('guide.navHidden', !show); }
+    menu.setAttribute('aria-expanded', show);
+  }
+  if (load('guide.navHidden')) body.classList.add('nav-hidden');
+  menu.setAttribute('aria-expanded', navShown());
+  menu.addEventListener('click', function () { showNav(!navShown()); });
+  doc.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); showNav(!navShown()); }
+  });
+
+  // Its groups and sub-lists: each folds with its own button.
+  var folded = load('guide.folded') || {};
+  function setFold(btn, fold) {
+    var list = doc.getElementById(btn.getAttribute('aria-controls'));
+    list.hidden = fold;
+    btn.setAttribute('aria-expanded', !fold);
+  }
+  nav.querySelectorAll('button[aria-controls]').forEach(function (btn) {
+    if (folded[btn.getAttribute('aria-controls')]) setFold(btn, true);
+    btn.addEventListener('click', function () {
+      var fold = btn.getAttribute('aria-expanded') === 'true';
+      setFold(btn, fold);
+      folded[btn.getAttribute('aria-controls')] = fold;
+      save('guide.folded', folded);
+    });
+  });
+  nav.addEventListener('click', function (e) { if (e.target.tagName === 'A' && narrow.matches) showNav(false); });
+
+  // Highlight the section being read.
+  var links = {};
+  nav.querySelectorAll('a').forEach(function (a) { (links[a.hash.slice(1)] = links[a.hash.slice(1)] || []).push(a); });
+  if ('IntersectionObserver' in window) {
+    var seen = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        nav.querySelectorAll('a.on').forEach(function (a) { a.classList.remove('on'); });
+        var mine = links[en.target.id] || [];
+        mine.forEach(function (a) { a.classList.add('on'); });
+        if (mine[0] && mine[0].offsetParent && nav.scrollHeight > nav.clientHeight) {
+          var r = mine[0].getBoundingClientRect(), n = nav.getBoundingClientRect();
+          if (r.top < n.top || r.bottom > n.bottom) nav.scrollTop += r.top - n.top - nav.clientHeight / 2;
+        }
+      });
+    }, { rootMargin: '-15% 0px -75% 0px' });
+    doc.querySelectorAll('main h3[id], main h4[id], main h5[id]').forEach(function (h) { if (links[h.id]) seen.observe(h); });
+  }
+
+  // ----- search across the whole guide -----
+  var input = doc.getElementById('q'), panel = doc.getElementById('results');
+  var sections = [], cur = null, part = '', topic = '';
+  doc.querySelectorAll('main .part-title, main h3[id], main h4[id], main h5[id], main .topic p, main .topic li, main .topic tr, main figcaption').forEach(function (el) {
+    if (el.classList.contains('part-title')) { part = el.getAttribute('data-title'); return; }
+    if (/^H[345]$/.test(el.tagName)) {
+      var title = el.firstChild.textContent.trim() || el.textContent.trim();
+      if (el.tagName === 'H3') topic = title;
+      cur = { el: el, title: title, where: part + (el.tagName === 'H3' ? '' : ' › ' + topic), blocks: [], text: title.toLowerCase() };
+      sections.push(cur);
+      return;
+    }
+    if (!cur || el.closest('thead') || (el.tagName === 'P' && el.closest('li, td'))) return;
+    var text = (el.tagName === 'TR' ? Array.prototype.map.call(el.cells, function (c) { return c.textContent; }).join(' — ') : el.textContent).replace(/\s+/g, ' ').trim();
+    if (!text) return;
+    cur.blocks.push({ el: el, text: text, low: text.toLowerCase() });
+    cur.text += ' ' + text.toLowerCase();
+  });
+
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function mark(text, terms) {
+    var re = new RegExp('(' + terms.map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')', 'gi');
+    return esc(text).replace(re, '<mark>$1</mark>');
+  }
+  function snippet(text, terms) {
+    var low = text.toLowerCase(), at = -1;
+    terms.forEach(function (t) { var i = low.indexOf(t); if (i >= 0 && (at < 0 || i < at)) at = i; });
+    var from = Math.max(0, at - 50);
+    if (from > 0) from = text.indexOf(' ', from) + 1;
+    var cut = text.slice(from, from + 150);
+    return (from > 0 ? '…' : '') + cut + (from + 150 < text.length ? '…' : '');
+  }
+
+  function wordStart(low, t) {
+    for (var i = low.indexOf(t); i >= 0; i = low.indexOf(t, i + 1)) if (i === 0 || !/[a-z0-9]/.test(low[i - 1])) return true;
+    return false;
+  }
+  var found = [], active = -1;
+  function search() {
+    var terms = input.value.toLowerCase().split(/\s+/).filter(Boolean);
+    found = []; active = -1;
+    if (!terms.length) { panel.hidden = true; return; }
+    sections.forEach(function (s) {
+      if (!terms.every(function (t) { return s.text.indexOf(t) >= 0; })) return;
+      var inTitle = terms.filter(function (t) { return s.title.toLowerCase().indexOf(t) >= 0; }).length;
+      var best = null, bestN = 0, hits = 0;
+      s.blocks.forEach(function (b) {
+        // a term at the start of a word counts more than one inside a word
+        var n = 0;
+        terms.forEach(function (t) { var i = b.low.indexOf(t); if (i >= 0) n += 1 + (wordStart(b.low, t) ? 0.5 : 0); });
+        if (n) hits++;
+        if (n > bestN) { bestN = n; best = b; }
+      });
+      found.push({ s: s, block: best, score: inTitle * 100 + bestN * 10 + Math.min(hits, 9) });
+    });
+    found.sort(function (a, b) { return b.score - a.score; });
+    found = found.slice(0, 30);
+    panel.innerHTML = found.length
+      ? '<div class="count">' + found.length + (found.length === 30 ? '+' : '') + ' section' + (found.length === 1 ? '' : 's') + '</div>' +
+        found.map(function (f, i) {
+          return '<a href="#' + f.s.el.id + '" data-i="' + i + '"><span class="where">' + esc(f.s.where) + '</span><strong>' + mark(f.s.title, terms) +
+            '</strong>' + (f.block ? '<span class="snip">' + mark(snippet(f.block.text, terms), terms) + '</span>' : '') + '</a>';
+        }).join('')
+      : '<div class="count">Nothing found for "' + esc(input.value.trim()) + '"</div>';
+    panel.hidden = false;
+    panel.scrollTop = 0;
+  }
+  function setActive(i) {
+    var items = panel.querySelectorAll('a');
+    if (!items.length) return;
+    active = (i + items.length) % items.length;
+    items.forEach(function (a, n) { a.classList.toggle('sel', n === active); });
+    items[active].scrollIntoView({ block: 'nearest' });
+  }
+  function go(i) {
+    var f = found[i];
+    if (!f) return;
+    var target = f.block ? f.block.el : f.s.el;
+    panel.hidden = true;
+    input.blur();
+    if (narrow.matches) showNav(false);
+    history.replaceState(null, '', '#' + f.s.el.id);
+    // show the heading too when the match sits close under it
+    var top = target.getBoundingClientRect().top - f.s.el.getBoundingClientRect().top < window.innerHeight * 0.5 ? f.s.el : target;
+    top.scrollIntoView({ block: 'start' });
+    doc.querySelectorAll('.hit').forEach(function (el) { el.classList.remove('hit'); });
+    target.classList.add('hit');
+    setTimeout(function () { target.classList.remove('hit'); }, 3000);
+  }
+  input.addEventListener('input', search);
+  input.addEventListener('focus', function () { if (input.value.trim()) search(); });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive(active + 1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+    else if (e.key === 'Enter') { e.preventDefault(); go(active < 0 ? 0 : active); }
+    else if (e.key === 'Escape') { panel.hidden = true; input.blur(); }
+  });
+  panel.addEventListener('click', function (e) {
+    var a = e.target.closest('a');
+    if (a) { e.preventDefault(); go(+a.getAttribute('data-i')); }
+  });
+  doc.addEventListener('click', function (e) { if (!e.target.closest('.search')) panel.hidden = true; });
+  doc.addEventListener('keydown', function (e) {
+    var typing = /^(INPUT|TEXTAREA)$/.test(doc.activeElement.tagName);
+    if ((e.key === '/' && !typing) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) { e.preventDefault(); input.focus(); input.select(); }
+  });
+})();
+
+// ----- reading aids: header shadow, back to top, heading links, screenshot viewer -----
+(function () {
+  var doc = document;
+  var top = doc.querySelector('.top'), totop = doc.getElementById('totop');
+  function onScroll() {
+    top.classList.toggle('scrolled', window.scrollY > 8);
+    totop.classList.toggle('show', window.scrollY > window.innerHeight * 1.2);
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  totop.addEventListener('click', function () { window.scrollTo({ top: 0 }); history.replaceState(null, '', location.pathname + location.search); });
+
+  // A "#" after each heading: copies a link straight to it.
+  doc.querySelectorAll('main h3[id], main h4[id], main h5[id]').forEach(function (h) {
+    var a = doc.createElement('a');
+    a.className = 'anchor'; a.href = '#' + h.id;
+    a.setAttribute('aria-label', 'Copy a link to this section');
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      history.replaceState(null, '', '#' + h.id);
+      h.scrollIntoView({ block: 'start' });
+      var url = location.href;
+      if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () {
+        a.classList.add('copied');
+        setTimeout(function () { a.classList.remove('copied'); }, 1600);
+      }, function () {});
+    });
+    h.appendChild(a);
+  });
+
+  // Screenshots open in a viewer; arrow keys step through every screenshot in the guide.
+  var viewer = doc.getElementById('viewer'), img = viewer.querySelector('img'), cap = viewer.querySelector('figcaption');
+  var shots = [].slice.call(doc.querySelectorAll('main a.shot')), at = -1, opener = null;
+  function caption(a) {
+    var fig = a.closest('figure'), fc = fig && fig.querySelector('figcaption');
+    return (fc && fc.textContent.trim()) || a.querySelector('img').alt || '';
+  }
+  function show(i) {
+    at = (i + shots.length) % shots.length;
+    var a = shots[at], src = a.querySelector('img');
+    img.src = a.getAttribute('href'); img.alt = src.alt;
+    img.classList.toggle('phone', a.classList.contains('phone'));
+    cap.textContent = caption(a);
+    cap.hidden = !cap.textContent;
+  }
+  function open(i) {
+    opener = doc.activeElement;
+    show(i);
+    viewer.hidden = false;
+    doc.body.style.overflow = 'hidden';
+    viewer.querySelector('.x').focus();
+  }
+  function close() {
+    viewer.hidden = true;
+    doc.body.style.overflow = '';
+    if (opener && opener.focus) opener.focus();
+  }
+  shots.forEach(function (a, i) {
+    a.removeAttribute('target');
+    a.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; // open in a new tab as usual
+      e.preventDefault();
+      open(i);
+    });
+  });
+  viewer.addEventListener('click', function (e) {
+    if (e.target.closest('.prev')) show(at - 1);
+    else if (e.target.closest('.next')) show(at + 1);
+    else if (!e.target.closest('figcaption')) close();
+  });
+  doc.addEventListener('keydown', function (e) {
+    if (viewer.hidden) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') show(at - 1);
+    else if (e.key === 'ArrowRight') show(at + 1);
+    else if (e.key === 'Tab') { // keep the keyboard inside the viewer
+      var f = [].slice.call(viewer.querySelectorAll('button')), i = f.indexOf(doc.activeElement);
+      e.preventDefault();
+      f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+    }
+  });
+})();
+
+(function(){
+var root=document.documentElement,btn=document.querySelector('.theme-toggle');if(!btn)return;
+var sys=matchMedia('(prefers-color-scheme: dark)');
+function now(){return root.getAttribute('data-theme')||(sys.matches?'dark':'light')}
+function paint(){var dark=now()==='dark';btn.setAttribute('aria-pressed',String(dark));var l=dark?'Switch to light mode':'Switch to dark mode';btn.setAttribute('aria-label',l);btn.title=l;
+  document.querySelectorAll('meta[name=theme-color]').forEach(function(m){m.setAttribute('content',dark?'#151617':'#E9E9E6')});}
+function set(t){if(t===(sys.matches?'dark':'light')){root.removeAttribute('data-theme');try{localStorage.removeItem('theme')}catch(e){}}
+  else{root.setAttribute('data-theme',t);try{localStorage.setItem('theme',t)}catch(e){}}paint();}
+btn.addEventListener('click',function(){
+  var next=now()==='dark'?'light':'dark';
+  if(!document.startViewTransition||matchMedia('(prefers-reduced-motion: reduce)').matches){set(next);return;}
+  var r=btn.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,end=Math.hypot(Math.max(x,innerWidth-x),Math.max(y,innerHeight-y));
+  document.startViewTransition(function(){set(next)}).ready.then(function(){
+    root.animate({clipPath:['circle(0px at '+x+'px '+y+'px)','circle('+end+'px at '+x+'px '+y+'px)']},{duration:650,easing:'cubic-bezier(.22,1,.36,1)',pseudoElement:'::view-transition-new(root)'});
+  });
+});
+sys.addEventListener('change',paint);
+addEventListener('storage',function(e){if(e.key==='theme'){if(e.newValue)root.setAttribute('data-theme',e.newValue);else root.removeAttribute('data-theme');paint();}});
+paint();
+})();</script>
+</body>
+</html>

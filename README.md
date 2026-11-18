@@ -6,6 +6,7 @@ The homepage for Andromon, built for search engines: one fast static page, the u
 npm run build     # writes dist/
 npm run serve     # builds, then previews at http://127.0.0.1:4173
 npm run images    # remakes the pictures from the apps' screenshots
+npm run sync      # rebuilds the user guide from the apps' guides and copies it (guide/) and the latest release (release.json) in
 ```
 
 Upload the contents of `dist/` to any static host (Cloudflare Pages, Netlify, GitHub Pages, nginx). On Netlify, `netlify.toml` already says what to run and publish: connect the repository and deploy. Until `"url"` is set, the site uses Netlify's own address.

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node build.js",
     "serve": "node build.js --serve",
-    "images": "node tools/images.js"
+    "images": "node tools/images.js",
+    "sync": "node ../user-guide/build.js && rm -rf guide && rsync -a --exclude build.js --exclude .DS_Store ../user-guide/ guide/ && cp ../pc/latest.json release.json"
   }
 }

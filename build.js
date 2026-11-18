@@ -21,9 +21,11 @@ const abs = (p) => site.url + '/' + p;
 const placeholder = /\/\/example\.com/.test(site.url);
 
 // The newest release, as the desktop app's build records it.
+// The repo keeps its own copy (release.json, refreshed by npm run sync) so hosts that build from
+// this repository alone, like Netlify, have it too.
 let release = null;
-const latest = path.join(ROOT, 'pc/latest.json');
-if (fs.existsSync(latest)) release = JSON.parse(read(latest));
+const latest = [path.join(WEB, 'release.json'), path.join(ROOT, 'pc/latest.json')].find((f) => fs.existsSync(f));
+if (latest) release = JSON.parse(read(latest));
 
 const imagesFile = path.join(WEB, 'static/img/images.json');
 if (!fs.existsSync(imagesFile)) {
@@ -41,7 +43,8 @@ const css = read(path.join(WEB, 'src/style.css'))
   .replace(/;}/g, '}')
   .trim();
 
-const guideSrc = path.join(ROOT, 'user-guide');
+// The user guide: the copy in guide/ (npm run sync), or ../user-guide when that isn't there.
+const guideSrc = [path.join(WEB, 'guide'), path.join(ROOT, 'user-guide')].find((d) => fs.existsSync(path.join(d, 'index.html'))) || path.join(WEB, 'guide');
 const guide = !!site.includeGuide && fs.existsSync(path.join(guideSrc, 'index.html'));
 
 const ctx = { site, content: require('./src/content')(site), release, css, base, abs, images, guide };
