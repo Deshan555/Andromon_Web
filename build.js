@@ -91,7 +91,12 @@ if (guide) {
     `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'TechArticle', headline: gTitle, description: gDesc, url: abs('guide/'),
       about: { '@id': abs('') + '#app' }, publisher: { '@id': abs('') + '#org' }, inLanguage: site.lang }).replace(/</g, '\\u003c')}</script>`,
   ].join('\n');
-  fs.writeFileSync(file, read(file)
+  // On the website the logo in the guide's top bar goes to the home page (on its own it goes to the top).
+  const html = read(file);
+  const brand = '<a class="brand" href="#top">';
+  if (!html.includes(brand)) throw new Error('Guide: the logo link was not found');
+  fs.writeFileSync(file, html
+    .replace(brand, `<a class="brand" href="${base}" title="${attr(site.name)} home">`)
     .replace(/<title>[^<]*<\/title>/, `<title>${attr(gTitle)}</title>`)
     .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(gDesc)}">`)
     .replace('<link rel="icon"', meta + '\n<link rel="icon"'));
