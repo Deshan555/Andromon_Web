@@ -23,7 +23,15 @@ if(r.classList.contains('splashing')){
   addEventListener('load',finish);setTimeout(finish,4000);
 }
 d.addEventListener('DOMContentLoaded',function(){[].forEach.call(d.querySelectorAll('main img:not(.mascot)'),function(i){if(i.complete&&i.naturalWidth)return;i.classList.add('sk');var off=function(){i.classList.remove('sk')};i.addEventListener('load',off);i.addEventListener('error',off)})});
-if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',function(){navigator.serviceWorker.register('${base}sw.js').catch(function(){})});
+// Offline cache (sw.js). A hard refresh (Shift+reload, Ctrl+F5) skips the service worker, so the page has no
+// controller although one is installed: then every saved copy is deleted and the cache is set up again from
+// the live site. Any reload also asks for a newer sw.js at once.
+if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',function(){
+  var sw=navigator.serviceWorker,nav=(performance.getEntriesByType&&performance.getEntriesByType('navigation')[0])||{},reload=nav.type==='reload';
+  sw.getRegistration().then(function(reg){
+    if(!reg||sw.controller||!reload)return;
+    return Promise.all([reg.unregister(),caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return k.indexOf('andromon-')===0}).map(function(k){return caches.delete(k)}))})]);
+  }).catch(function(){}).then(function(){return sw.register('${base}sw.js')}).then(function(r){if(reload&&r)r.update()}).catch(function(){})});
 })();`;
 const THEME_SCRIPT = `(function(){
 var root=document.documentElement,btn=document.querySelector('.theme-toggle');if(!btn)return;
@@ -241,9 +249,11 @@ function downloads(ctx) {
           <h3>${os.name}</h3>
           <p>${esc(os.note)}</p>
           ${os.more ? `<p class="more">${esc(os.more)}</p>` : ''}
-          <a class="btn" data-primary href="${esc(first ? first.url : site.releases)}" rel="noopener">${icon('download')}<span>${first ? `Download for ${os.name}` : `Get it for ${os.name}`}</span></a>
-          <p class="pick">${first ? esc(pickText(release, first, false)) : ''}</p>
-          ${list}
+          <div class="get">
+            ${list}
+            <p class="pick">${first ? esc(pickText(release, first, false)) : ''}</p>
+            <a class="btn" data-primary href="${esc(first ? first.url : site.releases)}" rel="noopener">${icon('download')}<span>${first ? `Download for ${os.name}` : `Get it for ${os.name}`}</span></a>
+          </div>
         </li>`;
   }).join('\n        ');
   const version = release ? esc(versionLine(release)) + ' ' : '';
@@ -325,7 +335,7 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function mb(b){return Math.round(b/1e6)+' MB'}
 function paint(){
   if(files)[].forEach.call(d.querySelectorAll('.os [data-os]'),function(li){var o=li.getAttribute('data-os'),mine=files.filter(function(f){return f.platform===o}),ul=li.querySelector('.files');
-    if(!mine.length)return;if(!ul){ul=d.createElement('ul');ul.className='files';li.appendChild(ul)}
+    if(!mine.length)return;if(!ul){var g=li.querySelector('.get');ul=d.createElement('ul');ul.className='files';if(g)g.insertBefore(ul,g.firstChild);else li.appendChild(ul)}
     ul.innerHTML=mine.map(function(f){return '<li><a href="'+esc(f.url)+'" rel="noopener">'+esc(fileLabel(f))+'</a> <span>'+mb(f.size)+'</span></li>'}).join('')});
   [].forEach.call(d.querySelectorAll('.os [data-os]'),function(li){var o=li.getAttribute('data-os'),yours=o===os,f=files&&pickFile(files,o,yours?cpu:''),a=li.querySelector('[data-primary]'),pk=li.querySelector('.pick');
     li.classList.toggle('is-yours',yours);
@@ -334,7 +344,7 @@ function paint(){
   if(rel){var v=d.querySelector('[data-version]');if(v)v.textContent=versionLine(rel)+' '}
 }
 function go(){paint();if(!d.querySelector('.os'))return;
-  if(${JSON.stringify(!!ctx.site.latestJson)})fetch(${JSON.stringify(ctx.site.latestJson || '')},{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(m){if(m&&m.version&&m.files&&m.files.length){rel=m;files=m.files;paint()}}).catch(function(){})}
+  if(${JSON.stringify(!!ctx.site.latestJson)})fetch(${JSON.stringify(ctx.site.latestJson || '')}+'?t='+Math.floor(Date.now()/60000),{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(m){if(m&&m.version&&m.files&&m.files.length){rel=m;files=m.files;paint()}}).catch(function(){})}
 if(n.userAgentData&&n.userAgentData.getHighEntropyValues&&os!=='android'&&os!=='mac')n.userAgentData.getHighEntropyValues(['architecture','bitness']).then(function(h){if(h.architecture==='arm')cpu='arm64';else if(h.architecture==='x86')cpu=h.bitness==='32'?'ia32':'x64'}).catch(function(){}).then(done);else done();
 function done(){if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',go);else go()}
 })();`;
