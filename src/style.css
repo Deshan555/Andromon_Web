@@ -157,24 +157,29 @@ footer .brand .wordmark { height: 50px; }
 /* Download */
 .download .box { background: linear-gradient(135deg, var(--lime), var(--green)); color: #292A2C; border-radius: calc(var(--r) + 8px); padding: clamp(28px, 5vw, 64px); }
 .download .lead { color: #3d3e40; margin-top: 12px; }
-.os { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
-.os li { background: #fff; color: #292A2C; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 4px; border: 2px solid transparent; }
-.os li.is-yours { border-color: #292A2C; }
+.os { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 32px; }
+.os > li { background: #fff; color: #292A2C; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 4px; border: 2px solid transparent; }
+.os > li.is-yours { border-color: #292A2C; }
 .os .yours { display: none; align-self: flex-start; font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; background: #292A2C; color: #fff; border-radius: 99px; padding: 3px 10px; margin-bottom: 6px; }
 .os .is-yours .yours { display: inline-block; }
 .os h3 { font-size: 1.3rem; }
 .os p { color: #56575A; font-size: .92rem; }
-.os p + p { margin-bottom: 18px; }
-.os .btn { margin-top: auto; background: #292A2C; color: #fff; }
-.os .files { margin-top: 14px; display: grid; gap: 6px; font-size: .88rem; }
-.os .files a { color: #3F6A0A; }
+.os p { margin-bottom: 14px; }
+.os .more { font-size: .85rem; margin-top: -8px; }
+.os .btn { margin-top: auto; background: #292A2C; color: #fff; justify-content: center; text-align: center; white-space: normal; line-height: 1.25; }
+.os .pick { margin: 8px 0 0; font-size: .82rem; color: #56575A; min-height: 1.2em; }
+.os .files { margin-top: 14px; padding-top: 12px; border-top: 1px solid #e4e4df; display: grid; gap: 6px; font-size: .86rem; }
+.os .files li { display: flex; justify-content: space-between; gap: 10px; }
+.os .files a { color: #3F6A0A; text-underline-offset: 3px; }
+.os .files span { color: #7a7b7e; white-space: nowrap; }
 .meta { margin-top: 22px; font-size: .9rem; color: #3d3e40; }
 .meta a { color: inherit; }
 .download .preview { margin-top: 22px; color: #292A2C; font-weight: 500; }
 .download .preview a { color: inherit; text-underline-offset: 3px; }
 .hero .try { margin-top: 16px; color: var(--soft); font-size: .95rem; }
 .hero .try a { color: var(--accent); font-weight: 500; text-underline-offset: 3px; }
-@media (max-width: 860px) { .os { grid-template-columns: 1fr; } }
+@media (max-width: 1100px) { .os { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .os { grid-template-columns: 1fr; } }
 
 /* FAQ */
 .faq-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: clamp(28px, 5vw, 72px); align-items: start; }
@@ -260,7 +265,7 @@ footer a:hover { color: #fff; text-decoration: underline; }
   .phones figure { --from: translateY(48px) rotate(-2deg); }
   .phones figure:nth-child(2) { --from: translateY(64px); }
   .phones figure:nth-child(3) { --from: translateY(48px) rotate(2deg); }
-  .care li, .os li { --from: translateY(18px) scale(.98); }
+  .care li, .os > li { --from: translateY(18px) scale(.98); }
   @media (max-width: 860px) { .spot .shot, .spot .spot-text, .spot:nth-child(even) .shot, .spot:nth-child(even) .spot-text { --from: translateY(30px); } }
   /* the ticks under a spotlight follow its text, one by one */
   .motion .spot-text .ticks li { opacity: 0; transform: translateX(-10px); transition: opacity .6s var(--ease), transform .7s var(--ease); }
@@ -297,8 +302,8 @@ footer a:hover { color: #fff; text-decoration: underline; }
   .group li:hover .ico { background: var(--lime); color: #292A2C; transform: scale(1.08) rotate(-6deg); }
   .care li { transition: opacity .85s var(--ease), transform .6s var(--ease), background-color .3s ease; }
   .care li.in:hover, .care li:not([data-r]):hover { transform: translateY(-3px); background: #3F4044; }
-  .steps li, .os li { transition: opacity .85s var(--ease), transform .6s var(--ease), box-shadow .6s var(--ease); }
-  .steps li.in:hover, .steps li:not([data-r]):hover, .os li.in:hover, .os li:not([data-r]):hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+  .steps li, .os > li { transition: opacity .85s var(--ease), transform .6s var(--ease), box-shadow .6s var(--ease); }
+  .steps li.in:hover, .steps li:not([data-r]):hover, .os > li.in:hover, .os > li:not([data-r]):hover { transform: translateY(-5px); box-shadow: var(--shadow); }
   .steps li::before { transition: transform .5s var(--ease); }
   .steps li:hover::before { transform: scale(1.1) rotate(-8deg); }
 

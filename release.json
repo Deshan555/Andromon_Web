@@ -1,77 +1,152 @@
 {
-  "name": "Droid Desk",
-  "version": "0.1.0",
+  "name": "Andromon",
+  "version": "1.0.4",
   "build": 2,
-  "date": "2026-11-15T07:24:53.344Z",
-  "commit": "90f099518d9df869422907de5f9e697aa2028cc5",
-  "release": "https://github.com/Deshan555/Andromon_PC/releases/tag/v0.1.0",
+  "date": "2026-11-19T09:55:57.017Z",
+  "commit": "9863b7efae2462544709109350a642239c836724",
+  "release": "https://github.com/Deshan555/Andromon_Releases/releases/tag/v1.0.4",
   "changes": [
-    "Add an update check: find a newer build, download its installer and open it",
-    "Use the changes since the previous build as the release's description"
+    "Release from the automation branch; the release branch is gone",
+    "Publish a release when a new version is pushed to the automation branch",
+    "Remove the GitHub Actions build; releases are built in Andromon_Releases",
+    "Publish releases in Andromon_Releases, built from the release branch",
+    "Let the release manifest link downloads and commits to separate repositories",
+    "Build a new release by itself when the version in package.json changes",
+    "Keep the release manifest and notes in build/ out of git",
+    "List the phone app and web build in the release manifest and changelog",
+    "Offer the 32-bit Windows build its own installer in the update check",
+    "Keep web build zips in build/ out of git",
+    "Release 1.0.4 with companion 1.0.4",
+    "Keep the installers release.py makes in build/",
+    "Bundle companion 0.35.0"
   ],
+  "companion": {
+    "version": "0.29.0",
+    "versionCode": 29,
+    "build": 0,
+    "commit": "6df021be09e75369b2b41916e4dffb5821579461",
+    "changes": [
+      "Check and build the app with GitHub Actions",
+      "Point the hints to Droid Desk's Shizuku page",
+      "Add a user guide with screenshots",
+      "Replace the launcher icon with the robot artwork",
+      "Add accessibility options to Settings: text size, high contrast, bold text, reduce motion",
+      "Add the Freezer and Battery saver tools",
+      "Add privileged access through Shizuku",
+      "Dock the bottom bar, simplify the PC link screen, add a design guide",
+      "Switch the app's icons to Lucide outlines",
+      "Droid Desk Companion: Android helper app for Droid Desk"
+    ],
+    "since": ""
+  },
   "files": [
     {
       "platform": "linux",
       "arch": "x64",
       "kind": "deb",
-      "name": "Droid-Desk-0.1.0-amd64.deb",
-      "size": 103211196,
-      "sha256": "b5350c84ce06490156fdf5d10427e03558338cb6a39544c26efcd95380c5da67",
-      "url": "https://github.com/Deshan555/Andromon_PC/releases/download/v0.1.0/Droid-Desk-0.1.0-amd64.deb"
+      "name": "Andromon-1.0.4-amd64.deb",
+      "size": 104429512,
+      "sha256": "143bc2419769dd974a23000610e03a809d3cfcf711ef2fd183461d4686108c79",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-amd64.deb"
+    },
+    {
+      "platform": "linux",
+      "arch": "arm64",
+      "kind": "AppImage",
+      "name": "Andromon-1.0.4-arm64.AppImage",
+      "size": 129889798,
+      "sha256": "2148c32c67f5eb1e96f8058113c10dc505e07fd9acf45f90bd4dae6b5ee23113",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-arm64.AppImage"
+    },
+    {
+      "platform": "linux",
+      "arch": "arm64",
+      "kind": "deb",
+      "name": "Andromon-1.0.4-arm64.deb",
+      "size": 99335632,
+      "sha256": "fa17854e82fa8aebb132d724bac7de7c2751bd01d1fc8eb85370cf89874de351",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-arm64.deb"
     },
     {
       "platform": "mac",
       "arch": "arm64",
       "kind": "dmg",
-      "name": "Droid-Desk-0.1.0-arm64.dmg",
-      "size": 125265459,
-      "sha256": "ce9f3497dfdd703fdef145349d413a8fbc0d2373e9d947426487a268144cb505",
-      "url": "https://github.com/Deshan555/Andromon_PC/releases/download/v0.1.0/Droid-Desk-0.1.0-arm64.dmg"
+      "name": "Andromon-1.0.4-arm64.dmg",
+      "size": 125126553,
+      "sha256": "1267385e164988f1b06293a1890cc679098da0672f2086ad4b27a47410a6acb3",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-arm64.dmg"
     },
     {
       "platform": "mac",
       "arch": "x64",
       "kind": "dmg",
-      "name": "Droid-Desk-0.1.0-x64.dmg",
-      "size": 129348843,
-      "sha256": "feff5a49771a2a19dfe72bcf30ef1857a277cdc766ffd54ca891dd0cb4c74338",
-      "url": "https://github.com/Deshan555/Andromon_PC/releases/download/v0.1.0/Droid-Desk-0.1.0-x64.dmg"
+      "name": "Andromon-1.0.4-x64.dmg",
+      "size": 132340754,
+      "sha256": "a2928a8e085349dfca5837325106e88b04050e94fc926615a92bac6b354a3b9b",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-x64.dmg"
     },
     {
       "platform": "linux",
       "arch": "x64",
       "kind": "AppImage",
-      "name": "Droid-Desk-0.1.0-x86_64.AppImage",
-      "size": 127551594,
-      "sha256": "22dd63f7dbf3ba03b9d9f3e133c1952bbc5d0a20c8ff1c2e4208a87e38330bd1",
-      "url": "https://github.com/Deshan555/Andromon_PC/releases/download/v0.1.0/Droid-Desk-0.1.0-x86_64.AppImage"
+      "name": "Andromon-1.0.4-x86_64.AppImage",
+      "size": 128678810,
+      "sha256": "e2e2ca131b7ab28da2acfabcf4e6ad15db83a903fa0cf12782d9bfaa9b50b3ef",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-x86_64.AppImage"
+    },
+    {
+      "platform": "android",
+      "arch": "",
+      "kind": "apk",
+      "name": "Andromon-Companion-1.0.4.apk",
+      "size": 1469816,
+      "sha256": "cf31d3e052d75764a325e2dc757c468ea49a5563127bc0d75b8e7ee58be02867",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Companion-1.0.4.apk"
     },
     {
       "platform": "windows",
       "arch": "arm64",
       "kind": "exe",
-      "name": "Droid-Desk-Setup-0.1.0-arm64.exe",
-      "size": 116689934,
-      "sha256": "cf8687ec6fcc045d007b07e276bebda21aee552148ffb1c15ad98c0b777a215c",
-      "url": "https://github.com/Deshan555/Andromon_PC/releases/download/v0.1.0/Droid-Desk-Setup-0.1.0-arm64.exe"
+      "name": "Andromon-Setup-1.0.4-arm64.exe",
+      "size": 117779852,
+      "sha256": "0c2ac74328df0fd10e247821edf0fa1096a484d9106521c360ca33bd97a5a601",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Setup-1.0.4-arm64.exe"
+    },
+    {
+      "platform": "windows",
+      "arch": "ia32",
+      "kind": "exe",
+      "name": "Andromon-Setup-1.0.4-ia32.exe",
+      "size": 101885575,
+      "sha256": "d6b83a583251e86c719f2c2caee0b41480805259187a13d7231af33e8691c3e2",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Setup-1.0.4-ia32.exe"
     },
     {
       "platform": "windows",
       "arch": "x64",
       "kind": "exe",
-      "name": "Droid-Desk-Setup-0.1.0-x64.exe",
-      "size": 122617808,
-      "sha256": "8e4fca44522a1d8b413b6f85d366f8c147f270e2f6f31964c6711dadcae5ce16",
-      "url": "https://github.com/Deshan555/Andromon_PC/releases/download/v0.1.0/Droid-Desk-Setup-0.1.0-x64.exe"
+      "name": "Andromon-Setup-1.0.4-x64.exe",
+      "size": 123707327,
+      "sha256": "d19c355e22b47eff1cd82f12433dea6ee873083350a3b4f52efa75585dbb919d",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Setup-1.0.4-x64.exe"
     },
     {
       "platform": "windows",
       "arch": "",
       "kind": "exe",
-      "name": "Droid-Desk-Setup-0.1.0.exe",
-      "size": 238517558,
-      "sha256": "856ade3565cd20c584a7a783af952620e9def8fb4e476513c3f7d3a32c3a0f1f",
-      "url": "https://github.com/Deshan555/Andromon_PC/releases/download/v0.1.0/Droid-Desk-Setup-0.1.0.exe"
+      "name": "Andromon-Setup-1.0.4.exe",
+      "size": 240694408,
+      "sha256": "87833e3d101d56f1e3ca09729f3c1abbea01dc873e9720838a6304e46afb99ce",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Setup-1.0.4.exe"
+    },
+    {
+      "platform": "web",
+      "arch": "",
+      "kind": "zip",
+      "name": "Andromon-Web-1.0.4.zip",
+      "size": 2175290,
+      "sha256": "bc80cac4647a3dedc216a5915b4b9ac3efcb5f2d576c3193044d330861c6c8d6",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Web-1.0.4.zip"
     }
   ]
 }

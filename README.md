@@ -6,7 +6,7 @@ The homepage for Andromon, built for search engines: one fast static page, the u
 npm run build     # writes dist/
 npm run serve     # builds, then previews at http://127.0.0.1:4173
 npm run images    # remakes the pictures from the apps' screenshots
-npm run sync      # rebuilds the user guide from the apps' guides and copies it (guide/) and the latest release (release.json) in
+npm run sync      # rebuilds the user guide from the apps' guides and copies it (guide/) in, and downloads the newest release's latest.json (release.json)
 ```
 
 Upload the contents of `dist/` to any static host (Cloudflare Pages, Netlify, GitHub Pages, nginx). On Netlify, `netlify.toml` already says what to run and publish: connect the repository and deploy. Until `"url"` is set, the site uses Netlify's own address.
@@ -14,8 +14,18 @@ Upload the contents of `dist/` to any static host (Cloudflare Pages, Netlify, Gi
 ## Before going live
 
 1. Set `"url"` in `site.config.json` to the real address, for example `https://andromon.app`, and run `npm run build`. Until then `robots.txt` blocks search engines on purpose, so the placeholder address is never indexed. (`SITE_URL=https://… npm run build` also works.) An address with a path, such as a GitHub Pages project site, is supported.
-2. Publish a release on GitHub. The download buttons point at the Releases page (`"releases"` in the config). Set `"directDownloads": true` to also list each installer with its size, read from `../pc/latest.json`.
+2. Publish a release in [Andromon_Releases](https://github.com/Deshan555/Andromon_Releases) (the `automation` branch of Andromon_PC does it). The download section has a card for Windows, macOS, Linux and Android, each listing that system's files from the release with their sizes.
 3. Add the site to Google Search Console and Bing Webmaster Tools, and submit `https://your-address/sitemap.xml`.
+
+## Downloads
+
+The download section (`downloads()` in `src/page.js`) is built from `release.json`, the newest release's `latest.json` (refreshed by `npm run sync`), so it works without JavaScript. In the browser, a small script then:
+
+- works out the visitor's system and CPU type: Chrome and Edge say it outright (`navigator.userAgentData`); otherwise it is read from the user agent, and on a Mac from the graphics chip, because Safari and Firefox call every Mac "Intel";
+- marks that card **Your computer** (or **Your phone**) and points its button at the right file: Windows 64-bit, ARM64 or 32-bit; Mac Apple Silicon or Intel; Linux AppImage for 64-bit or ARM64; the APK on an Android phone;
+- reads the live `latest.json` (`"latestJson"` in `site.config.json`), so a new release shows up without rebuilding the site. When GitHub can't be reached, the links from the build stay.
+
+`"releases"` is where "all files" and the structured data point.
 
 ## Where things are
 

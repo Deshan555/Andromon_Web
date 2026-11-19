@@ -7,6 +7,6 @@
     "build": "node build.js",
     "serve": "node build.js --serve",
     "images": "node tools/images.js",
-    "sync": "node ../user-guide/build.js && rm -rf guide && rsync -a --exclude build.js --exclude .DS_Store ../user-guide/ guide/ && cp ../pc/latest.json release.json"
+    "sync": "node ../user-guide/build.js && rm -rf guide && rsync -a --exclude build.js --exclude .DS_Store ../user-guide/ guide/ && curl -fsSL https://raw.githubusercontent.com/Deshan555/Andromon_Releases/HEAD/latest.json -o release.json"
   }
 }

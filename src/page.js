@@ -177,23 +177,52 @@ function mascot(ctx, name, cls, px) {
   return picture(ctx, 'mascot-' + name, '', { sizes: `${px}px`, cls: `mascot ${cls}` });
 }
 
+// ---------- downloads ----------
+// Each card lists that system's files from the newest release (latest.json in Andromon_Releases), and
+// its button downloads the one for the visitor's CPU. The page is built from release.json (npm run sync),
+// and DL_SCRIPT reads the live latest.json in the browser, so a new release shows without a rebuild.
+
+// The name of a file on its system's card. Also sent to the browser as text (DL_SCRIPT), so plain ES5.
+function fileLabel(f) {
+  var cpu = { x64: '64-bit', arm64: 'ARM64', ia32: '32-bit' }[f.arch] || '';
+  if (f.platform === 'windows') return f.arch ? cpu : '64-bit + ARM64 in one';
+  if (f.platform === 'mac') return f.arch === 'arm64' ? 'Apple Silicon' : f.arch === 'x64' ? 'Intel' : 'Apple Silicon and Intel';
+  if (f.platform === 'linux') return (f.kind === 'deb' ? '.deb' : 'AppImage') + (cpu ? ' · ' + cpu : '');
+  if (f.platform === 'android') return 'APK';
+  return f.name;
+}
+// The file a card's button offers for a CPU type (x64, arm64, ia32, or '' when unknown).
+function pickFile(files, os, cpu) {
+  var mine = files.filter(function (f) { return f.platform === os; });
+  if (os === 'linux') mine = mine.filter(function (f) { return f.kind === 'AppImage'; }).concat(mine.filter(function (f) { return f.kind !== 'AppImage'; }));
+  var want = cpu || (os === 'mac' ? 'arm64' : 'x64');
+  return mine.filter(function (f) { return f.arch === want; })[0]
+    || (os === 'windows' ? mine.filter(function (f) { return !f.arch; })[0] : null)
+    || (os === 'mac' && want === 'arm64' ? mine.filter(function (f) { return f.arch === 'x64'; })[0] : null)
+    || mine[0] || null;
+}
+
 function downloads(ctx) {
   const { site, content, release } = ctx;
+  const files = release ? release.files : [];
   const cards = content.download.os.map((os) => {
-    const files = release ? release.files.filter((f) => f.platform === os.id) : [];
-    const list = site.directDownloads && files.length
-      ? `<ul class="files">${files.map((f) => `<li><a href="${f.url}" rel="noopener">${esc(f.name)}</a> · ${mb(f.size)}</li>`).join('')}</ul>`
+    const mine = files.filter((f) => f.platform === os.id);
+    const first = pickFile(files, os.id, '');
+    const list = mine.length
+      ? `<ul class="files">${mine.map((f) => `<li><a href="${esc(f.url)}" rel="noopener">${esc(fileLabel(f))}</a> <span>${mb(f.size)}</span></li>`).join('')}</ul>`
       : '';
     return `<li data-os="${os.id}">
-          <span class="yours">Your computer</span>
+          <span class="yours">${os.id === 'android' ? 'Your phone' : 'Your computer'}</span>
           <h3>${os.name}</h3>
-          <p>${os.note}</p>
-          <p>${os.kinds}</p>
-          <a class="btn" href="${site.releases}" rel="noopener">${icon('download')}Download for ${os.name}</a>
+          <p>${esc(os.note)}</p>
+          ${os.more ? `<p class="more">${esc(os.more)}</p>` : ''}
+          <a class="btn" data-primary href="${esc(first ? first.url : site.releases)}" rel="noopener">${icon('download')}<span>${first ? `Download for ${os.name}` : `Get it for ${os.name}`}</span></a>
+          <p class="pick">${first ? `${esc(fileLabel(first))} · ${mb(first.size)}` : ''}</p>
           ${list}
         </li>`;
   }).join('\n        ');
-  const version = release ? `Version ${esc(release.version)}, released ${new Date(release.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}. ` : '';
+  const when = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  const version = release ? `Version ${esc(release.version)}, released ${when(release.date)}. ` : '';
   const renamed = site.appName && site.appName !== site.name
     ? ` The installers and the app window still carry the name ${esc(site.appName)}; it is the same app.` : '';
   return `<section class="download" id="download" aria-labelledby="download-h">
@@ -205,8 +234,8 @@ function downloads(ctx) {
       <ul class="os">
         ${cards}
       </ul>
-      ${site.preview ? `<p class="preview">Want to try it first? Open the <a href="${site.preview}" target="_blank" rel="noopener">online preview</a> in Chrome or Edge on your computer, with nothing to install.</p>` : ''}
-      <p class="meta">${version}Downloads are hosted on <a href="${site.releases}" rel="noopener">GitHub Releases</a>.${renamed}</p>
+      ${site.preview ? `<p class="preview">Want to try it first? Open the <a href="${site.preview}" target="_blank" rel="noopener">online version</a> in Chrome or Edge on your computer, with nothing to install.</p>` : ''}
+      <p class="meta"><span data-version>${version}</span>All files, checksums and older versions are on <a href="${site.releases}" rel="noopener">GitHub Releases</a>.${renamed}</p>
     </div>
   </div>
 </section>`;
@@ -251,7 +280,37 @@ function structuredData(ctx) {
   return ld({ '@context': 'https://schema.org', '@graph': graph });
 }
 
-const OS_SCRIPT = `(function(){var n=navigator,p=((n.userAgentData&&n.userAgentData.platform)||n.platform||'')+' '+n.userAgent;if(/Android|iPhone|iPad/i.test(p))return;var os=/Win/i.test(p)?'windows':/Mac/i.test(p)?'mac':/Linux|X11/i.test(p)?'linux':'';if(!os)return;var c=document.querySelector('[data-os="'+os+'"]');if(c)c.classList.add('is-yours');var t={windows:'Windows',mac:'macOS',linux:'Linux'}[os];document.querySelectorAll('[data-dl]').forEach(function(e){e.textContent='Download for '+t})})();`;
+// The visitor's system and CPU type, then the newest release: each card's button gets the file for this
+// computer ("Download for Windows · 64-bit"), its card is marked, and the lists follow the live
+// latest.json. Without JavaScript, or when GitHub can't be reached, the links from the build stay.
+// CPU type: Chrome and Edge say it (userAgentData); otherwise the user agent, and on a Mac the graphics
+// chip, since Safari and Firefox call every Mac "Intel".
+const OS_SCRIPT = (ctx) => `(function(){
+var n=navigator,ua=n.userAgent,p=((n.userAgentData&&n.userAgentData.platform)||n.platform||'')+' '+ua,d=document;
+var NAME={windows:'Windows',mac:'macOS',linux:'Linux',android:'Android'};
+${fileLabel.toString()}
+${pickFile.toString()}
+var os=/Android/i.test(ua)?'android':/iPhone|iPad|iPod/i.test(ua)?'':/Win/i.test(p)?'windows':/Mac/i.test(p)?'mac':/Linux|X11|CrOS/i.test(p)?'linux':'';
+var cpu=/aarch64|arm64|armv8/i.test(ua)?'arm64':/WOW64|Win64|x64|x86_64|amd64/i.test(ua)?'x64':os==='windows'?'ia32':'';
+if(os==='mac'){cpu='arm64';try{var g=d.createElement('canvas').getContext('webgl'),e=g&&g.getExtension('WEBGL_debug_renderer_info'),r=e?g.getParameter(e.UNMASKED_RENDERER_WEBGL):'';if(/Intel|AMD|Radeon|NVIDIA/i.test(r))cpu='x64'}catch(x){}}
+var files=${JSON.stringify(ctx.release ? ctx.release.files : null).replace(/</g, '\\u003c')},ver=null;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function mb(b){return Math.round(b/1e6)+' MB'}
+function paint(){
+  if(files)[].forEach.call(d.querySelectorAll('.os [data-os]'),function(li){var o=li.getAttribute('data-os'),mine=files.filter(function(f){return f.platform===o}),ul=li.querySelector('.files');
+    if(!mine.length)return;if(!ul){ul=d.createElement('ul');ul.className='files';li.appendChild(ul)}
+    ul.innerHTML=mine.map(function(f){return '<li><a href="'+esc(f.url)+'" rel="noopener">'+esc(fileLabel(f))+'</a> <span>'+mb(f.size)+'</span></li>'}).join('')});
+  [].forEach.call(d.querySelectorAll('.os [data-os]'),function(li){var o=li.getAttribute('data-os'),yours=o===os,f=files&&pickFile(files,o,yours?cpu:''),a=li.querySelector('[data-primary]'),pk=li.querySelector('.pick');
+    li.classList.toggle('is-yours',yours);
+    if(f&&a){a.href=f.url;a.lastChild.textContent='Download for '+NAME[o];if(pk)pk.textContent=(yours&&o!=='android'?'For this computer: ':'')+fileLabel(f)+' · '+mb(f.size)}});
+  if(os&&NAME[os])[].forEach.call(d.querySelectorAll('[data-dl]'),function(e){e.textContent='Download for '+NAME[os]});
+  if(ver){var v=d.querySelector('[data-version]');if(v)v.textContent='Version '+ver.version+', released '+new Date(ver.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})+'. '}
+}
+function go(){paint();if(!d.querySelector('.os'))return;
+  if(${JSON.stringify(!!ctx.site.latestJson)})fetch(${JSON.stringify(ctx.site.latestJson || '')},{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(m){if(m&&m.files&&m.files.length){files=m.files;ver=m;paint()}}).catch(function(){})}
+if(n.userAgentData&&n.userAgentData.getHighEntropyValues&&os!=='android'&&os!=='mac')n.userAgentData.getHighEntropyValues(['architecture','bitness']).then(function(h){if(h.architecture==='arm')cpu='arm64';else if(h.architecture==='x86')cpu=h.bitness==='32'?'ia32':'x64'}).catch(function(){}).then(done);else done();
+function done(){if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',go);else go()}
+})();`;
 
 // Motion: the header gets a shadow once the page scrolls, and blocks fade and slide in as they
 // reach the screen (style.css, "Motion"). Nothing is hidden unless this script runs and the visitor
@@ -260,7 +319,7 @@ const MOTION_SCRIPT = `(function(){
 var top=document.querySelector('.top');
 if(top){var s=function(){top.classList.toggle('scrolled',window.scrollY>8)};addEventListener('scroll',s,{passive:true});s();}
 if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-var sel='.spot-text,.shot,.head,.faq-grid>div:first-child,.group,.phones figure,.comp>div:last-child>h2,.care li,.steps li,.download .box,.os li,.faq details,.cmp-wrap,.why li,.alt,.built li,.cmp-cta';
+var sel='.spot-text,.shot,.head,.faq-grid>div:first-child,.group,.phones figure,.comp>div:last-child>h2,.care li,.steps li,.download .box,.os>li,.faq details,.cmp-wrap,.why li,.alt,.built li,.cmp-cta';
 var els=[].slice.call(document.querySelectorAll(sel));
 els.forEach(function(el){
   var sib=[].filter.call(el.parentElement.children,function(x){return x.matches(sel)});
@@ -328,7 +387,7 @@ ${header(ctx, true)}
 <div class="strip">
   <div class="wrap">
     <ul>
-      <li><b>Windows</b> 64-bit and ARM64</li>
+      <li><b>Windows</b> 64-bit, ARM64 and 32-bit</li>
       <li><b>macOS</b> Apple Silicon and Intel</li>
       <li><b>Linux</b> .deb and AppImage</li>
       <li><b>Android</b> phones and tablets</li>
@@ -406,7 +465,7 @@ ${downloads(ctx)}
 
 </main>
 ${footer(ctx)}
-<script>${OS_SCRIPT}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
+<script>${OS_SCRIPT(ctx)}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
 </body>
 </html>
 `;
@@ -553,7 +612,7 @@ ${header(ctx, false)}
 
 </main>
 ${footer(ctx)}
-<script>${OS_SCRIPT}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
+<script>${OS_SCRIPT(ctx)}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
 </body>
 </html>
 `;
@@ -708,7 +767,7 @@ ${header(ctx, false)}
 
 </main>
 ${footer(ctx)}
-<script>${OS_SCRIPT}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
+<script>${OS_SCRIPT(ctx)}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
 </body>
 </html>
 `;

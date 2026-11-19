@@ -10,9 +10,10 @@
   "themeColor": "#E3F786",
   "repoPc": "https://github.com/Deshan555/Andromon_PC",
   "repoAndroid": "https://github.com/Deshan555/Andromon-android",
-  "releases": "https://github.com/Deshan555/Andromon_PC/releases",
+  "releases": "https://github.com/Deshan555/Andromon_Releases/releases",
+  "latestJson": "https://raw.githubusercontent.com/Deshan555/Andromon_Releases/HEAD/latest.json",
   "preview": "https://preandroidmon.netlify.app/",
-  "directDownloads": false,
+  "directDownloads": true,
   "includeGuide": true,
   "seo": {
     "googleSiteVerification": "gN-o0YsNUf3Yj5WqPOgMraFqHnkXx_N1sNJ8_Z-ZFa0",

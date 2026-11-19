@@ -143,9 +143,11 @@ module.exports = (site) => {
       h: 'Download ' + N,
       p: 'Free. No account, no ads.',
       os: [
-        { id: 'windows', name: 'Windows', note: '64-bit Intel/AMD and ARM64', kinds: 'Setup .exe' },
-        { id: 'mac', name: 'macOS', note: 'Apple Silicon and Intel', kinds: '.dmg' },
-        { id: 'linux', name: 'Linux', note: '64-bit', kinds: '.deb and AppImage' },
+        { id: 'windows', name: 'Windows', note: 'Windows 10 and 11: 64-bit, ARM64 and 32-bit. Setup wizard.' },
+        { id: 'mac', name: 'macOS', note: 'Apple Silicon and Intel Macs. Disk image (.dmg).' },
+        { id: 'linux', name: 'Linux', note: '64-bit and ARM64. AppImage runs on any distribution; .deb is for Debian and Ubuntu.' },
+        { id: 'android', name: 'Android', note: 'The companion app, for Android 8.0 and later.',
+          more: N + ' on your computer installs it for you and sets up its permissions. Download it only to install it by hand.' },
       ],
     },
 
