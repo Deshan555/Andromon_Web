@@ -268,6 +268,13 @@ function downloads(ctx) {
       <ul class="os">
         ${cards}
       </ul>
+      ${content.download.install ? `<details class="install">
+        <summary>${esc(content.download.install.h)}</summary>
+        <p>${esc(content.download.install.lead)}</p>
+        <dl>
+          ${content.download.install.items.map(([t, d]) => `<dt>${esc(t)}</dt><dd>${esc(d)}</dd>`).join('\n          ')}
+        </dl>
+      </details>` : ''}
       ${site.preview ? `<p class="preview">Want to try it first? Open the <a href="${site.preview}" target="_blank" rel="noopener">online version</a> in Chrome or Edge on your computer, with nothing to install.</p>` : ''}
       <p class="meta"><span data-version>${version}</span>All files, checksums and older versions are on <a href="${site.releases}" rel="noopener">GitHub Releases</a>.${renamed}</p>
     </div>

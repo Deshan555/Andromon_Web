@@ -133,7 +133,7 @@ module.exports = (site) => {
     steps: {
       h: 'How to connect your Android phone to your computer',
       items: [
-        ['Install ' + N, 'Download the installer for Windows, macOS or Linux and open it. No drivers, Android SDK or adb to install.'],
+        ['Install ' + N, 'Download the installer for Windows, macOS or Linux and open it. No drivers, Android SDK or adb to install. The first time, your computer may ask you to confirm: see "If your computer won\'t open it" under Download.'],
         ['Turn on USB debugging', 'On the phone, open Settings › About phone and tap Build number seven times. Then switch on USB debugging under Developer options.'],
         ['Plug in and allow', `Connect the USB cable, click Connect phone in ${N}, and tap Allow on the phone. After the first time it connects by itself whenever you plug the phone in, and you can also connect over Wi‑Fi.`],
       ],
@@ -149,6 +149,18 @@ module.exports = (site) => {
         { id: 'android', name: 'Android', note: 'The companion app, for Android 8.0 and later.',
           more: N + ' on your computer installs it for you and sets up its permissions. Download it only to install it by hand.' },
       ],
+      // Shown under the cards (downloads() in page.js). The builds aren't code-signed by Apple or Microsoft yet.
+      install: {
+        h: 'If your computer won\'t open it',
+        lead: `The installers aren't code-signed by Apple or Microsoft yet, so the first time your computer asks you to confirm, or blocks the installer. They are the same files as on GitHub Releases, listed with their SHA-256 in SHA256SUMS.txt.`,
+        items: [
+          ['Windows: "Windows protected your PC"', 'SmartScreen. Click More info, then Run anyway.'],
+          ['Windows 11: "Smart App Control blocked an app"', `Smart App Control blocks apps that aren't signed and has no way past it. Use the online version in Chrome or Edge instead, with nothing to install. Turning Smart App Control off (Windows Security › App & browser control) lets the installer run, but on many PCs it can't be turned back on without resetting Windows, so we don't recommend it.`],
+          ['macOS: "Apple could not verify “Andromon” is free of malware"', 'Click Done. Open System Settings › Privacy & Security, scroll down to "Andromon was blocked" and click Open Anyway, then confirm. Only needed the first time. On macOS 14 and earlier, right-clicking the app and choosing Open also works. In Terminal: xattr -dr com.apple.quarantine /Applications/Andromon.app'],
+          ['Linux', 'AppImage: make it executable (chmod +x Andromon-*.AppImage) and run it. .deb: sudo apt install ./Andromon-*.deb'],
+          ['Android', `${N} on the computer installs the companion app for you. To install the APK by hand, allow installing apps from your browser or file manager when Android asks.`],
+        ],
+      },
     },
 
     // The /android/ page: the companion app on the phone.
@@ -335,6 +347,10 @@ module.exports = (site) => {
         'Yes. Screen mirror shows the phone live in a window. Clicking is a tap, the scroll wheel scrolls, and the keyboard types on the phone. Sound from the phone needs Android 11 or later.'],
       ['Can I make the text bigger or turn off animations?',
         `Yes. Settings has accessibility options: four text sizes, high contrast, reduced motion, bold text, a plain system font, a strong keyboard focus outline and underlined links. High contrast and reduced motion can follow your computer's settings.`],
+      ['Windows says "Windows protected your PC" or Smart App Control blocked it. What do I do?',
+        `${N}'s installers aren't code-signed by Microsoft yet. For "Windows protected your PC", click More info, then Run anyway. Smart App Control on Windows 11 blocks unsigned apps with no way past it: use the online version of ${N} in Chrome or Edge instead, which needs nothing installed.`],
+      ['macOS says Apple could not verify "Andromon" is free of malware. What do I do?',
+        `The Mac app isn't notarized by Apple yet. Click Done, then open System Settings › Privacy & Security, scroll down to "Andromon was blocked" and click Open Anyway. You only need to do this once.`],
       ['Does it work with iPhone?',
         `No. ${N} is for Android phones and tablets only.`],
     ],
