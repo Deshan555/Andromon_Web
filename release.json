@@ -1,152 +1,177 @@
 {
   "name": "Andromon",
-  "version": "1.0.4",
-  "build": 2,
-  "date": "2026-11-19T09:55:57.017Z",
-  "commit": "9863b7efae2462544709109350a642239c836724",
-  "release": "https://github.com/Deshan555/Andromon_Releases/releases/tag/v1.0.4",
+  "version": "1.0.5",
+  "build": 5,
+  "date": "2026-11-19T10:31:32.411Z",
+  "commit": "97f5aad609b1d799c349d844230cfa71a4214132",
+  "release": "https://github.com/Deshan555/Andromon_Releases/releases/tag/v1.0.5",
   "changes": [
-    "Release from the automation branch; the release branch is gone",
-    "Publish a release when a new version is pushed to the automation branch",
-    "Remove the GitHub Actions build; releases are built in Andromon_Releases",
-    "Publish releases in Andromon_Releases, built from the release branch",
-    "Let the release manifest link downloads and commits to separate repositories",
-    "Build a new release by itself when the version in package.json changes",
-    "Keep the release manifest and notes in build/ out of git",
-    "List the phone app and web build in the release manifest and changelog",
-    "Offer the 32-bit Windows build its own installer in the update check",
-    "Keep web build zips in build/ out of git",
-    "Release 1.0.4 with companion 1.0.4",
-    "Keep the installers release.py makes in build/",
-    "Bundle companion 0.35.0"
+    "Release 1.0.5 with companion 1.0.5",
+    "Record the phone app's version from the APK that is shipped",
+    "Deploy the web version to Netlify with each release, or on its own"
   ],
   "companion": {
-    "version": "0.29.0",
-    "versionCode": 29,
-    "build": 0,
-    "commit": "6df021be09e75369b2b41916e4dffb5821579461",
+    "version": "1.0.5",
+    "versionCode": 37,
+    "build": 11,
+    "commit": "989396454cb03b7a269937f513bbf1a6316e02dc",
     "changes": [
-      "Check and build the app with GitHub Actions",
-      "Point the hints to Droid Desk's Shizuku page",
-      "Add a user guide with screenshots",
-      "Replace the launcher icon with the robot artwork",
-      "Add accessibility options to Settings: text size, high contrast, bold text, reduce motion",
-      "Add the Freezer and Battery saver tools",
-      "Add privileged access through Shizuku",
-      "Dock the bottom bar, simplify the PC link screen, add a design guide",
-      "Switch the app's icons to Lucide outlines",
-      "Droid Desk Companion: Android helper app for Droid Desk"
+      "Check Andromon_Releases for a newer companion and install it when the person agrees",
+      "Add a switch to show or hide LeakCanary's Leaks icon in debug builds",
+      "Make Not now as big as Use fingerprint on the fingerprint offer",
+      "Offer the PC link lock in the welcome tour",
+      "Add a PIN and fingerprint lock for the PC link",
+      "Show the tour's pictures without a box and use a round arrow button",
+      "Retake the Tools screenshot with the chart Dashboard",
+      "Make the Tools Dashboard charts only",
+      "Split Tools into Dashboard and All tools tabs",
+      "Drop the PC link's \"All set\" badge and the unused splash robot",
+      "Chart the Cleaner's junk by group and what is selected",
+      "Show fewer badges: drop the ones that repeat what the screen already says",
+      "Show placeholder rows and progress circles while screens load",
+      "Turn the Tools hero card into a carousel that moves on every 10 seconds",
+      "Draw the progress rings with a thicker stroke",
+      "Collect the app's permissions in the tour and ask where they're needed",
+      "Give the welcome tour light haptic feedback",
+      "Show the logo with a progress bar for five seconds at start",
+      "Retake the guide's screenshots on a real phone",
+      "Keep the PC link stopped after Stop",
+      "Add a welcome tour for the first start",
+      "Show the Andromon logo while the app starts",
+      "Add Blur personal data, so screenshots are safe to share",
+      "Open on PC link, with Transfer, Tools and Stats in the bottom bar",
+      "Fix smaller problems in Battery saver, Finish setup, Memory, Apps and Cleaner",
+      "Keep the PC link answering while streams are open",
+      "Update all F-Droid apps in one go",
+      "Watch the clipboard for Andromon's clipboard sync",
+      "Find similar photos for Andromon",
+      "Show battery capacity, and give Andromon the battery's health",
+      "Prepare the F-Droid listing and say where to get the app",
+      "Add F-Droid: browse and install apps from F-Droid's catalogue",
+      "Add Recover: deleted photos and files still on the phone",
+      "Keep crash reports on the phone",
+      "Let automation apps switch the link, Wi-Fi receive and the Freezer",
+      "Show DNS records in Network › Look up",
+      "Show the trackers in an app's code",
+      "Make and open zip archives in Storage",
+      "Add Scan code to Send",
+      "Encrypt the Wi-Fi transfer key with the Android Keystore",
+      "Start the privileged helper as root through libsu",
+      "Let the PC link start again after it is turned off",
+      "Split Settings into pages and trim the bottom bar",
+      "Rename the app to Andromon Companion",
+      "Say in the README where to download the builds"
     ],
-    "since": ""
+    "since": "6df021be09e75369b2b41916e4dffb5821579461"
   },
   "files": [
     {
       "platform": "linux",
       "arch": "x64",
       "kind": "deb",
-      "name": "Andromon-1.0.4-amd64.deb",
-      "size": 104429512,
-      "sha256": "143bc2419769dd974a23000610e03a809d3cfcf711ef2fd183461d4686108c79",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-amd64.deb"
+      "name": "Andromon-1.0.5-amd64.deb",
+      "size": 104623356,
+      "sha256": "71c8cb134201894d482fe840da84d63245cffb94e44bca98a8679da1de42b620",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-1.0.5-amd64.deb"
     },
     {
       "platform": "linux",
       "arch": "arm64",
       "kind": "AppImage",
-      "name": "Andromon-1.0.4-arm64.AppImage",
-      "size": 129889798,
-      "sha256": "2148c32c67f5eb1e96f8058113c10dc505e07fd9acf45f90bd4dae6b5ee23113",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-arm64.AppImage"
+      "name": "Andromon-1.0.5-arm64.AppImage",
+      "size": 129898065,
+      "sha256": "9c4da726295d21cd4fbaf339ae299a71b0a2a88bc0022f9b85be916b4ae4a336",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-1.0.5-arm64.AppImage"
     },
     {
       "platform": "linux",
       "arch": "arm64",
       "kind": "deb",
-      "name": "Andromon-1.0.4-arm64.deb",
-      "size": 99335632,
-      "sha256": "fa17854e82fa8aebb132d724bac7de7c2751bd01d1fc8eb85370cf89874de351",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-arm64.deb"
+      "name": "Andromon-1.0.5-arm64.deb",
+      "size": 99471792,
+      "sha256": "f7b1977f82e9691a8911f388a44dc28fc6a4b3afa30823039663d7f5461bff11",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-1.0.5-arm64.deb"
     },
     {
       "platform": "mac",
       "arch": "arm64",
       "kind": "dmg",
-      "name": "Andromon-1.0.4-arm64.dmg",
-      "size": 125126553,
-      "sha256": "1267385e164988f1b06293a1890cc679098da0672f2086ad4b27a47410a6acb3",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-arm64.dmg"
+      "name": "Andromon-1.0.5-arm64.dmg",
+      "size": 125133403,
+      "sha256": "8307b9cd310f51248a88d9137627167be2dd90d797a973d6feb3cd1eca7cadb9",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-1.0.5-arm64.dmg"
     },
     {
       "platform": "mac",
       "arch": "x64",
       "kind": "dmg",
-      "name": "Andromon-1.0.4-x64.dmg",
-      "size": 132340754,
-      "sha256": "a2928a8e085349dfca5837325106e88b04050e94fc926615a92bac6b354a3b9b",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-x64.dmg"
+      "name": "Andromon-1.0.5-x64.dmg",
+      "size": 132351634,
+      "sha256": "5c4ef4704224b9d7821acab72f61f4c3098a45bd63355501bc33d30059c99aeb",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-1.0.5-x64.dmg"
     },
     {
       "platform": "linux",
       "arch": "x64",
       "kind": "AppImage",
-      "name": "Andromon-1.0.4-x86_64.AppImage",
-      "size": 128678810,
-      "sha256": "e2e2ca131b7ab28da2acfabcf4e6ad15db83a903fa0cf12782d9bfaa9b50b3ef",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-1.0.4-x86_64.AppImage"
+      "name": "Andromon-1.0.5-x86_64.AppImage",
+      "size": 128683009,
+      "sha256": "e65dfb1826fa67da599c8b82bd5d4978e8b2edcb3050086968e192f4f1c4b6b5",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-1.0.5-x86_64.AppImage"
     },
     {
       "platform": "android",
       "arch": "",
       "kind": "apk",
-      "name": "Andromon-Companion-1.0.4.apk",
-      "size": 1469816,
-      "sha256": "cf31d3e052d75764a325e2dc757c468ea49a5563127bc0d75b8e7ee58be02867",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Companion-1.0.4.apk"
+      "name": "Andromon-Companion-1.0.5.apk",
+      "size": 1475436,
+      "sha256": "874b469d708cf8bf800155f14b605a71a3d70f87a231a0bf636d488f11a06b7d",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-Companion-1.0.5.apk"
     },
     {
       "platform": "windows",
       "arch": "arm64",
       "kind": "exe",
-      "name": "Andromon-Setup-1.0.4-arm64.exe",
-      "size": 117779852,
-      "sha256": "0c2ac74328df0fd10e247821edf0fa1096a484d9106521c360ca33bd97a5a601",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Setup-1.0.4-arm64.exe"
+      "name": "Andromon-Setup-1.0.5-arm64.exe",
+      "size": 117785205,
+      "sha256": "9abe379e513a4beefc1138fd63a54ef6789177ac6bd19e7d304d9b4cfffc815a",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-Setup-1.0.5-arm64.exe"
     },
     {
       "platform": "windows",
       "arch": "ia32",
       "kind": "exe",
-      "name": "Andromon-Setup-1.0.4-ia32.exe",
-      "size": 101885575,
-      "sha256": "d6b83a583251e86c719f2c2caee0b41480805259187a13d7231af33e8691c3e2",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Setup-1.0.4-ia32.exe"
+      "name": "Andromon-Setup-1.0.5-ia32.exe",
+      "size": 101890549,
+      "sha256": "82adfe5c6ee1ef6b470e1b43a9fc40698e863592e7bd1f38ec90d73a09aeffb8",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-Setup-1.0.5-ia32.exe"
     },
     {
       "platform": "windows",
       "arch": "x64",
       "kind": "exe",
-      "name": "Andromon-Setup-1.0.4-x64.exe",
-      "size": 123707327,
-      "sha256": "d19c355e22b47eff1cd82f12433dea6ee873083350a3b4f52efa75585dbb919d",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Setup-1.0.4-x64.exe"
+      "name": "Andromon-Setup-1.0.5-x64.exe",
+      "size": 123712632,
+      "sha256": "7a550a620cd3b4757727fb73891435cdfa1bb16a6def4d93feb8412aa807b775",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-Setup-1.0.5-x64.exe"
     },
     {
       "platform": "windows",
       "arch": "",
       "kind": "exe",
-      "name": "Andromon-Setup-1.0.4.exe",
-      "size": 240694408,
-      "sha256": "87833e3d101d56f1e3ca09729f3c1abbea01dc873e9720838a6304e46afb99ce",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Setup-1.0.4.exe"
+      "name": "Andromon-Setup-1.0.5.exe",
+      "size": 240704986,
+      "sha256": "d6860ecb7f3cfa250ec93be9ba8ab614b7c38141caa13ead717fd1303de7e365",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-Setup-1.0.5.exe"
     },
     {
       "platform": "web",
       "arch": "",
       "kind": "zip",
-      "name": "Andromon-Web-1.0.4.zip",
-      "size": 2175290,
-      "sha256": "bc80cac4647a3dedc216a5915b4b9ac3efcb5f2d576c3193044d330861c6c8d6",
-      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.4/Andromon-Web-1.0.4.zip"
+      "name": "Andromon-Web-1.0.5.zip",
+      "size": 2180944,
+      "sha256": "67cb77e7b934dd6de5cf233e93244facabb1c70aea2d59036436c16b849efbf1",
+      "url": "https://github.com/Deshan555/Andromon_Releases/releases/download/v1.0.5/Andromon-Web-1.0.5.zip"
     }
   ]
 }

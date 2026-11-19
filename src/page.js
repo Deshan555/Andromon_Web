@@ -191,6 +191,20 @@ function fileLabel(f) {
   if (f.platform === 'android') return 'APK';
   return f.name;
 }
+// The exact version a card offers, from latest.json: the desktop app's for Windows, macOS and Linux, the
+// phone app's own ("companion") for Android. Also sent to the browser as text, so plain ES5.
+function versionOf(m, os) {
+  if (!m) return '';
+  if (os === 'android') {
+    var c = m.companion || {};
+    return 'Andromon Companion ' + (c.version || m.version) + (c.build ? ' (build ' + c.build + ')' : '');
+  }
+  return 'Andromon ' + m.version + (m.build ? ' (build ' + m.build + ')' : '');
+}
+// The line under a card's button: which version and build, for which CPU, and how big.
+function pickText(m, f, yours) {
+  return (yours ? (f.platform === 'android' ? 'For this phone: ' : 'For this computer: ') : '') + versionOf(m, f.platform) + ' · ' + fileLabel(f) + ' · ' + Math.round(f.size / 1e6) + ' MB';
+}
 // The file a card's button offers for a CPU type (x64, arm64, ia32, or '' when unknown).
 function pickFile(files, os, cpu) {
   var mine = files.filter(function (f) { return f.platform === os; });
@@ -201,6 +215,17 @@ function pickFile(files, os, cpu) {
     || (os === 'mac' && want === 'arm64' ? mine.filter(function (f) { return f.arch === 'x64'; })[0] : null)
     || mine[0] || null;
 }
+
+// "Version 1.0.5 (build 5), released 19 November 2026. Phone app 1.0.5 (build 11)." (ES5: also in the browser)
+function versionLine(m) {
+  var c = m.companion, when = new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  return 'Version ' + m.version + (m.build ? ' (build ' + m.build + ')' : '') + ', released ' + when + '.' +
+    (c && c.version ? ' Phone app ' + c.version + (c.build ? ' (build ' + c.build + ')' : '') + '.' : '');
+}
+
+// The manifest without its change lists, for the browser script.
+const slim = (m) => ({ version: m.version, build: m.build, date: m.date,
+  companion: m.companion ? { version: m.companion.version, versionCode: m.companion.versionCode, build: m.companion.build } : null, files: m.files });
 
 function downloads(ctx) {
   const { site, content, release } = ctx;
@@ -217,12 +242,11 @@ function downloads(ctx) {
           <p>${esc(os.note)}</p>
           ${os.more ? `<p class="more">${esc(os.more)}</p>` : ''}
           <a class="btn" data-primary href="${esc(first ? first.url : site.releases)}" rel="noopener">${icon('download')}<span>${first ? `Download for ${os.name}` : `Get it for ${os.name}`}</span></a>
-          <p class="pick">${first ? `${esc(fileLabel(first))} · ${mb(first.size)}` : ''}</p>
+          <p class="pick">${first ? esc(pickText(release, first, false)) : ''}</p>
           ${list}
         </li>`;
   }).join('\n        ');
-  const when = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
-  const version = release ? `Version ${esc(release.version)}, released ${when(release.date)}. ` : '';
+  const version = release ? esc(versionLine(release)) + ' ' : '';
   const renamed = site.appName && site.appName !== site.name
     ? ` The installers and the app window still carry the name ${esc(site.appName)}; it is the same app.` : '';
   return `<section class="download" id="download" aria-labelledby="download-h">
@@ -290,10 +314,13 @@ var n=navigator,ua=n.userAgent,p=((n.userAgentData&&n.userAgentData.platform)||n
 var NAME={windows:'Windows',mac:'macOS',linux:'Linux',android:'Android'};
 ${fileLabel.toString()}
 ${pickFile.toString()}
+${versionOf.toString()}
+${pickText.toString()}
+${versionLine.toString()}
 var os=/Android/i.test(ua)?'android':/iPhone|iPad|iPod/i.test(ua)?'':/Win/i.test(p)?'windows':/Mac/i.test(p)?'mac':/Linux|X11|CrOS/i.test(p)?'linux':'';
 var cpu=/aarch64|arm64|armv8/i.test(ua)?'arm64':/WOW64|Win64|x64|x86_64|amd64/i.test(ua)?'x64':os==='windows'?'ia32':'';
 if(os==='mac'){cpu='arm64';try{var g=d.createElement('canvas').getContext('webgl'),e=g&&g.getExtension('WEBGL_debug_renderer_info'),r=e?g.getParameter(e.UNMASKED_RENDERER_WEBGL):'';if(/Intel|AMD|Radeon|NVIDIA/i.test(r))cpu='x64'}catch(x){}}
-var files=${JSON.stringify(ctx.release ? ctx.release.files : null).replace(/</g, '\\u003c')},ver=null;
+var rel=${JSON.stringify(ctx.release ? slim(ctx.release) : null).replace(/</g, '\\u003c')},files=rel&&rel.files;
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
 function mb(b){return Math.round(b/1e6)+' MB'}
 function paint(){
@@ -302,12 +329,12 @@ function paint(){
     ul.innerHTML=mine.map(function(f){return '<li><a href="'+esc(f.url)+'" rel="noopener">'+esc(fileLabel(f))+'</a> <span>'+mb(f.size)+'</span></li>'}).join('')});
   [].forEach.call(d.querySelectorAll('.os [data-os]'),function(li){var o=li.getAttribute('data-os'),yours=o===os,f=files&&pickFile(files,o,yours?cpu:''),a=li.querySelector('[data-primary]'),pk=li.querySelector('.pick');
     li.classList.toggle('is-yours',yours);
-    if(f&&a){a.href=f.url;a.lastChild.textContent='Download for '+NAME[o];if(pk)pk.textContent=(yours&&o!=='android'?'For this computer: ':'')+fileLabel(f)+' · '+mb(f.size)}});
+    if(f&&a){a.href=f.url;a.lastChild.textContent='Download for '+NAME[o];if(pk)pk.textContent=pickText(rel,f,yours)}});
   if(os&&NAME[os])[].forEach.call(d.querySelectorAll('[data-dl]'),function(e){e.textContent='Download for '+NAME[os]});
-  if(ver){var v=d.querySelector('[data-version]');if(v)v.textContent='Version '+ver.version+', released '+new Date(ver.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})+'. '}
+  if(rel){var v=d.querySelector('[data-version]');if(v)v.textContent=versionLine(rel)+' '}
 }
 function go(){paint();if(!d.querySelector('.os'))return;
-  if(${JSON.stringify(!!ctx.site.latestJson)})fetch(${JSON.stringify(ctx.site.latestJson || '')},{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(m){if(m&&m.files&&m.files.length){files=m.files;ver=m;paint()}}).catch(function(){})}
+  if(${JSON.stringify(!!ctx.site.latestJson)})fetch(${JSON.stringify(ctx.site.latestJson || '')},{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).then(function(m){if(m&&m.version&&m.files&&m.files.length){rel=m;files=m.files;paint()}}).catch(function(){})}
 if(n.userAgentData&&n.userAgentData.getHighEntropyValues&&os!=='android'&&os!=='mac')n.userAgentData.getHighEntropyValues(['architecture','bitness']).then(function(h){if(h.architecture==='arm')cpu='arm64';else if(h.architecture==='x86')cpu=h.bitness==='32'?'ia32':'x64'}).catch(function(){}).then(done);else done();
 function done(){if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',go);else go()}
 })();`;
