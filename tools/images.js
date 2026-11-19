@@ -5,7 +5,7 @@
 //   static/img/wordmark-*.webp the logo with the name (static/assets/logo.png), for the header and footer
 //   static/img/icon-*.png    favicon, touch icon and manifest icons
 //   static/favicon.ico
-//   static/img/og.png        1200x630 picture for link previews
+//   static/img/og.png        1200x630 picture for link previews (og-android.png for /android/)
 //   static/img/images.json   sizes, read by build.js
 // Needs cwebp and ImageMagick (brew install webp imagemagick); og.png also needs
 // Google Chrome. Run again whenever the screenshots change:  npm run images
@@ -125,10 +125,19 @@ h1{font-weight:400;font-size:58px;line-height:1.1;letter-spacing:-.02em;margin:5
 p{font-size:25px;margin:26px 0 0;color:#3d3e40}
 .s{position:absolute;left:610px;top:96px;width:900px;border-radius:22px;box-shadow:0 40px 80px -30px rgba(41,42,44,.55)}
 </style><div class="t"><div class="b"><img src="${u(ICON)}">${site.name}</div><h1>${site.tagline}</h1><p>Windows · macOS · Linux</p></div><img class="s" src="${u(path.join(OUT, 'overview-1600.webp'))}">`;
-  const page = path.join(tmp, 'og.html');
-  fs.writeFileSync(page, html);
-  run(chrome, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1', '--window-size=1200,630',
-    '--virtual-time-budget=3000', `--user-data-dir=${path.join(tmp, 'chrome')}`, `--screenshot=${path.join(OUT, 'og.png')}`, u(page)]);
+  const shoot = (name, markup) => {
+    const page = path.join(tmp, name + '.html');
+    fs.writeFileSync(page, markup);
+    run(chrome, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1', '--window-size=1200,630',
+      '--virtual-time-budget=3000', `--user-data-dir=${path.join(tmp, 'chrome')}`, `--screenshot=${path.join(OUT, name + '.png')}`, u(page)]);
+    console.log((name + '.png').padEnd(15) + (fs.statSync(path.join(OUT, name + '.png')).size / 1024).toFixed(0) + ' KB');
+  };
+  shoot('og', html);
+  // The Android page's own preview: the same card, with three of the phone app's screens.
+  const phone = (k) => u(path.join(OUT, `phone-${k}-540.webp`));
+  shoot('og-android', html
+    .replace(/<h1>[^<]*<\/h1><p>[^<]*<\/p>/, '<h1>The phone-care app that links Android to your computer</h1><p>Free · no ads · no account</p>')
+    .replace(/<img class="s"[^>]*>/, `<div class="ph"><img src="${phone('home')}"><img src="${phone('cleaner')}"><img src="${phone('battery')}"></div>`)
+    .replace('</style>', '.ph{position:absolute;left:610px;top:70px;display:flex;gap:16px;align-items:flex-start}.ph img{width:170px;border:5px solid #111;border-radius:26px;background:#000;box-shadow:0 30px 60px -24px rgba(41,42,44,.55)}.ph img:nth-child(2){margin-top:46px}h1{font-size:50px}</style>'));
   fs.rmSync(tmp, { recursive: true, force: true });
-  console.log('og.png         ' + (fs.statSync(path.join(OUT, 'og.png')).size / 1024).toFixed(0) + ' KB');
 }

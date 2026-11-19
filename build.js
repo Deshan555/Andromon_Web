@@ -19,6 +19,10 @@ site.url = (process.env.SITE_URL || (/\/\/example\.com/.test(site.url) && netlif
 const base = new URL(site.url + '/').pathname; // "/" or "/sub/path/"
 const abs = (p) => site.url + '/' + p;
 const placeholder = /\/\/example\.com/.test(site.url);
+// Netlify deploy previews and branch deploys are copies of the site at other addresses: keep them out
+// of search results (Settings: seo.indexPreviewDeploys), so only the real site is indexed.
+const previewDeploy = !!process.env.CONTEXT && process.env.CONTEXT !== 'production' && !(site.seo || {}).indexPreviewDeploys;
+const attr = (t) => String(t).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 // The newest release, as the desktop app's build records it.
 // The repo keeps its own copy (release.json, refreshed by npm run sync) so hosts that build from
@@ -72,18 +76,66 @@ if (guide) {
   const to = path.join(DIST, 'guide');
   fs.cpSync(guideSrc, to, { recursive: true, filter: (p) => !/build\.js$|\.DS_Store$/.test(p) });
   const file = path.join(to, 'index.html');
-  fs.writeFileSync(file, read(file).replace('<link rel="icon"', `<link rel="canonical" href="${abs('guide/')}">\n<link rel="icon"`));
+  // The guide is made by ../user-guide/build.js for reading on its own; give it the same search and
+  // link-preview details as the other pages.
+  const gTitle = `${site.name} User Guide: Every Page and Option Explained`;
+  const gDesc = `How to use ${site.name} on Windows, Mac and Linux and its Android companion app: connecting, messages, files, mirroring, backup and every setting.`;
+  const meta = [
+    `<link rel="canonical" href="${abs('guide/')}">`,
+    `<meta name="robots" content="index, follow, max-image-preview:large">`,
+    `<meta property="og:type" content="article">`, `<meta property="og:site_name" content="${attr(site.name)}">`,
+    `<meta property="og:title" content="${attr(gTitle)}">`, `<meta property="og:description" content="${attr(gDesc)}">`,
+    `<meta property="og:url" content="${abs('guide/')}">`, `<meta property="og:image" content="${abs('img/og.png')}">`,
+    `<meta property="og:image:width" content="1200">`, `<meta property="og:image:height" content="630">`,
+    `<meta name="twitter:card" content="summary_large_image">`, `<meta name="twitter:image" content="${abs('img/og.png')}">`,
+    `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'TechArticle', headline: gTitle, description: gDesc, url: abs('guide/'),
+      about: { '@id': abs('') + '#app' }, publisher: { '@id': abs('') + '#org' }, inLanguage: site.lang }).replace(/</g, '\\u003c')}</script>`,
+  ].join('\n');
+  fs.writeFileSync(file, read(file)
+    .replace(/<title>[^<]*<\/title>/, `<title>${attr(gTitle)}</title>`)
+    .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(gDesc)}">`)
+    .replace('<link rel="icon"', meta + '\n<link rel="icon"'));
 }
 
+// Sitemap. lastmod is when the files behind a page last changed in git (a build alone doesn't change
+// a page), and each page lists its screenshots so they can show in image search.
+const changed = (...files) => {
+  try { return require('child_process').execFileSync('git', ['log', '-1', '--format=%cs', '--', ...files], { cwd: WEB, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return ''; }
+};
 const today = new Date().toISOString().slice(0, 10);
-const pages = [{ loc: abs(''), priority: '1.0' }, { loc: abs('android/'), priority: '0.9' }, { loc: abs('compare/'), priority: '0.8' }, ...(guide ? [{ loc: abs('guide/'), priority: '0.7' }] : [])];
+const shot = (k) => abs('img/' + images[k].variants.slice(-1)[0].file);
+const common = ['src/page.js', 'src/style.css', 'site.config.json'];
+const pages = [
+  { loc: abs(''), priority: '1.0', files: [...common, 'src/content.js', 'static/img'], images: ['overview', 'mirror', 'messages', 'photos', 'apps'].map(shot) },
+  { loc: abs('android/'), priority: '0.9', files: [...common, 'src/content.js', 'static/img'], images: ['phone-home', 'phone-cleaner', 'phone-battery', 'phone-transfer', 'phone-stats'].map(shot) },
+  { loc: abs('compare/'), priority: '0.8', files: [...common, 'src/content.js'], images: [] },
+  ...(guide ? [{ loc: abs('guide/'), priority: '0.7', files: ['guide'], images: [] }] : []),
+];
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'),
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-  pages.map((p) => `  <url><loc>${p.loc}</loc><lastmod>${today}</lastmod><priority>${p.priority}</priority></url>`).join('\n') +
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n` +
+  pages.map((p) => `  <url><loc>${p.loc}</loc><lastmod>${changed(...p.files) || today}</lastmod><priority>${p.priority}</priority>` +
+    p.images.map((i) => `<image:image><image:loc>${i}</image:loc></image:image>`).join('') + `</url>`).join('\n') +
   `\n</urlset>\n`);
 
+// llms.txt: a short plain-text map of the site for AI assistants and answer engines (llmstxt.org).
+const content = ctx.content;
+fs.writeFileSync(path.join(DIST, 'llms.txt'), [
+  `# ${site.name}`, '', `> ${site.description}`, '',
+  `${site.name} is a free desktop app for Windows, macOS and Linux that manages an Android phone over USB or Wi‑Fi, with a companion app on the phone. No account and no root needed.`, '',
+  '## Pages', '',
+  `- [Home](${abs('')}): what ${site.name} does, downloads and questions and answers`,
+  `- [${site.name} Companion (Android app)](${abs('android/')}): the phone-care app that links the phone to the computer`,
+  `- [Compare](${abs('compare/')}): ${site.name} next to AirDroid, Phone Link, Vysor and scrcpy`,
+  ...(guide ? [`- [User guide](${abs('guide/')}): every page and option of both apps, with screenshots`] : []),
+  '', '## Questions', '',
+  ...content.faq.map(([q, a]) => `- ${q} ${a}`),
+  '', '## Links', '', `- [Releases](${site.releases})`, `- [Desktop app source](${site.repoPc})`, `- [Android app source](${site.repoAndroid})`, '',
+].join('\n'));
+
 fs.writeFileSync(path.join(DIST, 'robots.txt'),
-  placeholder
+  previewDeploy
+    ? '# A preview copy of the site: only the published site is indexed.\nUser-agent: *\nDisallow: /\n'
+    : placeholder
     ? '# The site address is still the placeholder: keep search engines out until it is set.\nUser-agent: *\nDisallow: /\n'
     : `User-agent: *\nAllow: /\n\nSitemap: ${abs('sitemap.xml')}\n`);
 
@@ -104,6 +156,7 @@ fs.writeFileSync(path.join(DIST, '_headers'), [
   '/site.webmanifest', '  Cache-Control: public, max-age=86400',
   '/sw.js', '  Cache-Control: no-cache',
   '/*', '  X-Content-Type-Options: nosniff', '  Referrer-Policy: strict-origin-when-cross-origin',
+  ...(previewDeploy ? ['  X-Robots-Tag: noindex'] : []),
 ].join('\n') + '\n');
 
 // Offline cache (sw.js, registered by every page). Its version is a hash of the built site, so each

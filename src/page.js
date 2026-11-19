@@ -52,8 +52,14 @@ const mb = (bytes) => Math.round(bytes / 1e6) + ' MB';
 const ld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`;
 
 // ctx: { site, content, release, css, base, abs(path), images, guide }
-function head(ctx, { title, description, canonical, index = true, extra = '' }) {
+function head(ctx, { title, description, canonical, index = true, extra = '', og = 'og.png', ogAlt = '' }) {
   const { site, base, abs } = ctx;
+  const seo = site.seo || {};
+  const verify = [
+    seo.googleSiteVerification && `<meta name="google-site-verification" content="${esc(seo.googleSiteVerification)}">`,
+    seo.bingSiteVerification && `<meta name="msvalidate.01" content="${esc(seo.bingSiteVerification)}">`,
+  ].filter(Boolean).map((m) => m + '\n').join('');
+  const handle = seo.twitter ? '@' + String(seo.twitter).replace(/^@/, '') : '';
   return `<!doctype html>
 <html lang="${site.lang}">
 <head>
@@ -67,6 +73,7 @@ ${index ? `<link rel="canonical" href="${canonical}">
 <meta name="theme-color" content="#E9E9E6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#151617" media="(prefers-color-scheme: dark)">
 <meta name="application-name" content="${esc(site.name)}">
+${verify}
 <link rel="icon" href="${base}favicon.ico" sizes="32x32">
 <link rel="icon" href="${base}img/icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="${base}img/apple-touch-icon.png">
@@ -79,14 +86,15 @@ ${extra}<meta property="og:type" content="website">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:image" content="${abs('img/og.png')}">
+<meta property="og:image" content="${abs('img/' + og)}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${esc(site.name + ': ' + site.tagline)}">
+<meta property="og:image:alt" content="${esc(ogAlt || site.name + ': ' + site.tagline)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
-<meta name="twitter:image" content="${abs('img/og.png')}">
+<meta name="twitter:image" content="${abs('img/' + og)}">
+${handle ? `<meta name="twitter:site" content="${esc(handle)}">\n` : ''}
 <style>${ctx.css}</style>
 `;
 }
@@ -591,7 +599,7 @@ function androidPage(ctx) {
       ${phone(s.img, s.alt, '(min-width: 861px) 290px, 70vw', ' shot')}
     </article>`).join('\n    ');
 
-  return head(ctx, { title: c.title, description: c.description, canonical: page, extra: data }) +
+  return head(ctx, { title: c.title, description: c.description, canonical: page, extra: data, og: 'og-android.png', ogAlt: `${site.name} Companion: the phone-care app that links Android to your computer` }) +
 `</head>
 <body>
 ${header(ctx, false)}

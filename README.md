@@ -34,11 +34,24 @@ Upload the contents of `dist/` to any static host (Cloudflare Pages, Netlify, Gi
 
 ## What is done for search engines
 
+**Settings** (`"seo"` in `site.config.json`):
+
+| Setting | What it does |
+|---|---|
+| `googleSiteVerification` | The code Google Search Console gives for the "HTML tag" method; added as `google-site-verification` on every page |
+| `bingSiteVerification` | The same for Bing Webmaster Tools (`msvalidate.01`) |
+| `twitter` | Your X/Twitter handle, for `twitter:site` on link previews |
+| `indexPreviewDeploys` | Leave `false`: Netlify deploy previews and branch deploys are then kept out of search results (`robots.txt` and `X-Robots-Tag: noindex`), so only the published site is indexed |
+
+
 - **Title and description** written around what people search for ("Android phone manager", Windows, Mac, Linux). The build fails if the title passes 60 characters or the description 160.
 - **One `<h1>`**, and section headings that match searches: mirror Android screen to PC, send text messages from computer, transfer files between Android and PC, remove bloatware without root, how to connect an Android phone to a computer.
 - **Structured data** (JSON-LD): `SoftwareApplication` (free, operating systems, version from `pc/latest.json`, screenshots, feature list), `FAQPage` from the same questions shown on the page, `WebSite` and `Organization`. No ratings or review counts are claimed.
 - **Canonical address, Open Graph and Twitter tags**, with a 1200×630 preview picture.
-- **`sitemap.xml`, `robots.txt`, web manifest, favicons, a `404.html`** that is marked noindex.
+- **`sitemap.xml`** with each page's screenshots (image sitemap) and the date its files last changed in git, **`robots.txt`**, web manifest, favicons, a `404.html` that is marked noindex.
+- **Link previews per page**: `og.png` for the homepage, Compare and the guide, `og-android.png` for the Android page (both made by `npm run images`).
+- **The user guide** (`/guide/`) gets its own title, description, canonical address, link-preview tags and `TechArticle` structured data at build time.
+- **`llms.txt`**: a short plain-text map of the site and its questions and answers, for AI assistants and answer engines.
 - **Speed**: CSS is inlined, there is no framework and no third-party request, fonts are self-hosted and preloaded, screenshots are WebP in two widths with `srcset`, the first picture is preloaded and the rest load lazily, and every picture has its width and height so the page doesn't jump.
 - **Accessibility**: alt text on every picture (checked by the build), a skip link, visible keyboard focus, questions as native `<details>`, reduced-motion respected.
 - **A Compare page** at `/compare/` ("Andromon vs AirDroid, Phone Link, Vysor and scrcpy"), linked from the menu and footer, with breadcrumb structured data and the same build checks as the homepage. Check competitors' sites before changing a mark; the page says when it was last checked (`asOf`).
