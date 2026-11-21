@@ -13,6 +13,7 @@
   "releases": "https://github.com/Deshan555/Andromon_Releases/releases",
   "latestJson": "https://raw.githubusercontent.com/Deshan555/Andromon_Releases/master/latest.json",
   "preview": "https://preandroidmon.netlify.app/",
+  "goatcounter": "https://andromon.goatcounter.com/count",
   "directDownloads": true,
   "includeGuide": true,
   "seo": {

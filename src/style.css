@@ -444,9 +444,7 @@ img.sk { background-color: var(--line); background-image: linear-gradient(100deg
   @keyframes sk { from { background-position: 120% 0; } to { background-position: -120% 0; } }
 }
 
-/* ---------- Download stats (/stats/, linked from the footer's "dev" tag) ---------- */
-.dev-tag { display: inline-block; margin-left: 8px; padding: 0 8px; border: 1px solid #45464A; border-radius: 999px; font-size: .72rem; line-height: 1.6; letter-spacing: .06em; text-transform: uppercase; color: var(--dark-soft); vertical-align: 1px; }
-footer .dev-tag:hover { color: #292A2C; background: var(--lime); border-color: var(--lime); text-decoration: none; }
+/* ---------- Download stats (/stats/) ---------- */
 .st-hero { text-align: left; padding-bottom: 8px; }
 .st-hero h1, .st-hero .lead { margin-inline: 0; }
 .st-hero .lead a { color: var(--accent); text-underline-offset: 3px; }

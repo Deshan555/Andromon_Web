@@ -51,7 +51,8 @@ const css = read(path.join(WEB, 'src/style.css'))
 const guideSrc = [path.join(WEB, 'guide'), path.join(ROOT, 'user-guide')].find((d) => fs.existsSync(path.join(d, 'index.html'))) || path.join(WEB, 'guide');
 const guide = !!site.includeGuide && fs.existsSync(path.join(guideSrc, 'index.html'));
 
-const ctx = { site, content: require('./src/content')(site), release, css, base, abs, images, guide };
+const ctx = { site, content: require('./src/content')(site), release, css, base, abs, images, guide,
+  analytics: !previewDeploy && site.goatcounter ? site.goatcounter : '' };
 const { home, notFound, compare, androidPage, statsPage } = require('./src/page');
 
 // ---------- write ----------
@@ -70,7 +71,7 @@ fs.writeFileSync(path.join(DIST, 'compare/index.html'), compareHtml);
 const androidHtml = androidPage(ctx);
 fs.mkdirSync(path.join(DIST, 'android'), { recursive: true });
 fs.writeFileSync(path.join(DIST, 'android/index.html'), androidHtml);
-// Download stats for the developer: not in the sitemap, not indexed (the footer's "dev" tag links to it).
+// Download stats for the developer at /stats/: not linked, not in the sitemap, not indexed, not counted.
 const statsHtml = statsPage(ctx);
 fs.mkdirSync(path.join(DIST, 'stats'), { recursive: true });
 fs.writeFileSync(path.join(DIST, 'stats/index.html'), statsHtml);
@@ -94,6 +95,8 @@ if (guide) {
     `<meta name="twitter:card" content="summary_large_image">`, `<meta name="twitter:image" content="${abs('img/og.png')}">`,
     `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'TechArticle', headline: gTitle, description: gDesc, url: abs('guide/'),
       about: { '@id': abs('') + '#app' }, publisher: { '@id': abs('') + '#org' }, inLanguage: site.lang }).replace(/</g, '\\u003c')}</script>`,
+    // Visit counts, as on the other pages (see analytics() in src/page.js).
+    ...(ctx.analytics ? [`<script data-goatcounter="${attr(ctx.analytics)}" async src="https://gc.zgo.at/count.js"></script>`] : []),
   ].join('\n');
   // On the website the logo in the guide's top bar goes to the home page (on its own it goes to the top).
   const html = read(file);

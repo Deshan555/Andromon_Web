@@ -27,7 +27,9 @@ The download section (`downloads()` in `src/page.js`) is built from `release.jso
 
 `"releases"` is where "all files" and the structured data point.
 
-**Download stats** are at `/stats/` (`statsPage()` in `src/page.js`), linked from the small **dev** tag at the end of the footer. The page isn't in the sitemap and tells search engines not to index it. It reads GitHub's own per-file download counts for the `"releases"` repository in the browser, so it needs no build step, server or tracking. GitHub allows 60 of these checks an hour per network, so a result is kept for 5 minutes (**Refresh** skips that). Totals leave out the checksums, changelog and `latest.json`.
+**Download stats** are at `/stats/` (`statsPage()` in `src/page.js`). Nothing on the site links to it, so open it directly. The page isn't in the sitemap, tells search engines not to index it, and isn't counted by GoatCounter. It reads GitHub's own per-file download counts for the `"releases"` repository in the browser, so it needs no build step, server or tracking. GitHub allows 60 of these checks an hour per network, so a result is kept for 5 minutes (**Refresh** skips that). Totals leave out the checksums, changelog and `latest.json`.
+
+**Visits and countries** come from [GoatCounter](https://www.goatcounter.com) (`"goatcounter"` in `site.config.json`, the address of the site's `/count` endpoint; leave it empty to turn it off). It sets no cookies and stores nothing personal, so there's no consent banner. Every page and the user guide load it, except `/stats/`. Netlify preview deploys leave it out, and it ignores `localhost`. A click on any release file (the download buttons) is counted as an event named `download/<file>`, so the dashboard at https://andromon.goatcounter.com shows which files are taken and from which countries. It only sees downloads started on this site, not ones from GitHub or the app's update check.
 
 ## Where things are
 

@@ -60,7 +60,15 @@ const mb = (bytes) => Math.round(bytes / 1e6) + ' MB';
 const ld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`;
 
 // ctx: { site, content, release, css, base, abs(path), images, guide }
-function head(ctx, { title, description, canonical, index = true, extra = '', og = 'og.png', ogAlt = '' }) {
+// Visit counts (GoatCounter, "goatcounter" in site.config.json): no cookies, nothing personal stored, so no
+// consent banner. Left out of Netlify preview deploys; count.js itself ignores localhost. Clicks on a
+// release file (the download buttons) are counted as events named download/<file>, so the dashboard
+// shows which files people take and from which countries.
+const DL_EVENTS = `document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href*="/releases/download/"]');if(!a)return;var f=decodeURIComponent(a.href.split('/').pop().split('?')[0]),gc=window.goatcounter;if(gc&&gc.count)gc.count({path:'download/'+f,title:'Download '+f,event:true})});`;
+const analytics = (ctx) => ctx.analytics
+  ? `<script data-goatcounter="${esc(ctx.analytics)}" async src="https://gc.zgo.at/count.js"></script>\n<script>${DL_EVENTS}</script>\n` : '';
+
+function head(ctx, { title, description, canonical, index = true, extra = '', og = 'og.png', ogAlt = '', track = true }) {
   const { site, base, abs } = ctx;
   const seo = site.seo || {};
   const verify = [
@@ -104,7 +112,7 @@ ${extra}<meta property="og:type" content="website">
 <meta name="twitter:image" content="${abs('img/' + og)}">
 ${handle ? `<meta name="twitter:site" content="${esc(handle)}">\n` : ''}
 <style>${ctx.css}</style>
-`;
+${track ? analytics(ctx) : ''}`;
 }
 
 // The logo with the name in it (static/assets/logo.png, made into WebP by npm run images).
@@ -167,7 +175,7 @@ function footer(ctx) {
         </ul>
       </div>
     </nav>
-    <p class="legal">© ${new Date().getFullYear()} ${esc(site.name)}. Android is a trademark of Google LLC. Windows, macOS and Linux are trademarks of their owners. <a class="dev-tag" href="${base}stats/" rel="nofollow" title="Download stats">dev</a></p>
+    <p class="legal">© ${new Date().getFullYear()} ${esc(site.name)}. Android is a trademark of Google LLC. Windows, macOS and Linux are trademarks of their owners.</p>
   </div>
 </footer>`;
 }
@@ -818,7 +826,7 @@ ${footer(ctx)}
 }
 
 
-// ---------- /stats/: download counts for the developer (noindex, linked from the "dev" tag in the footer) ----------
+// ---------- /stats/: download counts for the developer (noindex, not linked from the site; open /stats/ directly) ----------
 // The counts are GitHub's own per-file download counters, read live from the releases API in the
 // browser (no build step, no server, nothing about visitors is collected). GitHub allows 60 API calls an
 // hour per network without signing in, so a result is kept in sessionStorage for 5 minutes; Refresh
@@ -872,7 +880,7 @@ function statsPage(ctx) {
   const { site, abs } = ctx;
   const repo = (String(site.releases).match(/github\.com\/([^/]+\/[^/]+)/) || [])[1];
   if (!repo) throw new Error('site.config.json: "releases" must be a GitHub releases address');
-  return head(ctx, { title: `Download stats | ${site.name}`, description: `How many times each ${site.name} release and file has been downloaded, live from GitHub.`, canonical: abs('stats/'), index: false }) +
+  return head(ctx, { title: `Download stats | ${site.name}`, description: `How many times each ${site.name} release and file has been downloaded, live from GitHub.`, canonical: abs('stats/'), index: false, track: false }) +
 `</head>
 <body>
 ${header(ctx, false)}
@@ -889,7 +897,7 @@ ${header(ctx, false)}
   <div class="wrap">
     <noscript><p class="lead">This page reads the counts from GitHub in the browser, so it needs JavaScript. The same numbers are in the <a href="https://api.github.com/repos/${repo}/releases">releases API</a>.</p></noscript>
     <div id="stats"></div>
-    <p class="cmp-note">Totals count the installers, the phone app and the web version. Checksums, the changelog and latest.json are listed but not counted. GitHub doesn't say where a download came from.</p>
+    ${ctx.site.goatcounter ? `<p class="cmp-note">Countries, visits and clicks on each download button: <a href="${esc(new URL(ctx.site.goatcounter).origin)}" rel="noopener">GoatCounter dashboard</a>.</p>\n    ` : ''}<p class="cmp-note">Totals count the installers, the phone app and the web version. Checksums, the changelog and latest.json are listed but not counted. GitHub doesn't say where a download came from.</p>
   </div>
 </section>
 </main>
