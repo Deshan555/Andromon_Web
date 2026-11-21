@@ -544,7 +544,7 @@ ${header(ctx, false)}
     </div>
   </div>
 </main>
-${feedbackWidget(ctx)}
+${feedbackWidget(ctx, { fab: false })}
 ${footer(ctx)}
 <script>${THEME_SCRIPT}</script>
 </body>
@@ -667,7 +667,7 @@ ${header(ctx, false)}
 </section>
 
 </main>
-${feedbackWidget(ctx)}
+${feedbackWidget(ctx, { fab: false })}
 ${footer(ctx)}
 <script>${OS_SCRIPT(ctx)}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
 </body>
@@ -823,7 +823,7 @@ ${header(ctx, false)}
 </section>
 
 </main>
-${feedbackWidget(ctx)}
+${feedbackWidget(ctx, { fab: false })}
 ${footer(ctx)}
 <script>${OS_SCRIPT(ctx)}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
 </body>
@@ -929,7 +929,9 @@ const releasesRepo = (site) => {
   return repo;
 };
 
-const FB_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+const FB_ICON = '<svg class="fbw-ic-msg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+
+const FB_X = '<svg class="fbw-ic-x" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
 
 function feedbackForm(ctx) {
   const ver = ctx.release ? ctx.release.version : '';
@@ -944,13 +946,13 @@ function feedbackForm(ctx) {
   <label class="fbw-field" data-only="bug"><span>What did you expect? <small>(optional)</small></span><textarea name="expected" rows="2"></textarea></label>
   <details class="fbw-env" open>
     <summary>About your setup <small>(nothing personal)</small></summary>
-    <label class="fbw-field"><span>Which part?</span><select name="where">
+    <div class="fbw-field"><span>Which part?</span><select name="where">
       <option>Desktop app (Windows, macOS, Linux)</option>
       <option>Phone app (Andromon Companion)</option>
       <option>Web version in the browser</option>
       <option>This website</option>
       <option value="">Not sure / everything</option>
-    </select></label>
+    </select></div>
     <div class="fbw-row">
       <label class="fbw-field"><span>Andromon version</span><input name="version" type="text" maxlength="40" value="${esc(ver)}" placeholder="e.g. 1.0.5"></label>
       <label class="fbw-field"><span>Computer system</span><input name="system" type="text" maxlength="80" placeholder="e.g. Windows 11"></label>
@@ -967,59 +969,84 @@ function feedbackForm(ctx) {
 }
 
 const FB_CSS = `
-.fbw-fab { position: fixed; right: 22px; bottom: 22px; z-index: 30; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px 0 16px; border: 0; border-radius: 999px;
-  background: var(--btn, var(--fab, #292A2C)); color: var(--btn-ink, var(--fab-ink, #fff)); font: 500 .95rem/1 Poppins, system-ui, sans-serif; cursor: pointer;
+.fbw-fab { position: fixed; right: 22px; bottom: 22px; z-index: 30; display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 18px 0 14px; border: 0; border-radius: 999px;
+  background: var(--btn, var(--fab, #292A2C)); color: var(--btn-ink, var(--fab-ink, #fff)); font: 500 13px/1 Poppins, system-ui, sans-serif; cursor: pointer;
   box-shadow: 0 16px 34px -14px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06); transition: transform .3s cubic-bezier(.22,1,.36,1), background-color .2s ease; }
 .fbw-fab:hover { transform: translateY(-2px); background: var(--btn-hover, var(--fab-hover, #000)); }
 .fbw-fab:focus-visible { outline: 3px solid var(--accent, #3F6A0A); outline-offset: 3px; }
-.fbw-guide .fbw-fab { bottom: 80px; } /* the user guide's back-to-top button sits below */
-@media (max-width: 600px) { .fbw-fab { right: 14px; bottom: 14px; width: 52px; min-height: 52px; padding: 0; justify-content: center; } .fbw-fab span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .fbw-guide .fbw-fab { bottom: 76px; } }
-@media print { .fbw-fab { display: none; } }
+.fbw-fab .fbw-ic-x, .fbw-fab[aria-expanded="true"] .fbw-ic-msg { display: none; }
+.fbw-fab[aria-expanded="true"] .fbw-ic-x { display: block; }
 .splashing .fbw-fab { visibility: hidden; }
-dialog.fbw { width: min(640px, calc(100% - 24px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 1px solid var(--line, #D9D9D5); border-radius: var(--r, 28px);
-  background: var(--card, #fff); color: var(--ink, #292A2C); box-shadow: 0 40px 80px -30px rgba(0,0,0,.6); overflow: auto; overscroll-behavior: contain; }
-dialog.fbw::backdrop { background: rgba(12,13,14,.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-dialog.fbw[open] { animation: fbw-in .38s cubic-bezier(.22,1,.36,1); }
-@keyframes fbw-in { from { opacity: 0; transform: translateY(18px) scale(.98); } }
-@media (prefers-reduced-motion: reduce) { dialog.fbw[open] { animation: none; } .fbw-fab { transition: none; } }
-@media (max-width: 600px) { dialog.fbw { width: 100%; max-width: 100%; margin: auto 0 0; max-height: calc(100dvh - 24px); border-radius: 24px 24px 0 0; border-bottom: 0; }
-  @keyframes fbw-in { from { transform: translateY(40%); opacity: .4; } } }
-.fbw-head { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 22px 12px 26px; background: var(--card, #fff); }
-.fbw-head h2 { margin: 0; font-size: 1.35rem; font-weight: 500; letter-spacing: -.01em; }
-.fbw-x { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--line, #D9D9D5); border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
-.fbw-x:hover { background: var(--surface, #F5F5F3); }
-.fbw-body { padding: 0 26px 24px; }
-.fbw-lead { margin: 0 0 16px; color: var(--soft, #56575A); font-size: .92rem; }
+/* The popup: a panel in the bottom-right corner, above the button */
+dialog.fbw { position: fixed; inset: auto 22px 80px auto; z-index: 31; margin: 0; width: 380px; max-width: calc(100vw - 44px); max-height: min(640px, calc(100vh - 110px)); padding: 0;
+  border: 1px solid var(--line, #D9D9D5); border-radius: 22px; background: var(--card, #fff); color: var(--ink, #292A2C); font: 12px/1.5 Poppins, system-ui, sans-serif;
+  box-shadow: 0 30px 70px -24px rgba(0,0,0,.55); overflow: auto; overscroll-behavior: contain; transform-origin: 100% 100%; }
+.fbw-root:not(.fbw-hasfab) dialog.fbw { bottom: 22px; max-height: calc(100vh - 44px); }
+dialog.fbw[open] { animation: fbw-in .3s cubic-bezier(.22,1,.36,1); }
+@keyframes fbw-in { from { opacity: 0; transform: translateY(10px) scale(.96); } }
+@media (prefers-reduced-motion: reduce) { dialog.fbw[open], .fbw-dd-list { animation: none; } .fbw-fab { transition: none; } }
+/* On phones there is no button or popup: the footer links open the /feedback/ page */
+@media (max-width: 600px) { .fbw-fab, dialog.fbw { display: none !important; } }
+@media print { .fbw-fab, dialog.fbw { display: none !important; } }
+.fbw-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 12px 8px 18px; background: var(--card, #fff); }
+.fbw-head h2 { margin: 0; font-size: 15px; font-weight: 500; letter-spacing: -.01em; }
+.fbw-x { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 50%; background: transparent; color: var(--soft, #56575A); cursor: pointer; }
+.fbw-x:hover { background: var(--surface, #F5F5F3); color: var(--ink, #292A2C); }
+.fbw-body { padding: 0 18px 18px; }
+.fbw-lead { margin: 0 0 12px; color: var(--soft, #56575A); }
+/* The form, here and on /feedback/: sizes follow its font size (12px in the popup) */
 .fbw-form { font-family: Poppins, system-ui, sans-serif; }
+.fb-card .fbw-form { font-size: 15px; }
 .fbw-form [hidden] { display: none; }
-.fbw-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-.fbw-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border: 1px solid var(--line, #D9D9D5); border-radius: 999px;
-  background: var(--card, #fff); color: var(--ink, #292A2C); font: 500 .95rem/1.2 Poppins, system-ui, sans-serif; cursor: pointer; }
+.fbw-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.2em; }
+.fbw-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 3.4em; padding: 0 1.5em; border: 1px solid var(--line, #D9D9D5); border-radius: 999px;
+  background: var(--card, #fff); color: var(--ink, #292A2C); font: 500 1em/1.2 Poppins, system-ui, sans-serif; cursor: pointer; }
 .fbw-btn:hover { background: var(--surface, #F5F5F3); }
-.fbw-sm { min-height: 40px; padding: 0 16px; font-size: .88rem; }
+.fbw-sm { min-height: 2.8em; padding: 0 1.1em; }
 .fbw-dark, .fbw-tabs [aria-pressed="true"] { background: var(--btn, var(--fab, #292A2C)); color: var(--btn-ink, var(--fab-ink, #fff)); border-color: transparent; }
 .fbw-dark:hover, .fbw-tabs [aria-pressed="true"]:hover { background: var(--btn-hover, var(--fab-hover, #000)); }
-.fbw-field { display: block; margin: 0 0 14px; min-width: 0; }
-.fbw-field > span { display: block; font-weight: 500; font-size: .9rem; margin: 0 0 6px 4px; }
-.fbw-form small { color: var(--soft, #56575A); font-weight: 400; }
-.fbw-field :is(input, textarea, select) { display: block; width: 100%; box-sizing: border-box; padding: 11px 16px; border: 1px solid var(--line, #D9D9D5); border-radius: 16px;
-  background: var(--surface, #F5F5F3); color: var(--ink, #292A2C); font: inherit; font-size: 1rem; }
+.fbw-field { display: block; margin: 0 0 1em; min-width: 0; }
+.fbw-field > span { display: block; font-weight: 500; margin: 0 0 .4em .3em; }
+.fbw-form small { color: var(--soft, #56575A); font-weight: 400; font-size: 1em; }
+.fbw-field :is(input, textarea, select) { display: block; width: 100%; box-sizing: border-box; padding: .75em 1.1em; border: 1px solid var(--line, #D9D9D5); border-radius: 14px;
+  background: var(--surface, #F5F5F3); color: var(--ink, #292A2C); font: inherit; }
 .fbw-field :is(input, select) { border-radius: 999px; }
 .fbw-field textarea { resize: vertical; min-height: 3.2em; }
 .fbw-field :is(input, textarea, select):focus { outline: 2px solid var(--accent, #3F6A0A); outline-offset: 1px; }
 .fbw-field [aria-invalid="true"] { border-color: #d9443f; outline: 2px solid #d9443f; }
 .fbw-field :is(input, textarea)::placeholder { color: var(--soft, #56575A); opacity: .8; }
-.fbw-env { border-top: 1px solid var(--line, #D9D9D5); margin: 6px 0 0; padding: 14px 0 0; }
-.fbw-env summary { cursor: pointer; font-weight: 500; margin: 0 0 12px 4px; }
-.fbw-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 12px; }
+.fbw-env { border-top: 1px solid var(--line, #D9D9D5); margin: .4em 0 0; padding: 1em 0 0; }
+.fbw-env summary { cursor: pointer; font-weight: 500; margin: 0 0 .9em .3em; }
+.fbw-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 10px; }
+dialog.fbw .fbw-row { grid-template-columns: 1fr 1fr; }
+dialog.fbw .fbw-row > :last-child { grid-column: 1 / -1; }
 @media (max-width: 680px) { .fbw-row { grid-template-columns: 1fr; } }
-.fbw-note { color: var(--soft, #56575A); font-size: .85rem; line-height: 1.5; margin: 2px 0 16px; }
-.fbw-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
-.fbw-msg { flex-basis: 100%; margin: 0; color: var(--soft, #56575A); font-size: .88rem; }
+.fbw-note { color: var(--soft, #56575A); line-height: 1.5; margin: .2em 0 1.2em; }
+.fbw-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.fbw-msg { flex-basis: 100%; margin: 0; color: var(--soft, #56575A); }
+/* The dropdown (made from the <select> by the script; without JavaScript the <select> shows) */
+.fbw-dd { position: relative; }
+.fbw-dd > select { display: none; }
+.fbw-dd-btn { display: flex; align-items: center; justify-content: space-between; gap: .6em; width: 100%; padding: .75em .9em .75em 1.1em; border: 1px solid var(--line, #D9D9D5); border-radius: 999px;
+  background: var(--surface, #F5F5F3); color: var(--ink, #292A2C); font: inherit; text-align: left; cursor: pointer; transition: border-color .15s ease; }
+.fbw-dd-btn:hover { border-color: var(--soft, #56575A); }
+.fbw-dd-btn:focus-visible, .fbw-dd-btn[aria-expanded="true"] { outline: 2px solid var(--accent, #3F6A0A); outline-offset: 1px; }
+.fbw-dd-btn > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fbw-dd-btn svg { flex: none; color: var(--soft, #56575A); transition: transform .2s ease; }
+.fbw-dd-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.fbw-dd-list { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 5; margin: 0; padding: 5px; list-style: none; max-height: 18em; overflow: auto;
+  background: var(--card, #fff); border: 1px solid var(--line, #D9D9D5); border-radius: 16px; box-shadow: 0 18px 40px -16px rgba(0,0,0,.45); animation: fbw-dd .16s ease-out; }
+.fbw-dd.up .fbw-dd-list { top: auto; bottom: calc(100% + 6px); }
+@keyframes fbw-dd { from { opacity: 0; transform: translateY(-4px); } }
+.fbw-dd-list [role="option"] { display: flex; align-items: center; gap: .6em; padding: .65em .8em; border-radius: 10px; cursor: pointer; }
+.fbw-dd-list [role="option"].on { background: var(--surface, #F5F5F3); }
+.fbw-dd-list [role="option"][aria-selected="true"] { font-weight: 500; }
+.fbw-dd-list [role="option"] svg { flex: none; color: var(--accent, #3F6A0A); visibility: hidden; }
+.fbw-dd-list [role="option"][aria-selected="true"] svg { visibility: visible; }
 .fb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: clamp(20px, 4vw, 32px); }
 `;
 
-// Wires up every .fbw-form on the page, the floating button and popup (if there is one), and links to
+// Wires up every .fbw-form on the page, the popup and floating button (where there are), and links to
 // /feedback/ (the footer's), which open the popup instead of leaving the page.
 const FB_SCRIPT = (repo) => `(function(){
 var REPO='https://github.com/${repo}',MAX=7000,d=document;
@@ -1060,27 +1087,67 @@ function setup(f,onPage){
   f.querySelector('[data-copy]').addEventListener('click',function(){if(!ok())return;
     (navigator.clipboard?navigator.clipboard.writeText(plain()):Promise.reject()).then(function(){say('Copied. Paste it into an e-mail or message.')},function(){say('Couldn\\'t copy. Select the text and copy it yourself.')})});
   f.setKind=setKind;setKind(onPage&&location.hash==='#feedback'?'feedback':'bug');
+  [].forEach.call(f.querySelectorAll('select'),dropdown);
+}
+// The modern dropdown: a button and a listbox in place of each <select>, which keeps the value.
+var ddN=0,CHEV='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
+  TICK='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+function dropdown(sel){
+  var id='fbw-dd-'+(++ddN)+'-'+Math.random().toString(36).slice(2,6),field=sel.parentNode,cap=field.querySelector('span');
+  var wrap=d.createElement('div');wrap.className='fbw-dd';field.insertBefore(wrap,sel);wrap.appendChild(sel);sel.tabIndex=-1;sel.setAttribute('aria-hidden','true');
+  var btn=d.createElement('button'),val=d.createElement('span'),list=d.createElement('ul');
+  btn.type='button';btn.className='fbw-dd-btn';btn.setAttribute('aria-haspopup','listbox');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls',id);
+  if(cap){cap.id=id+'-c';cap.addEventListener('click',function(){btn.focus()})}val.id=id+'-v';btn.setAttribute('aria-labelledby',(cap?cap.id+' ':'')+val.id);
+  btn.appendChild(val);btn.insertAdjacentHTML('beforeend',CHEV);
+  list.className='fbw-dd-list';list.id=id;list.setAttribute('role','listbox');list.hidden=true;if(cap)list.setAttribute('aria-labelledby',cap.id);
+  var act=0,opts=[].map.call(sel.options,function(o,i){var li=d.createElement('li'),t=d.createElement('span');li.setAttribute('role','option');li.id=id+'-'+i;
+    li.innerHTML=TICK;t.textContent=o.text;li.appendChild(t);
+    li.addEventListener('mousedown',function(e){e.preventDefault()});li.addEventListener('mousemove',function(){if(act!==i)hi(i,true)});
+    li.addEventListener('click',function(){pick(i);close(true)});list.appendChild(li);return li});
+  wrap.appendChild(btn);wrap.appendChild(list);
+  function sync(){val.textContent=sel.options[sel.selectedIndex].text;opts.forEach(function(li,i){li.setAttribute('aria-selected',String(i===sel.selectedIndex))})}
+  function hi(i,mouse){act=i;opts.forEach(function(li,j){li.classList.toggle('on',j===i)});btn.setAttribute('aria-activedescendant',opts[i].id);if(!mouse)opts[i].scrollIntoView({block:'nearest'})}
+  function pick(i){if(sel.selectedIndex!==i){sel.selectedIndex=i;sel.dispatchEvent(new Event('change',{bubbles:true}))}sync()}
+  function open(){if(!list.hidden)return;list.hidden=false;btn.setAttribute('aria-expanded','true');
+    var box=wrap.closest('dialog'),r=btn.getBoundingClientRect(),lo=box?box.getBoundingClientRect():{top:0,bottom:innerHeight},h=list.offsetHeight+12;
+    wrap.classList.toggle('up',r.bottom+h>lo.bottom&&r.top-h>lo.top);hi(sel.selectedIndex)}
+  function close(focus){if(list.hidden)return;list.hidden=true;btn.setAttribute('aria-expanded','false');btn.removeAttribute('aria-activedescendant');if(focus)btn.focus()}
+  btn.addEventListener('click',function(){if(list.hidden)open();else close()});
+  btn.addEventListener('keydown',function(e){var k=e.key,n=opts.length;
+    if(list.hidden){if(k==='ArrowDown'||k==='ArrowUp'||k==='Enter'||k===' '){e.preventDefault();open()}return}
+    if(k==='ArrowDown'){e.preventDefault();hi((act+1)%n)}else if(k==='ArrowUp'){e.preventDefault();hi((act-1+n)%n)}
+    else if(k==='Home'){e.preventDefault();hi(0)}else if(k==='End'){e.preventDefault();hi(n-1)}
+    else if(k==='Enter'||k===' '){e.preventDefault();pick(act);close(true)}
+    else if(k==='Escape'){e.preventDefault();e.stopPropagation();close(true)}else if(k==='Tab')close()});
+  d.addEventListener('click',function(e){if(!wrap.contains(e.target))close()});
+  sel.addEventListener('change',sync);sync();
 }
 var page=d.querySelector('.fb-card .fbw-form');if(page)setup(page,true);
-var dlg=d.getElementById('fbw'),fab=d.querySelector('.fbw-fab');if(!dlg||!dlg.showModal)return;
-var f=dlg.querySelector('.fbw-form');setup(f,false);
-function open(k){f.setKind(k);dlg.showModal();setTimeout(function(){(f.elements[k==='bug'?'title':'text']).focus()},50)}
-fab.addEventListener('click',function(){open('feedback')});
-dlg.querySelector('.fbw-x').addEventListener('click',function(){dlg.close()});
-dlg.addEventListener('click',function(e){if(e.target===dlg){var r=dlg.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dlg.close()}});
-dlg.addEventListener('close',function(){fab.focus({preventScroll:true})});
-d.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||a.origin!==location.origin||!/\\/feedback\\/$/.test(a.pathname)||e.metaKey||e.ctrlKey||e.shiftKey)return;
-  e.preventDefault();open(a.hash==='#feedback'?'feedback':'bug')});
+var dlg=d.getElementById('fbw'),fab=d.querySelector('.fbw-fab');if(!dlg||!dlg.show)return;
+var f=dlg.querySelector('.fbw-form'),narrow=matchMedia('(max-width: 600px)');setup(f,false);
+// A panel in the corner (not a modal): Esc, the ✕, the button again or a click elsewhere closes it.
+function open(k){f.setKind(k);if(!dlg.open)dlg.show();if(fab)fab.setAttribute('aria-expanded','true');setTimeout(function(){f.elements[k==='bug'?'title':'text'].focus()},50)}
+function close(back){if(!dlg.open)return;dlg.close();if(back&&fab)fab.focus({preventScroll:true})}
+dlg.addEventListener('close',function(){if(fab)fab.setAttribute('aria-expanded','false')});
+if(fab)fab.addEventListener('click',function(){if(dlg.open)close(true);else open('feedback')});
+dlg.querySelector('.fbw-x').addEventListener('click',function(){close(true)});
+d.addEventListener('keydown',function(e){if(e.key==='Escape'&&dlg.open)close(true)});
+// Links to /feedback/ (the footer's) open the panel; on phones they go to the page.
+d.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');
+  if(a&&a.origin===location.origin&&/\\/feedback\\/$/.test(a.pathname)&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!narrow.matches){e.preventDefault();open(a.hash==='#feedback'?'feedback':'bug');return}
+  if(dlg.open&&!dlg.contains(e.target)&&!(fab&&fab.contains(e.target)))close(false)});
 })();`;
 
-// The floating Feedback button and its popup. guide: true moves the button above the guide's back-to-top button.
-function feedbackWidget(ctx, { guide = false } = {}) {
+// The popup, and on the home page the floating Feedback button that opens it (fab). Other pages get the
+// popup only, opened by the footer's Report a bug / Send feedback links. guide: true moves the button above
+// the guide's back-to-top button.
+function feedbackWidget(ctx, { guide = false, fab = true } = {}) {
   const repo = releasesRepo(ctx.site);
-  return `<div class="fbw-root${guide ? ' fbw-guide' : ''}">
+  return `<div class="fbw-root${guide ? ' fbw-guide' : ''}${fab ? ' fbw-hasfab' : ''}">
 <style>${FB_CSS.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ')}</style>
-<button class="fbw-fab" type="button" aria-haspopup="dialog" aria-controls="fbw" title="Report a bug or send feedback">${FB_ICON}<span>Feedback</span></button>
+${fab ? `<button class="fbw-fab" type="button" aria-haspopup="dialog" aria-controls="fbw" aria-expanded="false" title="Report a bug or send feedback">${FB_ICON}${FB_X}<span>Feedback</span></button>` : ''}
 <dialog id="fbw" class="fbw" aria-labelledby="fbw-h">
-  <div class="fbw-head"><h2 id="fbw-h">Help improve ${esc(ctx.site.name)}</h2><button class="fbw-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="fbw-head"><h2 id="fbw-h">Help improve ${esc(ctx.site.name)}</h2><button class="fbw-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
   <div class="fbw-body">
     <p class="fbw-lead">Found a bug, or have an idea? Using the app? <b>Feedback</b> in its sidebar fills in the versions for you.</p>
     ${feedbackForm(ctx)}

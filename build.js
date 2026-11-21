@@ -110,8 +110,8 @@ if (guide) {
     .replace(/<title>[^<]*<\/title>/, `<title>${attr(gTitle)}</title>`)
     .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(gDesc)}">`)
     .replace('<link rel="icon"', meta + '\n<link rel="icon"')
-    // The floating Feedback button and popup, as on the other pages (feedbackWidget() in src/page.js).
-    .replace('</body>', feedbackWidget(ctx, { guide: true }) + '\n</body>'));
+    // The feedback popup, opened by links to /feedback/ (feedbackWidget() in src/page.js; the floating button is on the home page only).
+    .replace('</body>', feedbackWidget(ctx, { guide: true, fab: false }) + '\n</body>'));
 }
 
 // Sitemap. lastmod is when the files behind a page last changed in git (a build alone doesn't change
