@@ -933,30 +933,47 @@ const FB_ICON = '<svg class="fbw-ic-msg" viewBox="0 0 24 24" width="18" height="
 
 const FB_X = '<svg class="fbw-ic-x" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
 
+// Computers the desktop app runs on (value: what the script detects) and the Android versions the
+// companion supports (8, its minSdk 26, and later).
+const FB_SYSTEMS = [['win11', 'Windows 11'], ['win10', 'Windows 10'], ['mac-arm', 'macOS (Apple silicon)'], ['mac-intel', 'macOS (Intel)'], ['linux', 'Linux'], ['chromeos', 'ChromeOS'], ['other', 'Something else']];
+const FB_ANDROID = [16, 15, 14, 13, 12, 11, 10, 9, 8];
+
+// Fields marked data-req are required (shown with *) while visible: all of them for a bug report, only
+// the text for feedback. data-parts lists the "Which part?" choices a field belongs to.
 function feedbackForm(ctx) {
-  const ver = ctx.release ? ctx.release.version : '';
+  const latest = ctx.release ? ctx.release.version : '';
+  const opt = (value, text) => `<option value="${esc(value)}">${esc(text)}</option>`;
   return `<form class="fbw-form" novalidate>
   <div class="fbw-tabs" role="group" aria-label="What would you like to do?">
     <button type="button" class="fbw-btn fbw-sm" data-kind="bug" aria-pressed="true">Report a bug</button>
     <button type="button" class="fbw-btn fbw-sm" data-kind="feedback" aria-pressed="false">Send feedback</button>
   </div>
-  <label class="fbw-field"><span data-label="title">Title</span><input name="title" type="text" maxlength="200" autocomplete="off"></label>
-  <label class="fbw-field"><span data-label="text">What went wrong?</span><textarea name="text" rows="4"></textarea></label>
-  <label class="fbw-field" data-only="bug"><span>How can we make it happen? <small>(optional)</small></span><textarea name="steps" rows="3" placeholder="1. Connect the phone over USB&#10;2. Open …"></textarea></label>
-  <label class="fbw-field" data-only="bug"><span>What did you expect? <small>(optional)</small></span><textarea name="expected" rows="2"></textarea></label>
+  <label class="fbw-field" data-req="title"><span>Title</span><input name="title" type="text" maxlength="200" autocomplete="off"></label>
+  <label class="fbw-field" data-req="text"><span data-label="text">What went wrong?</span><textarea name="text" rows="4"></textarea></label>
+  <label class="fbw-field" data-only="bug"><span>How can we make it happen?</span><textarea name="steps" rows="3" placeholder="1. Connect the phone over USB&#10;2. Open …"></textarea></label>
+  <label class="fbw-field" data-only="bug"><span>What did you expect?</span><textarea name="expected" rows="2"></textarea></label>
   <details class="fbw-env" open>
     <summary>About your setup <small>(nothing personal)</small></summary>
-    <div class="fbw-field"><span>Which part?</span><select name="where">
-      <option>Desktop app (Windows, macOS, Linux)</option>
-      <option>Phone app (Andromon Companion)</option>
-      <option>Web version in the browser</option>
-      <option>This website</option>
-      <option value="">Not sure / everything</option>
+    <div class="fbw-field" data-req="where"><span>Which part?</span><select name="where">
+      ${opt('desktop', 'Desktop app (Windows, macOS, Linux)')}
+      ${opt('phone', 'Phone app (Andromon Companion)')}
+      ${opt('web', 'Web version in the browser')}
+      ${opt('site', 'This website')}
+      ${opt('unsure', 'Not sure / everything')}
     </select></div>
     <div class="fbw-row">
-      <label class="fbw-field"><span>Andromon version</span><input name="version" type="text" maxlength="40" value="${esc(ver)}" placeholder="e.g. 1.0.5"></label>
-      <label class="fbw-field"><span>Computer system</span><input name="system" type="text" maxlength="80" placeholder="e.g. Windows 11"></label>
-      <label class="fbw-field"><span>Phone <small>(optional)</small></span><input name="phone" type="text" maxlength="80" placeholder="e.g. Samsung S20, Android 13"></label>
+      <div class="fbw-field" data-req="version" data-parts="desktop phone web unsure"><span>Andromon version</span><select name="version">
+        <option value="" data-ph>Choose…</option>${latest ? opt(latest, latest + ' (newest)') : ''}<option value="unsure">Not sure</option>
+      </select></div>
+      <div class="fbw-field" data-req="system" data-parts="desktop web unsure"><span>Computer</span><select name="system">
+        <option value="" data-ph>Choose…</option>${FB_SYSTEMS.map(([v, t]) => opt(v, t)).join('')}
+      </select></div>
+    </div>
+    <div class="fbw-row">
+      <label class="fbw-field" data-req="phone" data-parts="phone"><span>Phone</span><input name="phone" type="text" maxlength="80" autocomplete="off" placeholder="e.g. Samsung Galaxy S20"></label>
+      <div class="fbw-field" data-req="android" data-parts="phone"><span>Android version</span><select name="android">
+        <option value="" data-ph>Choose…</option>${FB_ANDROID.map((n) => opt(String(n), 'Android ' + n)).join('')}<option value="unsure">Not sure</option>
+      </select></div>
     </div>
   </details>
   <p class="fbw-note">Opens GitHub in a new tab with this filled in. Check it there and press Submit (a free GitHub account is needed). Nothing is sent before that, and what you post is public, so leave out phone numbers, messages and account names.</p>
@@ -1021,10 +1038,9 @@ dialog.fbw[open] { animation: fbw-in .3s cubic-bezier(.22,1,.36,1); }
 .fbw-field :is(input, textarea)::placeholder { color: var(--soft, #56575A); opacity: .8; }
 .fbw-env { border-top: 1px solid var(--line, #D9D9D5); margin: .4em 0 0; padding: 1em 0 0; }
 .fbw-env summary { cursor: pointer; font-weight: 500; margin: 0 0 .9em .3em; }
-.fbw-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 10px; }
-dialog.fbw .fbw-row { grid-template-columns: 1fr 1fr; }
-dialog.fbw .fbw-row > :last-child { grid-column: 1 / -1; }
-@media (max-width: 680px) { .fbw-row { grid-template-columns: 1fr; } }
+.fbw-row { display: flex; flex-wrap: wrap; gap: 0 10px; }
+.fbw-row > .fbw-field { flex: 1 1 150px; }
+.fbw-field.req > span::after { content: " *"; color: #d9443f; font-weight: 600; }
 .fbw-note { color: var(--soft, #56575A); line-height: 1.5; margin: .2em 0 1.2em; }
 .fbw-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
 .fbw-msg { flex-basis: 100%; margin: 0; color: var(--soft, #56575A); }
@@ -1036,6 +1052,8 @@ dialog.fbw .fbw-row > :last-child { grid-column: 1 / -1; }
 .fbw-dd-btn:hover { border-color: var(--soft, #56575A); }
 .fbw-dd-btn:focus-visible, .fbw-dd-btn[aria-expanded="true"] { outline: 2px solid var(--accent, #3F6A0A); outline-offset: 1px; }
 .fbw-dd-btn > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fbw-dd-btn.ph > span { color: var(--soft, #56575A); }
+.fbw-dd-btn[aria-invalid="true"] { border-color: #d9443f; outline: 2px solid #d9443f; }
 .fbw-dd-btn svg { flex: none; color: var(--soft, #56575A); transition: transform .2s ease; }
 .fbw-dd-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
 .fbw-dd-list { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 5; margin: 0; padding: 5px; list-style: none; max-height: 18em; overflow: auto;
@@ -1054,26 +1072,57 @@ dialog.fbw .fbw-row > :last-child { grid-column: 1 / -1; }
 // /feedback/ (the footer's), which open the popup instead of leaving the page.
 const FB_SCRIPT = (repo) => `(function(){
 var REPO='https://github.com/${repo}',MAX=7000,d=document;
-var ua=navigator.userAgent,SYS=/Android/.test(ua)?('Android '+((ua.match(/Android ([\\d.]+)/)||[])[1]||'')).trim():/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Linux/.test(ua)?'Linux':'';
+// The visitor's computer (FB_SYSTEMS value) or Android version, where the browser says so for sure.
+function detect(cb){var n=navigator,ua=n.userAgent,uad=n.userAgentData,p=((uad&&uad.platform)||n.platform||'')+' '+ua,hi=uad&&uad.getHighEntropyValues;
+  if(/Android/.test(ua)){if(hi)uad.getHighEntropyValues(['platformVersion']).then(function(h){cb('',parseInt(h.platformVersion,10)||0)},function(){cb('',0)});else cb('',0);return}
+  if(/CrOS/.test(ua))return cb('chromeos');
+  if(/Win/i.test(p)){if(hi)uad.getHighEntropyValues(['platformVersion']).then(function(h){var m=parseInt(h.platformVersion,10);cb(m>=13?'win11':m>0?'win10':'')},function(){cb('')});else cb('');return}
+  if(/Mac/i.test(p)){var c='mac-arm';try{var g=d.createElement('canvas').getContext('webgl'),e=g&&g.getExtension('WEBGL_debug_renderer_info'),r=e?g.getParameter(e.UNMASKED_RENDERER_WEBGL):'';if(/Intel|AMD|Radeon|NVIDIA/i.test(r))c='mac-intel'}catch(x){}return cb(c)}
+  if(/Linux|X11/i.test(p))return cb('linux');cb('')}
+// Every published version, from GitHub's releases list (kept for the browser session); asked for the
+// first time the form is used, not on every page view. The build only knows the newest.
+var vlist=null,vwait=[];
+function versions(cb){if(vlist)return cb(vlist);vwait.push(cb);if(vwait.length>1)return;
+  try{var c=JSON.parse(sessionStorage.getItem('fbw-versions')||'null');if(c&&Date.now()-c.t<36e5){vlist=c.v;vwait.splice(0).forEach(function(f){f(vlist)});return}}catch(e){}
+  fetch('https://api.github.com/repos/${repo}/releases?per_page=50').then(function(r){return r.ok?r.json():[]}).then(function(a){
+    var v=(a||[]).filter(function(r){return !r.draft}).map(function(r){return String(r.tag_name).replace(/^v/,'')});if(!v.length)return;
+    vlist=v;try{sessionStorage.setItem('fbw-versions',JSON.stringify({t:Date.now(),v:v}))}catch(e){}vwait.splice(0).forEach(function(f){f(vlist)})}).catch(function(){})}
 function fit(o,make){var u=make(o);for(var i=0;u.length>MAX&&i<60;i++){var k=Object.keys(o).filter(function(x){return x!=='env'}).sort(function(a,b){return o[b].length-o[a].length})[0];
   if(!k||o[k].length<40)break;o[k]=o[k].slice(0,Math.floor(o[k].length*.85)).replace(/\\s+$/,'')+' …(shortened)';u=make(o)}return u}
 function q(o){return Object.keys(o).filter(function(k){return o[k]}).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(o[k])}).join('&')}
 function setup(f,onPage){
-  var kind='bug',tabs=[].slice.call(f.querySelectorAll('[data-kind]')),E=f.elements;
+  var kind='bug',tabs=[].slice.call(f.querySelectorAll('[data-kind]')),E=f.elements,fields=[].slice.call(f.querySelectorAll('[data-req]'));
   function v(n){return E[n].value.trim()}
+  function shown(el){return !el.closest('[hidden]')}
+  function txt(n){var el=E[n];return el.tagName==='SELECT'?(el.value?el.options[el.selectedIndex].text:''):el.value.trim()}
+  function ctl(n){var el=E[n];return (el.tagName==='SELECT'&&el.parentNode.querySelector('.fbw-dd-btn'))||el}
   function say(t){f.querySelector('.fbw-msg').textContent=t}
+  // Required fields get a * (CSS) and aria-required; which ones depends on the tab and on "Which part?".
+  function need(){return fields.filter(function(el){return shown(el)&&(kind==='bug'||el.getAttribute('data-req')==='text')}).map(function(el){return el.getAttribute('data-req')})}
+  function marks(){var r=need();fields.forEach(function(el){var n=el.getAttribute('data-req'),on=r.indexOf(n)>=0;el.classList.toggle('req',on);E[n].setAttribute('aria-required',String(on));if(!on)ctl(n).removeAttribute('aria-invalid')})}
+  function parts(){var p=E.where.value;[].forEach.call(f.querySelectorAll('[data-parts]'),function(el){el.hidden=el.getAttribute('data-parts').split(' ').indexOf(p)<0});marks()}
   function setKind(k){kind=k;tabs.forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-kind')===k))});
     [].forEach.call(f.querySelectorAll('[data-only]'),function(el){el.hidden=el.getAttribute('data-only')!==k});
-    f.querySelector('[data-label=title]').innerHTML=k==='bug'?'Title':'Title <small>(optional)</small>';
     f.querySelector('[data-label=text]').textContent=k==='bug'?'What went wrong?':'Your feedback';
     E.text.placeholder=k==='bug'?'What happened, and any error message you saw':'What you like, what\\'s missing, what\\'s confusing, an idea…';
     E.title.placeholder=k==='bug'?'e.g. Screen mirror freezes after a minute':'A few words about your feedback';
-    f.querySelector('[data-go]').textContent=k==='bug'?'Report on GitHub':'Post on GitHub';say('');
+    f.querySelector('[data-go]').textContent=k==='bug'?'Report on GitHub':'Post on GitHub';say('');marks();
     if(onPage&&history.replaceState)history.replaceState(null,'',k==='feedback'?'#feedback':location.pathname)}
   tabs.forEach(function(b){b.addEventListener('click',function(){setKind(b.getAttribute('data-kind'))})});
-  if(SYS&&!E.system.value)E.system.value=SYS;if(/^Android/.test(SYS))E.where.selectedIndex=1;
-  function env(){var w=E.where,l=[];if(kind==='bug'||w.value)l.push('Where: '+w.options[w.selectedIndex].text);
-    if(v('version'))l.push('Andromon: '+v('version'));if(v('system'))l.push('System: '+v('system'));if(v('phone'))l.push('Phone: '+v('phone'));
+  function pick(n,val){var el=E[n];if(!val||el.value||![].some.call(el.options,function(o){return o.value===val}))return;el.value=val;el.dispatchEvent(new Event('change',{bubbles:true}))}
+  E.where.addEventListener('change',parts);
+  if(/Android/.test(navigator.userAgent))E.where.value='phone';
+  detect(function(sys,android){pick('system',sys);if(android)pick('android',String(android))});
+  // The version list: the newest from the build, all of them from GitHub once the form is used.
+  function fillVersions(list){var el=E.version,keep=el.value,ph=el.options[0],ns=el.options[el.options.length-1];
+    el.textContent='';el.appendChild(ph);list.forEach(function(x,i){var o=d.createElement('option');o.value=x;o.textContent=x+(i===0?' (newest)':'');el.appendChild(o)});el.appendChild(ns);
+    el.value=keep;if(el.selectedIndex<0)el.selectedIndex=0;if(el.fbwRefresh)el.fbwRefresh()}
+  f.loadVersions=function(){versions(fillVersions)};
+  f.addEventListener('focusin',function once(){f.removeEventListener('focusin',once);f.loadVersions()});
+  function env(){var l=['Where: '+txt('where')];
+    if(shown(E.version)&&txt('version'))l.push('Andromon: '+txt('version'));
+    if(shown(E.system)&&txt('system'))l.push('Computer: '+txt('system'));
+    if(shown(E.phone)&&(v('phone')||txt('android')))l.push('Phone: '+[v('phone'),txt('android')].filter(Boolean).join(', '));
     l.push('Sent from: the website');return l.join('\\n')}
   function url(){if(kind==='bug')return fit({title:v('title'),what:v('text'),steps:v('steps'),expected:v('expected'),env:env()},function(o){
       return REPO+'/issues/new?'+q({template:'bug_report.yml',title:'[Bug] '+o.title,what:o.what,steps:o.steps,expected:o.expected,env:o.env})});
@@ -1081,16 +1130,17 @@ function setup(f,onPage){
       return REPO+'/discussions/new?'+q({category:'general',title:o.title||'Feedback: '+first,body:o.text+'\\n\\n---\\n'+o.env})})}
   function plain(){return [kind==='bug'?'Bug: '+v('title'):(v('title')&&'Feedback: '+v('title')),(kind==='bug'?'What went wrong?\\n':'')+v('text'),
     kind==='bug'&&v('steps')&&'How to make it happen\\n'+v('steps'),kind==='bug'&&v('expected')&&'Expected\\n'+v('expected'),env()].filter(Boolean).join('\\n\\n')}
-  function ok(){var need=kind==='bug'?['title','text']:['text'],bad=need.filter(function(n){return !v(n)});
-    need.forEach(function(n){E[n].setAttribute('aria-invalid',String(bad.indexOf(n)>=0))});
-    if(bad.length){E[bad[0]].focus();say(kind==='bug'?'Add a short title and what went wrong.':'Write your feedback first.');return false}return true}
+  function ok(){var r=need(),bad=r.filter(function(n){return !v(n)});
+    r.forEach(function(n){ctl(n).setAttribute('aria-invalid',String(bad.indexOf(n)>=0))});
+    if(bad.length){var c=ctl(bad[0]),det=c.closest('details');if(det)det.open=true;c.focus();say(kind==='bug'?'Fill in the fields marked *.':'Write your feedback first.');return false}return true}
   [].forEach.call(f.querySelectorAll('input,textarea'),function(el){el.addEventListener('input',function(){el.removeAttribute('aria-invalid')})});
+  [].forEach.call(f.querySelectorAll('select'),function(el){el.addEventListener('change',function(){ctl(el.name).removeAttribute('aria-invalid')})});
   f.addEventListener('submit',function(e){e.preventDefault();if(!ok())return;var u=url(),w=window.open(u,'_blank','noopener');if(!w&&onPage)location.href=u;
     say('GitHub opened in a new tab. Check it there and press Submit.');E.title.value='';E.text.value='';E.steps.value='';E.expected.value='';
     if(!onPage)setTimeout(function(){var dl=f.closest('dialog');if(dl&&dl.open)dl.close()},1600)});
   f.querySelector('[data-copy]').addEventListener('click',function(){if(!ok())return;
     (navigator.clipboard?navigator.clipboard.writeText(plain()):Promise.reject()).then(function(){say('Copied. Paste it into an e-mail or message.')},function(){say('Couldn\\'t copy. Select the text and copy it yourself.')})});
-  f.setKind=setKind;setKind(onPage&&location.hash==='#feedback'?'feedback':'bug');
+  f.setKind=setKind;parts();setKind(onPage&&location.hash==='#feedback'?'feedback':'bug');
   [].forEach.call(f.querySelectorAll('select'),dropdown);
 }
 // The modern dropdown: a button and a listbox in place of each <select>, which keeps the value.
@@ -1099,38 +1149,42 @@ var ddN=0,CHEV='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stro
 function dropdown(sel){
   var id='fbw-dd-'+(++ddN)+'-'+Math.random().toString(36).slice(2,6),field=sel.parentNode,cap=field.querySelector('span');
   var wrap=d.createElement('div');wrap.className='fbw-dd';field.insertBefore(wrap,sel);wrap.appendChild(sel);sel.tabIndex=-1;sel.setAttribute('aria-hidden','true');
-  var btn=d.createElement('button'),val=d.createElement('span'),list=d.createElement('ul');
+  var btn=d.createElement('button'),val=d.createElement('span'),list=d.createElement('ul'),act=0,opts=[];
   btn.type='button';btn.className='fbw-dd-btn';btn.setAttribute('aria-haspopup','listbox');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-controls',id);
   if(cap){cap.id=id+'-c';cap.addEventListener('click',function(){btn.focus()})}val.id=id+'-v';btn.setAttribute('aria-labelledby',(cap?cap.id+' ':'')+val.id);
   btn.appendChild(val);btn.insertAdjacentHTML('beforeend',CHEV);
   list.className='fbw-dd-list';list.id=id;list.setAttribute('role','listbox');list.hidden=true;if(cap)list.setAttribute('aria-labelledby',cap.id);
-  var act=0,opts=[].map.call(sel.options,function(o,i){var li=d.createElement('li'),t=d.createElement('span');li.setAttribute('role','option');li.id=id+'-'+i;
-    li.innerHTML=TICK;t.textContent=o.text;li.appendChild(t);
-    li.addEventListener('mousedown',function(e){e.preventDefault()});li.addEventListener('mousemove',function(){if(act!==i)hi(i,true)});
-    li.addEventListener('click',function(){pick(i);close(true)});list.appendChild(li);return li});
   wrap.appendChild(btn);wrap.appendChild(list);
-  function sync(){val.textContent=sel.options[sel.selectedIndex].text;opts.forEach(function(li,i){li.setAttribute('aria-selected',String(i===sel.selectedIndex))})}
-  function hi(i,mouse){act=i;opts.forEach(function(li,j){li.classList.toggle('on',j===i)});btn.setAttribute('aria-activedescendant',opts[i].id);if(!mouse)opts[i].scrollIntoView({block:'nearest'})}
+  // One list item per <option>, except the "Choose…" placeholder (data-ph), which only shows on the button.
+  function build(){list.textContent='';opts=[];[].forEach.call(sel.options,function(o,i){if(o.hasAttribute('data-ph'))return;
+    var li=d.createElement('li'),t=d.createElement('span'),k=opts.length;li.setAttribute('role','option');li.id=id+'-'+i;li.dataset.i=i;
+    li.innerHTML=TICK;t.textContent=o.text;li.appendChild(t);
+    li.addEventListener('mousedown',function(e){e.preventDefault()});li.addEventListener('mousemove',function(){if(act!==k)hi(k,true)});
+    li.addEventListener('click',function(){pick(+li.dataset.i);close(true)});list.appendChild(li);opts.push(li)});sync()}
+  function cur(){for(var k=0;k<opts.length;k++)if(+opts[k].dataset.i===sel.selectedIndex)return k;return 0}
+  function sync(){var o=sel.options[sel.selectedIndex];val.textContent=o?o.text:'';btn.classList.toggle('ph',!o||o.hasAttribute('data-ph'));
+    opts.forEach(function(li){li.setAttribute('aria-selected',String(+li.dataset.i===sel.selectedIndex))})}
+  function hi(k,mouse){act=k;opts.forEach(function(li,j){li.classList.toggle('on',j===k)});if(opts[k]){btn.setAttribute('aria-activedescendant',opts[k].id);if(!mouse)opts[k].scrollIntoView({block:'nearest'})}}
   function pick(i){if(sel.selectedIndex!==i){sel.selectedIndex=i;sel.dispatchEvent(new Event('change',{bubbles:true}))}sync()}
   function open(){if(!list.hidden)return;list.hidden=false;btn.setAttribute('aria-expanded','true');
     var box=wrap.closest('dialog'),r=btn.getBoundingClientRect(),lo=box?box.getBoundingClientRect():{top:0,bottom:innerHeight},h=list.offsetHeight+12;
-    wrap.classList.toggle('up',r.bottom+h>lo.bottom&&r.top-h>lo.top);hi(sel.selectedIndex)}
+    wrap.classList.toggle('up',r.bottom+h>lo.bottom&&r.top-h>lo.top);hi(cur())}
   function close(focus){if(list.hidden)return;list.hidden=true;btn.setAttribute('aria-expanded','false');btn.removeAttribute('aria-activedescendant');if(focus)btn.focus()}
   btn.addEventListener('click',function(){if(list.hidden)open();else close()});
   btn.addEventListener('keydown',function(e){var k=e.key,n=opts.length;
     if(list.hidden){if(k==='ArrowDown'||k==='ArrowUp'||k==='Enter'||k===' '){e.preventDefault();open()}return}
     if(k==='ArrowDown'){e.preventDefault();hi((act+1)%n)}else if(k==='ArrowUp'){e.preventDefault();hi((act-1+n)%n)}
     else if(k==='Home'){e.preventDefault();hi(0)}else if(k==='End'){e.preventDefault();hi(n-1)}
-    else if(k==='Enter'||k===' '){e.preventDefault();pick(act);close(true)}
+    else if(k==='Enter'||k===' '){e.preventDefault();pick(+opts[act].dataset.i);close(true)}
     else if(k==='Escape'){e.preventDefault();e.stopPropagation();close(true)}else if(k==='Tab')close()});
   d.addEventListener('click',function(e){if(!wrap.contains(e.target))close()});
-  sel.addEventListener('change',sync);sync();
+  sel.addEventListener('change',sync);sel.fbwRefresh=build;build();
 }
 var page=d.querySelector('.fb-card .fbw-form');if(page)setup(page,true);
 var dlg=d.getElementById('fbw'),fab=d.querySelector('.fbw-fab');if(!dlg||!dlg.show)return;
 var f=dlg.querySelector('.fbw-form'),narrow=matchMedia('(max-width: 600px)');setup(f,false);
 // A panel in the corner (not a modal): Esc, the ✕, the button again or a click elsewhere closes it.
-function open(k){f.setKind(k);if(!dlg.open)dlg.show();if(fab)fab.setAttribute('aria-expanded','true');setTimeout(function(){f.elements[k==='bug'?'title':'text'].focus()},50)}
+function open(k){f.setKind(k);f.loadVersions();if(!dlg.open)dlg.show();if(fab)fab.setAttribute('aria-expanded','true');setTimeout(function(){f.elements[k==='bug'?'title':'text'].focus()},50)}
 function close(back){if(!dlg.open)return;dlg.close();if(back&&fab)fab.focus({preventScroll:true})}
 dlg.addEventListener('close',function(){if(fab)fab.setAttribute('aria-expanded','false')});
 if(fab)fab.addEventListener('click',function(){if(dlg.open)close(true);else open('feedback')});
