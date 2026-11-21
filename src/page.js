@@ -172,6 +172,8 @@ function footer(ctx) {
           ${site.preview ? `<li><a href="${site.preview}" target="_blank" rel="noopener">Online preview</a></li>` : ''}
           <li><a href="${site.repoPc}" rel="noopener">Desktop app on GitHub</a></li>
           <li><a href="${site.repoAndroid}" rel="noopener">Android app on GitHub</a></li>
+          <li><a href="${base}feedback/">Report a bug</a></li>
+          <li><a href="${base}feedback/#feedback">Send feedback</a></li>
         </ul>
       </div>
     </nav>
@@ -908,4 +910,113 @@ ${footer(ctx)}
 `;
 }
 
-module.exports = { home, notFound, compare, androidPage, statsPage };
+// ---------- feedback page ----------
+// /feedback/: Report a bug or Send feedback, the same forms as in both apps (pc/src/feedback.js,
+// android/…/Feedback.kt). Nothing is sent from the site: the form builds a github.com link with the
+// text filled in and opens it, and the visitor presses Submit there with their GitHub account.
+//   Bug      → an issue through .github/ISSUE_TEMPLATE/bug_report.yml in the releases repo; each query
+//              parameter fills the field with the same id (what, steps, expected, env).
+//   Feedback → a discussion in that repo's "General" category (title, body).
+// #feedback in the address opens the feedback form.
+const FEEDBACK_SCRIPT = (repo) => `(function(){
+var REPO='https://github.com/${repo}',MAX=7000,d=document,f=d.getElementById('fb-form');if(!f)return;
+var kind='bug',tabs=[].slice.call(d.querySelectorAll('.fb-tabs button'));
+function $(id){return d.getElementById(id)}
+function setKind(k){kind=k;tabs.forEach(function(b){var on=b.getAttribute('data-kind')===k;b.setAttribute('aria-pressed',String(on));b.className='btn btn-sm '+(on?'btn-dark':'btn-light')});
+  [].forEach.call(f.querySelectorAll('[data-only]'),function(el){el.hidden=el.getAttribute('data-only')!==k});
+  $('fb-title-label').textContent=k==='bug'?'Title':'Title (optional)';$('fb-text-label').textContent=k==='bug'?'What went wrong?':'Your feedback';
+  $('fb-text').placeholder=k==='bug'?'What happened, and any error message you saw':'What you like, what\\'s missing, what\\'s confusing, an idea…';
+  $('fb-title').placeholder=k==='bug'?'e.g. Screen mirror freezes after a minute':'A few words about your feedback';
+  $('fb-go').textContent=k==='bug'?'Report on GitHub':'Post on GitHub';say('');
+  if(history.replaceState)history.replaceState(null,'',k==='feedback'?'#feedback':location.pathname)}
+tabs.forEach(function(b){b.addEventListener('click',function(){setKind(b.getAttribute('data-kind'))})});
+// A guess at the visitor's system, to save typing; they can change it.
+var ua=navigator.userAgent,sys=/Android/.test(ua)?'Android '+((ua.match(/Android ([\\d.]+)/)||[])[1]||''):/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Linux/.test(ua)?'Linux':'';
+if(sys&&!$('fb-system').value)$('fb-system').value=sys.trim();
+function v(id){return $(id).value.trim()}
+function env(){var w=$('fb-where'),lines=[];if(kind==='bug'||w.value)lines.push('Where: '+w.options[w.selectedIndex].text);
+  if(v('fb-version'))lines.push('Andromon: '+v('fb-version'));if(v('fb-system'))lines.push('System: '+v('fb-system'));if(v('fb-phone'))lines.push('Phone: '+v('fb-phone'));
+  lines.push('Sent from: the website');return lines.join('\\n')}
+function fit(o,make){var u=make(o);for(var i=0;u.length>MAX&&i<60;i++){var k=Object.keys(o).filter(function(x){return x!=='env'}).sort(function(a,b){return o[b].length-o[a].length})[0];
+  if(!k||o[k].length<40)break;o[k]=o[k].slice(0,Math.floor(o[k].length*.85)).replace(/\\s+$/,'')+' …(shortened)';u=make(o)}return u}
+function q(o){return Object.keys(o).filter(function(k){return o[k]}).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(o[k])}).join('&')}
+function url(){if(kind==='bug')return fit({title:v('fb-title'),what:v('fb-text'),steps:v('fb-steps'),expected:v('fb-expected'),env:env()},function(o){
+    return REPO+'/issues/new?'+q({template:'bug_report.yml',title:'[Bug] '+o.title,what:o.what,steps:o.steps,expected:o.expected,env:o.env})});
+  return fit({title:v('fb-title'),text:v('fb-text'),env:env()},function(o){var first=o.text.split('\\n')[0];if(first.length>60)first=first.slice(0,57)+'…';
+    return REPO+'/discussions/new?'+q({category:'general',title:o.title||'Feedback: '+first,body:o.text+'\\n\\n---\\n'+o.env})})}
+function plain(){return [kind==='bug'?'Bug: '+v('fb-title'):(v('fb-title')&&'Feedback: '+v('fb-title')),(kind==='bug'?'What went wrong?\\n':'')+v('fb-text'),
+  kind==='bug'&&v('fb-steps')&&'How to make it happen\\n'+v('fb-steps'),kind==='bug'&&v('fb-expected')&&'Expected\\n'+v('fb-expected'),env()].filter(Boolean).join('\\n\\n')}
+function ok(){var need=kind==='bug'?['fb-title','fb-text']:['fb-text'],bad=need.filter(function(id){return !v(id)});
+  need.forEach(function(id){$(id).setAttribute('aria-invalid',String(bad.indexOf(id)>=0))});
+  if(bad.length){$(bad[0]).focus();say(kind==='bug'?'Add a short title and what went wrong.':'Write your feedback first.');return false}return true}
+function say(t){$('fb-msg').textContent=t}
+[].forEach.call(f.querySelectorAll('input,textarea'),function(el){el.addEventListener('input',function(){el.removeAttribute('aria-invalid')})});
+f.addEventListener('submit',function(e){e.preventDefault();if(!ok())return;var w=window.open(url(),'_blank','noopener');if(!w)location.href=url();
+  say('GitHub opened in a new tab. Check it there and press Submit.')});
+$('fb-copy').addEventListener('click',function(){if(!ok())return;
+  (navigator.clipboard?navigator.clipboard.writeText(plain()):Promise.reject()).then(function(){say('Copied. Paste it into an e-mail or message.')},function(){say('Couldn\\'t copy. Select the text and copy it yourself.')})});
+setKind(location.hash==='#feedback'?'feedback':'bug');
+})();`;
+
+function feedbackPage(ctx) {
+  const { site, abs, release } = ctx;
+  const repo = (String(site.releases).match(/github\.com\/([^/]+\/[^/]+)/) || [])[1];
+  if (!repo) throw new Error('site.config.json: "releases" must be a GitHub releases address');
+  const ver = release ? `${release.version}` : '';
+  return head(ctx, { title: `Report a bug or send feedback | ${site.name}`, description: `Found a problem in ${site.name} or its phone app, or have an idea? Report a bug or send feedback on GitHub.`, canonical: abs('feedback/') }) +
+`</head>
+<body>
+${header(ctx, false)}
+<main id="main">
+<section class="hero st-hero" aria-labelledby="fb-h">
+  <div class="wrap fb-wrap">
+    <p class="kicker">Help improve ${esc(site.name)}</p>
+    <h1 id="fb-h">Report a bug or send feedback</h1>
+    <p class="lead">Something not working, or an idea to make ${esc(site.name)} better? Tell us here. Using the app? <b>Feedback</b> in its sidebar (or <b>Settings › About</b> in the phone app) does the same and fills in the versions for you.</p>
+  </div>
+</section>
+<section class="st-body" aria-label="Form">
+  <div class="wrap fb-wrap">
+    <noscript><p class="lead">This form needs JavaScript. You can also <a href="https://github.com/${repo}/issues/new?template=bug_report.yml">report a bug</a> or <a href="https://github.com/${repo}/discussions/new?category=general">send feedback</a> on GitHub directly.</p></noscript>
+    <form id="fb-form" class="fb-card" novalidate>
+      <div class="fb-tabs" role="group" aria-label="What would you like to do?">
+        <button type="button" class="btn btn-sm btn-dark" data-kind="bug" aria-pressed="true">Report a bug</button>
+        <button type="button" class="btn btn-sm btn-light" data-kind="feedback" aria-pressed="false">Send feedback</button>
+      </div>
+      <label class="fb-field"><span id="fb-title-label">Title</span><input id="fb-title" type="text" maxlength="200" autocomplete="off"></label>
+      <label class="fb-field"><span id="fb-text-label">What went wrong?</span><textarea id="fb-text" rows="5"></textarea></label>
+      <label class="fb-field" data-only="bug"><span>How can we make it happen? <small>(optional)</small></span><textarea id="fb-steps" rows="3" placeholder="1. Connect the phone over USB&#10;2. Open …"></textarea></label>
+      <label class="fb-field" data-only="bug"><span>What did you expect? <small>(optional)</small></span><textarea id="fb-expected" rows="2"></textarea></label>
+      <fieldset class="fb-env">
+        <legend>About your setup <small>(helps us find the problem; nothing personal)</small></legend>
+        <label class="fb-field"><span>Which part?</span><select id="fb-where">
+          <option value="desktop">Desktop app (Windows, macOS, Linux)</option>
+          <option value="phone">Phone app (Andromon Companion)</option>
+          <option value="web">Web version in the browser</option>
+          <option value="site">This website</option>
+          <option value="">Not sure / everything</option>
+        </select></label>
+        <div class="fb-row">
+          <label class="fb-field"><span>Andromon version</span><input id="fb-version" type="text" maxlength="40" value="${esc(ver)}" placeholder="e.g. 1.0.5"></label>
+          <label class="fb-field"><span>Computer system</span><input id="fb-system" type="text" maxlength="80" placeholder="e.g. Windows 11"></label>
+          <label class="fb-field"><span>Phone <small>(optional)</small></span><input id="fb-phone" type="text" maxlength="80" placeholder="e.g. Samsung S20, Android 13"></label>
+        </div>
+      </fieldset>
+      <p class="fb-note">Opens GitHub in a new tab with this filled in. Check it there and press Submit (a free GitHub account is needed). Nothing is sent before that, and what you post is public, so leave out phone numbers, messages and account names. Screenshots and logs can be dragged in on GitHub.</p>
+      <div class="fb-actions">
+        <button id="fb-go" type="submit" class="btn btn-dark">Report on GitHub</button>
+        <button id="fb-copy" type="button" class="btn btn-light" title="No GitHub account? Copy the text and e-mail or message it instead">Copy text</button>
+        <p id="fb-msg" class="st-sub" role="status"></p>
+      </div>
+    </form>
+  </div>
+</section>
+</main>
+${footer(ctx)}
+<script>${FEEDBACK_SCRIPT(repo)}${THEME_SCRIPT}</script>
+</body>
+</html>
+`;
+}
+
+module.exports = { home, notFound, compare, androidPage, statsPage, feedbackPage };

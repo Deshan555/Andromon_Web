@@ -53,7 +53,7 @@ const guide = !!site.includeGuide && fs.existsSync(path.join(guideSrc, 'index.ht
 
 const ctx = { site, content: require('./src/content')(site), release, css, base, abs, images, guide,
   analytics: !previewDeploy && site.goatcounter ? site.goatcounter : '' };
-const { home, notFound, compare, androidPage, statsPage } = require('./src/page');
+const { home, notFound, compare, androidPage, statsPage, feedbackPage } = require('./src/page');
 
 // ---------- write ----------
 fs.rmSync(DIST, { recursive: true, force: true });
@@ -71,6 +71,9 @@ fs.writeFileSync(path.join(DIST, 'compare/index.html'), compareHtml);
 const androidHtml = androidPage(ctx);
 fs.mkdirSync(path.join(DIST, 'android'), { recursive: true });
 fs.writeFileSync(path.join(DIST, 'android/index.html'), androidHtml);
+// Report a bug / send feedback (opens GitHub with the form filled in).
+fs.mkdirSync(path.join(DIST, 'feedback'), { recursive: true });
+fs.writeFileSync(path.join(DIST, 'feedback/index.html'), feedbackPage(ctx));
 // Download stats for the developer at /stats/: not linked, not in the sitemap, not indexed, not counted.
 const statsHtml = statsPage(ctx);
 fs.mkdirSync(path.join(DIST, 'stats'), { recursive: true });
@@ -121,6 +124,7 @@ const pages = [
   { loc: abs(''), priority: '1.0', files: [...common, 'src/content.js', 'static/img'], images: ['overview', 'mirror', 'messages', 'photos', 'apps'].map(shot) },
   { loc: abs('android/'), priority: '0.9', files: [...common, 'src/content.js', 'static/img'], images: ['phone-home', 'phone-cleaner', 'phone-battery', 'phone-transfer', 'phone-stats'].map(shot) },
   { loc: abs('compare/'), priority: '0.8', files: [...common, 'src/content.js'], images: [] },
+  { loc: abs('feedback/'), priority: '0.4', files: common, images: [] },
   ...(guide ? [{ loc: abs('guide/'), priority: '0.7', files: ['guide'], images: [] }] : []),
 ];
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'),
@@ -181,7 +185,7 @@ fs.writeFileSync(path.join(DIST, '_headers'), [
   });
   walk(DIST);
   const version = hash.digest('hex').slice(0, 12);
-  const pages = ['', 'android/', 'compare/'].map((p) => base + p);
+  const pages = ['', 'android/', 'compare/', 'feedback/'].map((p) => base + p);
   const core = [...pages, base + 'fonts/poppins-400.woff2', base + 'fonts/poppins-500.woff2', base + 'fonts/poppins-600.woff2'];
   fs.writeFileSync(path.join(DIST, 'sw.js'), `// Andromon website offline cache, made by build.js. Version ${version}.
 // Pages: from the network first, so a new deploy shows at once; the cached copy when offline or slow.
