@@ -982,6 +982,10 @@ dialog.fbw { position: fixed; inset: auto 22px 80px auto; z-index: 31; margin: 0
   border: 1px solid var(--line, #D9D9D5); border-radius: 22px; background: var(--card, #fff); color: var(--ink, #292A2C); font: 12px/1.5 Poppins, system-ui, sans-serif;
   box-shadow: 0 30px 70px -24px rgba(0,0,0,.55); overflow: auto; overscroll-behavior: contain; transform-origin: 100% 100%; }
 .fbw-root:not(.fbw-hasfab) dialog.fbw { bottom: 22px; max-height: calc(100vh - 44px); }
+/* Netlify's free plan adds a "Powered by Netlify" badge (an iframe, #nl-badge-frame) in the same corner: sit above it */
+html:has(#nl-badge-frame) .fbw-fab { bottom: 92px; }
+html:has(#nl-badge-frame) dialog.fbw { bottom: 150px; max-height: min(640px, calc(100vh - 180px)); }
+html:has(#nl-badge-frame) .fbw-root:not(.fbw-hasfab) dialog.fbw { bottom: 92px; }
 dialog.fbw[open] { animation: fbw-in .3s cubic-bezier(.22,1,.36,1); }
 @keyframes fbw-in { from { opacity: 0; transform: translateY(10px) scale(.96); } }
 @media (prefers-reduced-motion: reduce) { dialog.fbw[open], .fbw-dd-list { animation: none; } .fbw-fab { transition: none; } }
