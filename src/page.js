@@ -387,6 +387,14 @@ els.forEach(function(el){io.observe(el)});
 
 // "What early users told us": feedback from the first versions, word for word, each with where Andromon
 // stands on it now (c.earlyFeedback in src/content.js). Not marked up as reviews: there are no ratings.
+// The slider: as many cards as fit (3 on a wide screen), arrows move a screenful, swiping works too.
+const EF_SCRIPT = `(function(){var s=document.currentScript.parentNode,l=s.querySelector('.ef-list'),c=s.querySelector('.ef-count'),b=s.querySelectorAll('.ef-btn'),n=l.children.length;
+function per(){var w=l.children[0].getBoundingClientRect().width;return Math.max(1,Math.round(l.clientWidth/(w+16)))}
+function paint(){var p=per(),i=Math.round(l.scrollLeft/(l.scrollWidth/n));c.textContent=(i+1)+(p>1?'–'+Math.min(n,i+p):'')+' of '+n;
+  b[0].disabled=l.scrollLeft<4;b[1].disabled=l.scrollLeft+l.clientWidth>=l.scrollWidth-4}
+[].forEach.call(b,function(x){x.addEventListener('click',function(){l.scrollBy({left:(+x.getAttribute('data-dir'))*l.clientWidth,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})})});
+l.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();b[e.key==='ArrowRight'?1:0].click()}});
+var t;l.addEventListener('scroll',function(){clearTimeout(t);t=setTimeout(paint,60)},{passive:true});addEventListener('resize',paint);paint()})();`;
 const EF_STATUS = { done: ['ef-done', 'Now in Andromon'], partly: ['ef-partly', 'Partly there'], no: ['ef-no', 'Not yet'] };
 function earlyFeedback(ctx) {
   const ef = ctx.content.earlyFeedback;
@@ -399,13 +407,21 @@ function earlyFeedback(ctx) {
       <h2 id="ef-h" style="margin-top:12px">${esc(ef.h)}</h2>
       <p class="lead" style="margin-top:14px">${esc(ef.lead)} ${done} of the ${asked} requests are in ${esc(ctx.site.name)} now.</p>
     </div>
-    <ul class="ef-list">
-      ${ef.items.map((x) => {
+    <div class="ef-slider">
+      <ul class="ef-list" tabindex="0" aria-label="${esc(ef.h)}">
+      ${ef.items.map((x, i) => {
         const st = EF_STATUS[x.status];
-        return `<li class="ef-card"><p class="ef-type">${esc(x.type)}</p><h3>${esc(x.title)}</h3><blockquote><p>${esc(x.text)}</p></blockquote>` +
+        return `<li class="ef-card" aria-label="${i + 1} of ${ef.items.length}"><p class="ef-type">${esc(x.type)}</p><h3>${esc(x.title)}</h3><blockquote><p>${esc(x.text)}</p></blockquote>` +
           (st ? `<p class="ef-status ${st[0]}"><b>${st[1]}</b>${x.note ? ` ${esc(x.note)}` : ''}</p>` : '') + `</li>`;
       }).join('\n      ')}
-    </ul>
+      </ul>
+      <div class="ef-nav">
+        <button class="ef-btn" type="button" data-dir="-1" aria-label="Previous feedback">${icon('chevron')}</button>
+        <p class="ef-count" aria-live="polite"></p>
+        <button class="ef-btn" type="button" data-dir="1" aria-label="Next feedback">${icon('chevron')}</button>
+      </div>
+    </div>
+    <script>${EF_SCRIPT}</script>
     <p class="ef-more">Have an idea too? <a href="${ctx.base}feedback/#feedback">Send feedback</a></p>
   </div>
 </section>`;
@@ -977,7 +993,11 @@ function feedbackForm(ctx) {
     <button type="button" class="fbw-btn fbw-sm" data-kind="feedback" aria-pressed="false">Send feedback</button>
   </div>
   <label class="fbw-field" data-req="title"><span>Title</span><input name="title" type="text" maxlength="200" autocomplete="off"></label>
-  <label class="fbw-field" data-req="text"><span data-label="text">What went wrong?</span><textarea name="text" rows="4"></textarea></label>
+  <label class="fbw-field" data-req="text" data-fb-req><span data-label="text">What went wrong?</span><textarea name="text" rows="4"></textarea></label>
+  <div class="fbw-field" data-only="feedback" data-req="rating" data-fb-req><span id="fbw-rate-h">How happy are you with Andromon?</span>
+    <div class="fbw-stars" role="radiogroup" aria-labelledby="fbw-rate-h">${[5, 4, 3, 2, 1].map((n) => `<label title="${n} of 5"><input type="radio" name="rating" value="${n}" aria-label="${n} star${n > 1 ? 's' : ''}"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg></label>`).join('')}<output class="fbw-stars-out"></output></div>
+  </div>
+  <label class="fbw-field" data-only="feedback" data-req="who" data-fb-req><span>Your name or email</span><input name="who" type="text" maxlength="100" autocomplete="name" placeholder="e.g. Kasun, or kasun@example.com"><small class="fbw-hint">Shown with your feedback on GitHub, which is public. A name is enough.</small></label>
   <label class="fbw-field" data-only="bug"><span>How can we make it happen?</span><textarea name="steps" rows="3" placeholder="1. Connect the phone over USB&#10;2. Open …"></textarea></label>
   <label class="fbw-field" data-only="bug"><span>What did you expect?</span><textarea name="expected" rows="2"></textarea></label>
   <details class="fbw-env" open>
@@ -1068,6 +1088,18 @@ dialog.fbw[open] { animation: fbw-in .3s cubic-bezier(.22,1,.36,1); }
 .fbw-env summary { cursor: pointer; font-weight: 500; margin: 0 0 .9em .3em; }
 .fbw-row { display: flex; flex-wrap: wrap; gap: 0 10px; }
 .fbw-row > .fbw-field { flex: 1 1 150px; }
+ .fbw-stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 2px; border-radius: 12px; width: fit-content; padding: 2px; }
+.fbw-stars label { cursor: pointer; color: var(--line, #D9D9D5); line-height: 0; padding: 2px; border-radius: 8px; transition: color .12s ease, transform .12s ease; }
+.fbw-stars svg { fill: currentColor; }
+.fbw-stars input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.fbw-stars label:has(:checked), .fbw-stars label:has(:checked) ~ label { color: #F5B301; }
+.fbw-stars:hover label { color: var(--line, #D9D9D5); }
+.fbw-stars label:hover, .fbw-stars label:hover ~ label { color: #F5B301; }
+.fbw-stars label:hover { transform: scale(1.12); }
+.fbw-stars label:has(:focus-visible) { outline: 2px solid var(--accent, #3F6A0A); }
+.fbw-stars[aria-invalid="true"] { outline: 2px solid #d9443f; }
+.fbw-stars-out { order: -1; margin-left: 10px; color: var(--soft, #56575A); }
+.fbw-hint { display: block; margin: .4em 0 0 .3em; }
 .fbw-field.req > span::after { content: " *"; color: #d9443f; font-weight: 600; }
 .fbw-note { color: var(--soft, #56575A); line-height: 1.5; margin: .2em 0 1.2em; }
 .fbw-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
@@ -1123,11 +1155,11 @@ function setup(f,onPage){
   function v(n){return E[n].value.trim()}
   function shown(el){return !el.closest('[hidden]')}
   function txt(n){var el=E[n];return el.tagName==='SELECT'?(el.value?el.options[el.selectedIndex].text:''):el.value.trim()}
-  function ctl(n){var el=E[n];return (el.tagName==='SELECT'&&el.parentNode.querySelector('.fbw-dd-btn'))||el}
+  function ctl(n){var el=E[n];if(!el.tagName)return f.querySelector('[data-req="'+n+'"] .fbw-stars');return (el.tagName==='SELECT'&&el.parentNode.querySelector('.fbw-dd-btn'))||el}
   function say(t){f.querySelector('.fbw-msg').textContent=t}
   // Required fields get a * (CSS) and aria-required; which ones depends on the tab and on "Which part?".
-  function need(){return fields.filter(function(el){return shown(el)&&(kind==='bug'||el.getAttribute('data-req')==='text')}).map(function(el){return el.getAttribute('data-req')})}
-  function marks(){var r=need();fields.forEach(function(el){var n=el.getAttribute('data-req'),on=r.indexOf(n)>=0;el.classList.toggle('req',on);E[n].setAttribute('aria-required',String(on));if(!on)ctl(n).removeAttribute('aria-invalid')})}
+  function need(){return fields.filter(function(el){return shown(el)&&(kind==='bug'||el.hasAttribute('data-fb-req'))}).map(function(el){return el.getAttribute('data-req')})}
+  function marks(){var r=need();fields.forEach(function(el){var n=el.getAttribute('data-req'),on=r.indexOf(n)>=0;el.classList.toggle('req',on);ctl(n).setAttribute('aria-required',String(on));if(!on)ctl(n).removeAttribute('aria-invalid')})}
   function parts(){var p=E.where.value;[].forEach.call(f.querySelectorAll('[data-parts]'),function(el){el.hidden=el.getAttribute('data-parts').split(' ').indexOf(p)<0});marks()}
   function setKind(k){kind=k;tabs.forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-kind')===k))});
     [].forEach.call(f.querySelectorAll('[data-only]'),function(el){el.hidden=el.getAttribute('data-only')!==k});
@@ -1154,17 +1186,21 @@ function setup(f,onPage){
     l.push('Sent from: the website');return l.join('\\n')}
   function url(){if(kind==='bug')return fit({title:v('title'),what:v('text'),steps:v('steps'),expected:v('expected'),env:env()},function(o){
       return REPO+'/issues/new?'+q({template:'bug_report.yml',title:'[Bug] '+o.title,what:o.what,steps:o.steps,expected:o.expected,env:o.env})});
-    return fit({title:v('title'),text:v('text'),env:env()},function(o){var first=o.text.split('\\n')[0];if(first.length>60)first=first.slice(0,57)+'…';
-      return REPO+'/discussions/new?'+q({category:'general',title:o.title||'Feedback: '+first,body:o.text+'\\n\\n---\\n'+o.env})})}
+    return fit({title:v('title'),text:v('text'),env:about()+'\\n\\n---\\n'+env()},function(o){var first=o.text.split('\\n')[0];if(first.length>60)first=first.slice(0,57)+'…';
+      return REPO+'/discussions/new?'+q({category:'general',title:o.title||'Feedback: '+first,body:o.text+'\\n\\n'+o.env})})}
   function plain(){return [kind==='bug'?'Bug: '+v('title'):(v('title')&&'Feedback: '+v('title')),(kind==='bug'?'What went wrong?\\n':'')+v('text'),
-    kind==='bug'&&v('steps')&&'How to make it happen\\n'+v('steps'),kind==='bug'&&v('expected')&&'Expected\\n'+v('expected'),env()].filter(Boolean).join('\\n\\n')}
+    kind==='bug'&&v('steps')&&'How to make it happen\\n'+v('steps'),kind==='bug'&&v('expected')&&'Expected\\n'+v('expected'),kind==='feedback'&&about(),env()].filter(Boolean).join('\\n\\n')}
   function ok(){var r=need(),bad=r.filter(function(n){return !v(n)});
     r.forEach(function(n){ctl(n).setAttribute('aria-invalid',String(bad.indexOf(n)>=0))});
-    if(bad.length){var c=ctl(bad[0]),det=c.closest('details');if(det)det.open=true;c.focus();say(kind==='bug'?'Fill in the fields marked *.':'Write your feedback first.');return false}return true}
+    if(bad.length){var c=ctl(bad[0]),det=c.closest('details');if(det)det.open=true;(c.classList.contains('fbw-stars')?c.querySelector('input'):c).focus();say('Fill in the fields marked *.');return false}return true}
   [].forEach.call(f.querySelectorAll('input,textarea'),function(el){el.addEventListener('input',function(){el.removeAttribute('aria-invalid')})});
   [].forEach.call(f.querySelectorAll('select'),function(el){el.addEventListener('change',function(){ctl(el.name).removeAttribute('aria-invalid')})});
+  var out=f.querySelector('.fbw-stars-out'),WORDS=['','Not happy','Could be better','It\\'s okay','Happy','Love it'];
+  [].forEach.call(f.querySelectorAll('[name=rating]'),function(r){r.addEventListener('change',function(){ctl('rating').removeAttribute('aria-invalid');out.textContent=WORDS[+r.value]})});
+  function stars(){var n=+v('rating');return n?'★★★★★'.slice(0,n)+'☆☆☆☆☆'.slice(0,5-n)+' '+n+'/5':''}
+  function about(){return ['Rating: '+stars(),'From: '+v('who')].join('\\n')}
   f.addEventListener('submit',function(e){e.preventDefault();if(!ok())return;var u=url(),w=window.open(u,'_blank','noopener');if(!w&&onPage)location.href=u;
-    say('GitHub opened in a new tab. Check it there and press Submit.');E.title.value='';E.text.value='';E.steps.value='';E.expected.value='';
+    say('GitHub opened in a new tab. Check it there and press Submit.');E.title.value='';E.text.value='';E.steps.value='';E.expected.value='';[].forEach.call(f.querySelectorAll('[name=rating]'),function(r){r.checked=false});out.textContent='';
     if(!onPage)setTimeout(function(){var dl=f.closest('dialog');if(dl&&dl.open)dl.close()},1600)});
   f.querySelector('[data-copy]').addEventListener('click',function(){if(!ok())return;
     (navigator.clipboard?navigator.clipboard.writeText(plain()):Promise.reject()).then(function(){say('Copied. Paste it into an e-mail or message.')},function(){say('Couldn\\'t copy. Select the text and copy it yourself.')})});

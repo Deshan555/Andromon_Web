@@ -484,20 +484,37 @@ table.st-table { width: 100%; min-width: 560px; border-collapse: collapse; font-
 /* ---------- feedback page (/feedback/); the form's own styles are FB_CSS in src/page.js ---------- */
 .fb-wrap { max-width: 760px; }
 
-/* ---------- early feedback (home page) ---------- */
-.ef-list { list-style: none; padding: 0; margin: 32px 0 0; columns: 3 300px; column-gap: 16px; }
-.ef-card { break-inside: avoid; margin: 0 0 16px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 22px 22px 18px; }
+/* ---------- early feedback (home page): a slider, 3 cards at a time on a wide screen ---------- */
+section.ef { padding-block: clamp(20px, 3vw, 40px); }
+#how-it-works { padding-bottom: clamp(20px, 3vw, 40px); }
+.ef .head .lead { max-width: 40em; }
+.ef-slider { margin-top: 28px; }
+.ef-list { list-style: none; padding: 2px; margin: 0; display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 32px) / 3); gap: 16px;
+  overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.ef-list::-webkit-scrollbar { display: none; }
+.ef-list:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 24px; }
+@media (max-width: 960px) { .ef-list { grid-auto-columns: calc((100% - 16px) / 2); } }
+@media (max-width: 620px) { .ef-list { grid-auto-columns: 88%; } }
+.ef-card { scroll-snap-align: start; display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 22px 22px 18px; min-width: 0; }
 .ef-type { font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
 .ef-card h3 { font-size: 1.05rem; font-weight: 500; line-height: 1.35; margin-top: 8px; }
-.ef-card blockquote { margin: 10px 0 0; padding: 0; }
+.ef-card blockquote { margin: 10px 0 14px; padding: 0; }
+.ef-card blockquote:last-child { margin-bottom: 0; }
 .ef-card blockquote p { color: var(--soft); font-size: .93rem; line-height: 1.6; }
 .ef-card blockquote p::before { content: "\201C"; }
 .ef-card blockquote p::after { content: "\201D"; }
-.ef-status { margin-top: 14px; padding: 10px 12px; border-radius: 14px; font-size: .85rem; line-height: 1.45; background: var(--surface); color: var(--soft); }
+.ef-status { margin-top: auto; padding: 10px 12px; border-radius: 14px; font-size: .85rem; line-height: 1.45; background: var(--surface); color: var(--soft); }
 .ef-status b { display: inline-flex; align-items: center; gap: 6px; margin-right: 6px; color: var(--ink); font-weight: 600; }
 .ef-status b::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--soft); flex: none; }
 .ef-done { background: var(--lime-soft); }
 .ef-done b::before { background: var(--green); }
 .ef-partly b::before { background: #E0A526; }
-.ef-more { margin-top: 12px; color: var(--soft); }
+.ef-nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; }
+.ef-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: var(--card); color: var(--ink); cursor: pointer; transition: background-color .2s ease, opacity .2s ease; }
+.ef-btn:hover:not(:disabled) { background: var(--surface); }
+.ef-btn:disabled { opacity: .35; cursor: default; }
+.ef-btn .ic { width: 18px; height: 18px; transform: rotate(90deg); }
+.ef-btn[data-dir="1"] .ic { transform: rotate(-90deg); }
+.ef-count { min-width: 7em; text-align: center; color: var(--soft); font-size: .9rem; font-variant-numeric: tabular-nums; }
+.ef-more { margin-top: 10px; text-align: center; color: var(--soft); }
 .ef-more a { color: var(--accent); font-weight: 500; text-underline-offset: 3px; }
