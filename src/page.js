@@ -385,6 +385,32 @@ document.documentElement.classList.add('motion');
 els.forEach(function(el){io.observe(el)});
 })();`;
 
+// "What early users told us": feedback from the first versions, word for word, each with where Andromon
+// stands on it now (c.earlyFeedback in src/content.js). Not marked up as reviews: there are no ratings.
+const EF_STATUS = { done: ['ef-done', 'Now in Andromon'], partly: ['ef-partly', 'Partly there'], no: ['ef-no', 'Not yet'] };
+function earlyFeedback(ctx) {
+  const ef = ctx.content.earlyFeedback;
+  if (!ef || !ef.items.length) return '';
+  const done = ef.items.filter((x) => x.status === 'done').length, asked = ef.items.filter((x) => x.status).length;
+  return `<section class="ef" id="early-feedback" aria-labelledby="ef-h">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">You asked, we built it</p>
+      <h2 id="ef-h" style="margin-top:12px">${esc(ef.h)}</h2>
+      <p class="lead" style="margin-top:14px">${esc(ef.lead)} ${done} of the ${asked} requests are in ${esc(ctx.site.name)} now.</p>
+    </div>
+    <ul class="ef-list">
+      ${ef.items.map((x) => {
+        const st = EF_STATUS[x.status];
+        return `<li class="ef-card"><p class="ef-type">${esc(x.type)}</p><h3>${esc(x.title)}</h3><blockquote><p>${esc(x.text)}</p></blockquote>` +
+          (st ? `<p class="ef-status ${st[0]}"><b>${st[1]}</b>${x.note ? ` ${esc(x.note)}` : ''}</p>` : '') + `</li>`;
+      }).join('\n      ')}
+    </ul>
+    <p class="ef-more">Have an idea too? <a href="${ctx.base}feedback/#feedback">Send feedback</a></p>
+  </div>
+</section>`;
+}
+
 function home(ctx) {
   const { site, content: c, base, abs } = ctx;
   const hero = ctx.images.overview;
@@ -501,6 +527,8 @@ ${header(ctx, true)}
     </ol>
   </div>
 </section>
+
+${earlyFeedback(ctx)}
 
 ${downloads(ctx)}
 

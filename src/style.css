@@ -483,3 +483,21 @@ table.st-table { width: 100%; min-width: 560px; border-collapse: collapse; font-
 
 /* ---------- feedback page (/feedback/); the form's own styles are FB_CSS in src/page.js ---------- */
 .fb-wrap { max-width: 760px; }
+
+/* ---------- early feedback (home page) ---------- */
+.ef-list { list-style: none; padding: 0; margin: 32px 0 0; columns: 3 300px; column-gap: 16px; }
+.ef-card { break-inside: avoid; margin: 0 0 16px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 22px 22px 18px; }
+.ef-type { font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--soft); }
+.ef-card h3 { font-size: 1.05rem; font-weight: 500; line-height: 1.35; margin-top: 8px; }
+.ef-card blockquote { margin: 10px 0 0; padding: 0; }
+.ef-card blockquote p { color: var(--soft); font-size: .93rem; line-height: 1.6; }
+.ef-card blockquote p::before { content: "\201C"; }
+.ef-card blockquote p::after { content: "\201D"; }
+.ef-status { margin-top: 14px; padding: 10px 12px; border-radius: 14px; font-size: .85rem; line-height: 1.45; background: var(--surface); color: var(--soft); }
+.ef-status b { display: inline-flex; align-items: center; gap: 6px; margin-right: 6px; color: var(--ink); font-weight: 600; }
+.ef-status b::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--soft); flex: none; }
+.ef-done { background: var(--lime-soft); }
+.ef-done b::before { background: var(--green); }
+.ef-partly b::before { background: #E0A526; }
+.ef-more { margin-top: 12px; color: var(--soft); }
+.ef-more a { color: var(--accent); font-weight: 500; text-underline-offset: 3px; }

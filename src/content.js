@@ -322,6 +322,42 @@ module.exports = (site) => {
       legal: 'AirDroid, Phone Link, Vysor, Dr.Fone, Coolmuster, MobiKin and the other names on this page are trademarks of their owners. ' + N + ' is not affiliated with them. The comparison is based on each product\'s public information and may change; check their websites for the latest.',
     },
 
+    // Feedback from people who tried early versions, word for word, with where Andromon stands on each
+    // request today. status: 'done' | 'partly' | 'no' | '' (not a request). Keep the statuses true:
+    // check the app before changing one.
+    earlyFeedback: {
+      h: 'What early users told us',
+      lead: `Feedback from people who tried the first versions of ${N}, and what we did with it.`,
+      items: [
+        { type: `Something I like`, title: `Finally, one place to manage my Android phone`, status: '',
+          text: `I really like the idea behind ${N}. Previously, I had to use multiple tools for screen mirroring, file transfers, backups, and app management. Having everything together in one desktop application makes the experience much easier. Keep up the great work!` },
+        { type: `Idea`, title: `Add wireless screen mirroring`, status: 'done', note: `Connect over Wi‑Fi (Android 11+) and mirror without the cable.`,
+          text: `It would be great if we could mirror the phone screen wirelessly without connecting a USB cable every time. A simple Wi-Fi pairing option would make ${N} much more convenient for everyday use.` },
+        { type: `Something is confusing`, title: `USB connection process could be clearer`, status: 'done', note: `Step-by-step connection help in the app, and a user guide with screenshots.`,
+          text: `I wasn't sure which settings I needed to enable on my Android phone before connecting it to ${N}. Maybe add a step-by-step connection guide with screenshots for first-time users.` },
+        { type: `Idea`, title: `Add scheduled automatic backups`, status: 'done', note: `Back up daily, weekly or monthly when the phone is connected.`,
+          text: `I'd love to have an option to schedule automatic backups. For example, users could configure daily or weekly backups whenever their phone is connected to the computer.` },
+        { type: `Something is missing`, title: `Missing drag-and-drop file transfer`, status: 'partly', note: `Drop files on the mirrored screen or a Wi‑Fi device. Dropping into the Files view is still to come.`,
+          text: `Currently, I would prefer a more convenient way to move files between my computer and phone. Supporting drag-and-drop directly into the phone storage view would make file management much faster.` },
+        { type: `Something I like`, title: `Love the desktop-first approach`, status: '',
+          text: `I appreciate that ${N} doesn't require uploading my personal phone data to a third-party cloud service. Keeping device management local is a big advantage for privacy-conscious users.` },
+        { type: `Idea`, title: `Add dark and light theme options`, status: 'done', note: `Light, dark or the same as your computer, plus colour themes.`,
+          text: `Could you add a theme switcher? I'd like to choose between dark mode, light mode, and following my operating system appearance settings.` },
+        { type: `Something is confusing`, title: `App management needs more information`, status: 'done', note: `Each app shows its version, package name, size and whether it is a system app.`,
+          text: `When viewing installed applications, it would be helpful to see additional details such as package name, installation size, version, and whether an application is a system app or user-installed app.` },
+        { type: `Idea`, title: `Add clipboard synchronization`, status: 'done', note: `Share the clipboard in Settings › Phone link.`,
+          text: `A clipboard synchronization feature would be really useful. Copying text on my computer and pasting it directly on my Android phone (and vice versa) would improve my workflow.` },
+        { type: `Something is missing`, title: `Need a proper backup restore preview`, status: 'done', note: `Restore shows what a backup holds, with counts and its date, and you pick what comes back.`,
+          text: `Before restoring a backup, I'd like to see exactly what will be restored. A preview showing available files, applications, and backup dates would help prevent accidental data replacement.` },
+        { type: `Something I like`, title: `Simple alternative to complicated ADB commands`, status: '',
+          text: `I like that ${N} makes Android management more accessible. Not everyone is comfortable working with terminal commands, so providing these features through a graphical interface is a great idea.` },
+        { type: `Other`, title: `Support for multiple connected Android devices`, status: 'no', note: `One phone at a time for now.`,
+          text: `It would be useful to connect multiple Android devices and switch between them without disconnecting and reconnecting cables. This would be especially helpful for developers and people managing multiple phones.` },
+        { type: `Idea`, title: `Add notification synchronization`, status: 'done', note: `See, reply to and dismiss the phone's notifications on the computer.`,
+          text: `It would be amazing to receive and manage Android notifications directly from the desktop application. Being able to view notifications and dismiss them without picking up my phone would be very convenient.` },
+      ],
+    },
+
     faq: [
       [`What is ${N}?`,
         `${N} is a desktop app for managing an Android phone from a computer. It shows the phone's messages, contacts, calls, files, photos, music and apps in one window, mirrors the screen, and makes backups. It runs on Windows, macOS and Linux.`],
