@@ -518,6 +518,7 @@ ${downloads(ctx)}
 </section>
 
 </main>
+${feedbackWidget(ctx)}
 ${footer(ctx)}
 <script>${OS_SCRIPT(ctx)}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
 </body>
@@ -543,6 +544,7 @@ ${header(ctx, false)}
     </div>
   </div>
 </main>
+${feedbackWidget(ctx)}
 ${footer(ctx)}
 <script>${THEME_SCRIPT}</script>
 </body>
@@ -665,6 +667,7 @@ ${header(ctx, false)}
 </section>
 
 </main>
+${feedbackWidget(ctx)}
 ${footer(ctx)}
 <script>${OS_SCRIPT(ctx)}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
 </body>
@@ -820,6 +823,7 @@ ${header(ctx, false)}
 </section>
 
 </main>
+${feedbackWidget(ctx)}
 ${footer(ctx)}
 <script>${OS_SCRIPT(ctx)}${MOTION_SCRIPT}${THEME_SCRIPT}</script>
 </body>
@@ -910,61 +914,189 @@ ${footer(ctx)}
 `;
 }
 
-// ---------- feedback page ----------
-// /feedback/: Report a bug or Send feedback, the same forms as in both apps (pc/src/feedback.js,
-// android/…/Feedback.kt). Nothing is sent from the site: the form builds a github.com link with the
-// text filled in and opens it, and the visitor presses Submit there with their GitHub account.
+// ---------- feedback: a floating button and popup on every page, and the /feedback/ page ----------
+// The same forms as in both apps (pc/src/feedback.js, android/…/Feedback.kt). Nothing is sent from the
+// site: the form builds a github.com link with the text filled in and opens it, and the visitor presses
+// Submit there with their GitHub account.
 //   Bug      → an issue through .github/ISSUE_TEMPLATE/bug_report.yml in the releases repo; each query
 //              parameter fills the field with the same id (what, steps, expected, env).
 //   Feedback → a discussion in that repo's "General" category (title, body).
-// #feedback in the address opens the feedback form.
-const FEEDBACK_SCRIPT = (repo) => `(function(){
-var REPO='https://github.com/${repo}',MAX=7000,d=document,f=d.getElementById('fb-form');if(!f)return;
-var kind='bug',tabs=[].slice.call(d.querySelectorAll('.fb-tabs button'));
-function $(id){return d.getElementById(id)}
-function setKind(k){kind=k;tabs.forEach(function(b){var on=b.getAttribute('data-kind')===k;b.setAttribute('aria-pressed',String(on));b.className='btn btn-sm '+(on?'btn-dark':'btn-light')});
-  [].forEach.call(f.querySelectorAll('[data-only]'),function(el){el.hidden=el.getAttribute('data-only')!==k});
-  $('fb-title-label').textContent=k==='bug'?'Title':'Title (optional)';$('fb-text-label').textContent=k==='bug'?'What went wrong?':'Your feedback';
-  $('fb-text').placeholder=k==='bug'?'What happened, and any error message you saw':'What you like, what\\'s missing, what\\'s confusing, an idea…';
-  $('fb-title').placeholder=k==='bug'?'e.g. Screen mirror freezes after a minute':'A few words about your feedback';
-  $('fb-go').textContent=k==='bug'?'Report on GitHub':'Post on GitHub';say('');
-  if(history.replaceState)history.replaceState(null,'',k==='feedback'?'#feedback':location.pathname)}
-tabs.forEach(function(b){b.addEventListener('click',function(){setKind(b.getAttribute('data-kind'))})});
-// A guess at the visitor's system, to save typing; they can change it.
-var ua=navigator.userAgent,sys=/Android/.test(ua)?'Android '+((ua.match(/Android ([\\d.]+)/)||[])[1]||''):/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Linux/.test(ua)?'Linux':'';
-if(sys&&!$('fb-system').value)$('fb-system').value=sys.trim();
-function v(id){return $(id).value.trim()}
-function env(){var w=$('fb-where'),lines=[];if(kind==='bug'||w.value)lines.push('Where: '+w.options[w.selectedIndex].text);
-  if(v('fb-version'))lines.push('Andromon: '+v('fb-version'));if(v('fb-system'))lines.push('System: '+v('fb-system'));if(v('fb-phone'))lines.push('Phone: '+v('fb-phone'));
-  lines.push('Sent from: the website');return lines.join('\\n')}
+// feedbackWidget() is self-contained (its own <style> and <script>) because build.js also puts it in the
+// user guide, which has its own stylesheet; it only borrows the colour tokens both share.
+const releasesRepo = (site) => {
+  const repo = (String(site.releases).match(/github\.com\/([^/]+\/[^/]+)/) || [])[1];
+  if (!repo) throw new Error('site.config.json: "releases" must be a GitHub releases address');
+  return repo;
+};
+
+const FB_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+
+function feedbackForm(ctx) {
+  const ver = ctx.release ? ctx.release.version : '';
+  return `<form class="fbw-form" novalidate>
+  <div class="fbw-tabs" role="group" aria-label="What would you like to do?">
+    <button type="button" class="fbw-btn fbw-sm" data-kind="bug" aria-pressed="true">Report a bug</button>
+    <button type="button" class="fbw-btn fbw-sm" data-kind="feedback" aria-pressed="false">Send feedback</button>
+  </div>
+  <label class="fbw-field"><span data-label="title">Title</span><input name="title" type="text" maxlength="200" autocomplete="off"></label>
+  <label class="fbw-field"><span data-label="text">What went wrong?</span><textarea name="text" rows="4"></textarea></label>
+  <label class="fbw-field" data-only="bug"><span>How can we make it happen? <small>(optional)</small></span><textarea name="steps" rows="3" placeholder="1. Connect the phone over USB&#10;2. Open …"></textarea></label>
+  <label class="fbw-field" data-only="bug"><span>What did you expect? <small>(optional)</small></span><textarea name="expected" rows="2"></textarea></label>
+  <details class="fbw-env" open>
+    <summary>About your setup <small>(nothing personal)</small></summary>
+    <label class="fbw-field"><span>Which part?</span><select name="where">
+      <option>Desktop app (Windows, macOS, Linux)</option>
+      <option>Phone app (Andromon Companion)</option>
+      <option>Web version in the browser</option>
+      <option>This website</option>
+      <option value="">Not sure / everything</option>
+    </select></label>
+    <div class="fbw-row">
+      <label class="fbw-field"><span>Andromon version</span><input name="version" type="text" maxlength="40" value="${esc(ver)}" placeholder="e.g. 1.0.5"></label>
+      <label class="fbw-field"><span>Computer system</span><input name="system" type="text" maxlength="80" placeholder="e.g. Windows 11"></label>
+      <label class="fbw-field"><span>Phone <small>(optional)</small></span><input name="phone" type="text" maxlength="80" placeholder="e.g. Samsung S20, Android 13"></label>
+    </div>
+  </details>
+  <p class="fbw-note">Opens GitHub in a new tab with this filled in. Check it there and press Submit (a free GitHub account is needed). Nothing is sent before that, and what you post is public, so leave out phone numbers, messages and account names.</p>
+  <div class="fbw-actions">
+    <button type="submit" class="fbw-btn fbw-dark" data-go>Report on GitHub</button>
+    <button type="button" class="fbw-btn" data-copy title="No GitHub account? Copy the text and e-mail or message it instead">Copy text</button>
+    <p class="fbw-msg" role="status"></p>
+  </div>
+</form>`;
+}
+
+const FB_CSS = `
+.fbw-fab { position: fixed; right: 22px; bottom: 22px; z-index: 30; display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px 0 16px; border: 0; border-radius: 999px;
+  background: var(--btn, var(--fab, #292A2C)); color: var(--btn-ink, var(--fab-ink, #fff)); font: 500 .95rem/1 Poppins, system-ui, sans-serif; cursor: pointer;
+  box-shadow: 0 16px 34px -14px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06); transition: transform .3s cubic-bezier(.22,1,.36,1), background-color .2s ease; }
+.fbw-fab:hover { transform: translateY(-2px); background: var(--btn-hover, var(--fab-hover, #000)); }
+.fbw-fab:focus-visible { outline: 3px solid var(--accent, #3F6A0A); outline-offset: 3px; }
+.fbw-guide .fbw-fab { bottom: 80px; } /* the user guide's back-to-top button sits below */
+@media (max-width: 600px) { .fbw-fab { right: 14px; bottom: 14px; width: 52px; min-height: 52px; padding: 0; justify-content: center; } .fbw-fab span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .fbw-guide .fbw-fab { bottom: 76px; } }
+@media print { .fbw-fab { display: none; } }
+.splashing .fbw-fab { visibility: hidden; }
+dialog.fbw { width: min(640px, calc(100% - 24px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 1px solid var(--line, #D9D9D5); border-radius: var(--r, 28px);
+  background: var(--card, #fff); color: var(--ink, #292A2C); box-shadow: 0 40px 80px -30px rgba(0,0,0,.6); overflow: auto; overscroll-behavior: contain; }
+dialog.fbw::backdrop { background: rgba(12,13,14,.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+dialog.fbw[open] { animation: fbw-in .38s cubic-bezier(.22,1,.36,1); }
+@keyframes fbw-in { from { opacity: 0; transform: translateY(18px) scale(.98); } }
+@media (prefers-reduced-motion: reduce) { dialog.fbw[open] { animation: none; } .fbw-fab { transition: none; } }
+@media (max-width: 600px) { dialog.fbw { width: 100%; max-width: 100%; margin: auto 0 0; max-height: calc(100dvh - 24px); border-radius: 24px 24px 0 0; border-bottom: 0; }
+  @keyframes fbw-in { from { transform: translateY(40%); opacity: .4; } } }
+.fbw-head { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 20px 22px 12px 26px; background: var(--card, #fff); }
+.fbw-head h2 { margin: 0; font-size: 1.35rem; font-weight: 500; letter-spacing: -.01em; }
+.fbw-x { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--line, #D9D9D5); border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
+.fbw-x:hover { background: var(--surface, #F5F5F3); }
+.fbw-body { padding: 0 26px 24px; }
+.fbw-lead { margin: 0 0 16px; color: var(--soft, #56575A); font-size: .92rem; }
+.fbw-form { font-family: Poppins, system-ui, sans-serif; }
+.fbw-form [hidden] { display: none; }
+.fbw-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.fbw-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border: 1px solid var(--line, #D9D9D5); border-radius: 999px;
+  background: var(--card, #fff); color: var(--ink, #292A2C); font: 500 .95rem/1.2 Poppins, system-ui, sans-serif; cursor: pointer; }
+.fbw-btn:hover { background: var(--surface, #F5F5F3); }
+.fbw-sm { min-height: 40px; padding: 0 16px; font-size: .88rem; }
+.fbw-dark, .fbw-tabs [aria-pressed="true"] { background: var(--btn, var(--fab, #292A2C)); color: var(--btn-ink, var(--fab-ink, #fff)); border-color: transparent; }
+.fbw-dark:hover, .fbw-tabs [aria-pressed="true"]:hover { background: var(--btn-hover, var(--fab-hover, #000)); }
+.fbw-field { display: block; margin: 0 0 14px; min-width: 0; }
+.fbw-field > span { display: block; font-weight: 500; font-size: .9rem; margin: 0 0 6px 4px; }
+.fbw-form small { color: var(--soft, #56575A); font-weight: 400; }
+.fbw-field :is(input, textarea, select) { display: block; width: 100%; box-sizing: border-box; padding: 11px 16px; border: 1px solid var(--line, #D9D9D5); border-radius: 16px;
+  background: var(--surface, #F5F5F3); color: var(--ink, #292A2C); font: inherit; font-size: 1rem; }
+.fbw-field :is(input, select) { border-radius: 999px; }
+.fbw-field textarea { resize: vertical; min-height: 3.2em; }
+.fbw-field :is(input, textarea, select):focus { outline: 2px solid var(--accent, #3F6A0A); outline-offset: 1px; }
+.fbw-field [aria-invalid="true"] { border-color: #d9443f; outline: 2px solid #d9443f; }
+.fbw-field :is(input, textarea)::placeholder { color: var(--soft, #56575A); opacity: .8; }
+.fbw-env { border-top: 1px solid var(--line, #D9D9D5); margin: 6px 0 0; padding: 14px 0 0; }
+.fbw-env summary { cursor: pointer; font-weight: 500; margin: 0 0 12px 4px; }
+.fbw-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 12px; }
+@media (max-width: 680px) { .fbw-row { grid-template-columns: 1fr; } }
+.fbw-note { color: var(--soft, #56575A); font-size: .85rem; line-height: 1.5; margin: 2px 0 16px; }
+.fbw-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
+.fbw-msg { flex-basis: 100%; margin: 0; color: var(--soft, #56575A); font-size: .88rem; }
+.fb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: clamp(20px, 4vw, 32px); }
+`;
+
+// Wires up every .fbw-form on the page, the floating button and popup (if there is one), and links to
+// /feedback/ (the footer's), which open the popup instead of leaving the page.
+const FB_SCRIPT = (repo) => `(function(){
+var REPO='https://github.com/${repo}',MAX=7000,d=document;
+var ua=navigator.userAgent,SYS=/Android/.test(ua)?('Android '+((ua.match(/Android ([\\d.]+)/)||[])[1]||'')).trim():/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'macOS':/Linux/.test(ua)?'Linux':'';
 function fit(o,make){var u=make(o);for(var i=0;u.length>MAX&&i<60;i++){var k=Object.keys(o).filter(function(x){return x!=='env'}).sort(function(a,b){return o[b].length-o[a].length})[0];
   if(!k||o[k].length<40)break;o[k]=o[k].slice(0,Math.floor(o[k].length*.85)).replace(/\\s+$/,'')+' …(shortened)';u=make(o)}return u}
 function q(o){return Object.keys(o).filter(function(k){return o[k]}).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(o[k])}).join('&')}
-function url(){if(kind==='bug')return fit({title:v('fb-title'),what:v('fb-text'),steps:v('fb-steps'),expected:v('fb-expected'),env:env()},function(o){
-    return REPO+'/issues/new?'+q({template:'bug_report.yml',title:'[Bug] '+o.title,what:o.what,steps:o.steps,expected:o.expected,env:o.env})});
-  return fit({title:v('fb-title'),text:v('fb-text'),env:env()},function(o){var first=o.text.split('\\n')[0];if(first.length>60)first=first.slice(0,57)+'…';
-    return REPO+'/discussions/new?'+q({category:'general',title:o.title||'Feedback: '+first,body:o.text+'\\n\\n---\\n'+o.env})})}
-function plain(){return [kind==='bug'?'Bug: '+v('fb-title'):(v('fb-title')&&'Feedback: '+v('fb-title')),(kind==='bug'?'What went wrong?\\n':'')+v('fb-text'),
-  kind==='bug'&&v('fb-steps')&&'How to make it happen\\n'+v('fb-steps'),kind==='bug'&&v('fb-expected')&&'Expected\\n'+v('fb-expected'),env()].filter(Boolean).join('\\n\\n')}
-function ok(){var need=kind==='bug'?['fb-title','fb-text']:['fb-text'],bad=need.filter(function(id){return !v(id)});
-  need.forEach(function(id){$(id).setAttribute('aria-invalid',String(bad.indexOf(id)>=0))});
-  if(bad.length){$(bad[0]).focus();say(kind==='bug'?'Add a short title and what went wrong.':'Write your feedback first.');return false}return true}
-function say(t){$('fb-msg').textContent=t}
-[].forEach.call(f.querySelectorAll('input,textarea'),function(el){el.addEventListener('input',function(){el.removeAttribute('aria-invalid')})});
-f.addEventListener('submit',function(e){e.preventDefault();if(!ok())return;var w=window.open(url(),'_blank','noopener');if(!w)location.href=url();
-  say('GitHub opened in a new tab. Check it there and press Submit.')});
-$('fb-copy').addEventListener('click',function(){if(!ok())return;
-  (navigator.clipboard?navigator.clipboard.writeText(plain()):Promise.reject()).then(function(){say('Copied. Paste it into an e-mail or message.')},function(){say('Couldn\\'t copy. Select the text and copy it yourself.')})});
-setKind(location.hash==='#feedback'?'feedback':'bug');
+function setup(f,onPage){
+  var kind='bug',tabs=[].slice.call(f.querySelectorAll('[data-kind]')),E=f.elements;
+  function v(n){return E[n].value.trim()}
+  function say(t){f.querySelector('.fbw-msg').textContent=t}
+  function setKind(k){kind=k;tabs.forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-kind')===k))});
+    [].forEach.call(f.querySelectorAll('[data-only]'),function(el){el.hidden=el.getAttribute('data-only')!==k});
+    f.querySelector('[data-label=title]').innerHTML=k==='bug'?'Title':'Title <small>(optional)</small>';
+    f.querySelector('[data-label=text]').textContent=k==='bug'?'What went wrong?':'Your feedback';
+    E.text.placeholder=k==='bug'?'What happened, and any error message you saw':'What you like, what\\'s missing, what\\'s confusing, an idea…';
+    E.title.placeholder=k==='bug'?'e.g. Screen mirror freezes after a minute':'A few words about your feedback';
+    f.querySelector('[data-go]').textContent=k==='bug'?'Report on GitHub':'Post on GitHub';say('');
+    if(onPage&&history.replaceState)history.replaceState(null,'',k==='feedback'?'#feedback':location.pathname)}
+  tabs.forEach(function(b){b.addEventListener('click',function(){setKind(b.getAttribute('data-kind'))})});
+  if(SYS&&!E.system.value)E.system.value=SYS;if(/^Android/.test(SYS))E.where.selectedIndex=1;
+  function env(){var w=E.where,l=[];if(kind==='bug'||w.value)l.push('Where: '+w.options[w.selectedIndex].text);
+    if(v('version'))l.push('Andromon: '+v('version'));if(v('system'))l.push('System: '+v('system'));if(v('phone'))l.push('Phone: '+v('phone'));
+    l.push('Sent from: the website');return l.join('\\n')}
+  function url(){if(kind==='bug')return fit({title:v('title'),what:v('text'),steps:v('steps'),expected:v('expected'),env:env()},function(o){
+      return REPO+'/issues/new?'+q({template:'bug_report.yml',title:'[Bug] '+o.title,what:o.what,steps:o.steps,expected:o.expected,env:o.env})});
+    return fit({title:v('title'),text:v('text'),env:env()},function(o){var first=o.text.split('\\n')[0];if(first.length>60)first=first.slice(0,57)+'…';
+      return REPO+'/discussions/new?'+q({category:'general',title:o.title||'Feedback: '+first,body:o.text+'\\n\\n---\\n'+o.env})})}
+  function plain(){return [kind==='bug'?'Bug: '+v('title'):(v('title')&&'Feedback: '+v('title')),(kind==='bug'?'What went wrong?\\n':'')+v('text'),
+    kind==='bug'&&v('steps')&&'How to make it happen\\n'+v('steps'),kind==='bug'&&v('expected')&&'Expected\\n'+v('expected'),env()].filter(Boolean).join('\\n\\n')}
+  function ok(){var need=kind==='bug'?['title','text']:['text'],bad=need.filter(function(n){return !v(n)});
+    need.forEach(function(n){E[n].setAttribute('aria-invalid',String(bad.indexOf(n)>=0))});
+    if(bad.length){E[bad[0]].focus();say(kind==='bug'?'Add a short title and what went wrong.':'Write your feedback first.');return false}return true}
+  [].forEach.call(f.querySelectorAll('input,textarea'),function(el){el.addEventListener('input',function(){el.removeAttribute('aria-invalid')})});
+  f.addEventListener('submit',function(e){e.preventDefault();if(!ok())return;var u=url(),w=window.open(u,'_blank','noopener');if(!w&&onPage)location.href=u;
+    say('GitHub opened in a new tab. Check it there and press Submit.');E.title.value='';E.text.value='';E.steps.value='';E.expected.value='';
+    if(!onPage)setTimeout(function(){var dl=f.closest('dialog');if(dl&&dl.open)dl.close()},1600)});
+  f.querySelector('[data-copy]').addEventListener('click',function(){if(!ok())return;
+    (navigator.clipboard?navigator.clipboard.writeText(plain()):Promise.reject()).then(function(){say('Copied. Paste it into an e-mail or message.')},function(){say('Couldn\\'t copy. Select the text and copy it yourself.')})});
+  f.setKind=setKind;setKind(onPage&&location.hash==='#feedback'?'feedback':'bug');
+}
+var page=d.querySelector('.fb-card .fbw-form');if(page)setup(page,true);
+var dlg=d.getElementById('fbw'),fab=d.querySelector('.fbw-fab');if(!dlg||!dlg.showModal)return;
+var f=dlg.querySelector('.fbw-form');setup(f,false);
+function open(k){f.setKind(k);dlg.showModal();setTimeout(function(){(f.elements[k==='bug'?'title':'text']).focus()},50)}
+fab.addEventListener('click',function(){open('feedback')});
+dlg.querySelector('.fbw-x').addEventListener('click',function(){dlg.close()});
+dlg.addEventListener('click',function(e){if(e.target===dlg){var r=dlg.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dlg.close()}});
+dlg.addEventListener('close',function(){fab.focus({preventScroll:true})});
+d.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||a.origin!==location.origin||!/\\/feedback\\/$/.test(a.pathname)||e.metaKey||e.ctrlKey||e.shiftKey)return;
+  e.preventDefault();open(a.hash==='#feedback'?'feedback':'bug')});
 })();`;
 
+// The floating Feedback button and its popup. guide: true moves the button above the guide's back-to-top button.
+function feedbackWidget(ctx, { guide = false } = {}) {
+  const repo = releasesRepo(ctx.site);
+  return `<div class="fbw-root${guide ? ' fbw-guide' : ''}">
+<style>${FB_CSS.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ')}</style>
+<button class="fbw-fab" type="button" aria-haspopup="dialog" aria-controls="fbw" title="Report a bug or send feedback">${FB_ICON}<span>Feedback</span></button>
+<dialog id="fbw" class="fbw" aria-labelledby="fbw-h">
+  <div class="fbw-head"><h2 id="fbw-h">Help improve ${esc(ctx.site.name)}</h2><button class="fbw-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="fbw-body">
+    <p class="fbw-lead">Found a bug, or have an idea? Using the app? <b>Feedback</b> in its sidebar fills in the versions for you.</p>
+    ${feedbackForm(ctx)}
+  </div>
+</dialog>
+<script>${FB_SCRIPT(repo)}</script>
+</div>`;
+}
+
+// /feedback/: the same form on a page of its own, for direct links and browsers without <dialog>.
 function feedbackPage(ctx) {
-  const { site, abs, release } = ctx;
-  const repo = (String(site.releases).match(/github\.com\/([^/]+\/[^/]+)/) || [])[1];
-  if (!repo) throw new Error('site.config.json: "releases" must be a GitHub releases address');
-  const ver = release ? `${release.version}` : '';
+  const { site, abs } = ctx;
+  const repo = releasesRepo(site);
   return head(ctx, { title: `Report a bug or send feedback | ${site.name}`, description: `Found a problem in ${site.name} or its phone app, or have an idea? Report a bug or send feedback on GitHub.`, canonical: abs('feedback/') }) +
-`</head>
+`<style>${FB_CSS}</style>
+</head>
 <body>
 ${header(ctx, false)}
 <main id="main">
@@ -978,45 +1110,15 @@ ${header(ctx, false)}
 <section class="st-body" aria-label="Form">
   <div class="wrap fb-wrap">
     <noscript><p class="lead">This form needs JavaScript. You can also <a href="https://github.com/${repo}/issues/new?template=bug_report.yml">report a bug</a> or <a href="https://github.com/${repo}/discussions/new?category=general">send feedback</a> on GitHub directly.</p></noscript>
-    <form id="fb-form" class="fb-card" novalidate>
-      <div class="fb-tabs" role="group" aria-label="What would you like to do?">
-        <button type="button" class="btn btn-sm btn-dark" data-kind="bug" aria-pressed="true">Report a bug</button>
-        <button type="button" class="btn btn-sm btn-light" data-kind="feedback" aria-pressed="false">Send feedback</button>
-      </div>
-      <label class="fb-field"><span id="fb-title-label">Title</span><input id="fb-title" type="text" maxlength="200" autocomplete="off"></label>
-      <label class="fb-field"><span id="fb-text-label">What went wrong?</span><textarea id="fb-text" rows="5"></textarea></label>
-      <label class="fb-field" data-only="bug"><span>How can we make it happen? <small>(optional)</small></span><textarea id="fb-steps" rows="3" placeholder="1. Connect the phone over USB&#10;2. Open …"></textarea></label>
-      <label class="fb-field" data-only="bug"><span>What did you expect? <small>(optional)</small></span><textarea id="fb-expected" rows="2"></textarea></label>
-      <fieldset class="fb-env">
-        <legend>About your setup <small>(helps us find the problem; nothing personal)</small></legend>
-        <label class="fb-field"><span>Which part?</span><select id="fb-where">
-          <option value="desktop">Desktop app (Windows, macOS, Linux)</option>
-          <option value="phone">Phone app (Andromon Companion)</option>
-          <option value="web">Web version in the browser</option>
-          <option value="site">This website</option>
-          <option value="">Not sure / everything</option>
-        </select></label>
-        <div class="fb-row">
-          <label class="fb-field"><span>Andromon version</span><input id="fb-version" type="text" maxlength="40" value="${esc(ver)}" placeholder="e.g. 1.0.5"></label>
-          <label class="fb-field"><span>Computer system</span><input id="fb-system" type="text" maxlength="80" placeholder="e.g. Windows 11"></label>
-          <label class="fb-field"><span>Phone <small>(optional)</small></span><input id="fb-phone" type="text" maxlength="80" placeholder="e.g. Samsung S20, Android 13"></label>
-        </div>
-      </fieldset>
-      <p class="fb-note">Opens GitHub in a new tab with this filled in. Check it there and press Submit (a free GitHub account is needed). Nothing is sent before that, and what you post is public, so leave out phone numbers, messages and account names. Screenshots and logs can be dragged in on GitHub.</p>
-      <div class="fb-actions">
-        <button id="fb-go" type="submit" class="btn btn-dark">Report on GitHub</button>
-        <button id="fb-copy" type="button" class="btn btn-light" title="No GitHub account? Copy the text and e-mail or message it instead">Copy text</button>
-        <p id="fb-msg" class="st-sub" role="status"></p>
-      </div>
-    </form>
+    <div class="fb-card">${feedbackForm(ctx)}</div>
   </div>
 </section>
 </main>
 ${footer(ctx)}
-<script>${FEEDBACK_SCRIPT(repo)}${THEME_SCRIPT}</script>
+<script>${FB_SCRIPT(repo)}${THEME_SCRIPT}</script>
 </body>
 </html>
 `;
 }
 
-module.exports = { home, notFound, compare, androidPage, statsPage, feedbackPage };
+module.exports = { home, notFound, compare, androidPage, statsPage, feedbackPage, feedbackWidget };

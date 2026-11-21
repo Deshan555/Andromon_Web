@@ -481,26 +481,5 @@ table.st-table { width: 100%; min-width: 560px; border-collapse: collapse; font-
 @media (max-width: 960px) { .st-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .st-grid { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .st-tiles { grid-template-columns: 1fr; } }
 
-/* ---------- feedback page (/feedback/) ---------- */
+/* ---------- feedback page (/feedback/); the form's own styles are FB_CSS in src/page.js ---------- */
 .fb-wrap { max-width: 760px; }
-.fb-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: clamp(20px, 4vw, 32px); }
-.fb-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
-.fb-field { display: block; margin: 0 0 16px; min-width: 0; }
-.fb-field > span { display: block; font-weight: 500; font-size: .95rem; margin: 0 0 6px 4px; }
-.fb-field small, .fb-env legend small { color: var(--soft); font-weight: 400; }
-.fb-field input, .fb-field textarea, .fb-field select { display: block; width: 100%; padding: 12px 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); font: inherit; font-size: 1rem; }
-.fb-field input, .fb-field select { border-radius: 999px; }
-.fb-field textarea { resize: vertical; min-height: 3.2em; }
-.fb-field :is(input, textarea, select):focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-.fb-field [aria-invalid="true"] { border-color: #d9443f; outline: 2px solid #d9443f; }
-.fb-field input::placeholder, .fb-field textarea::placeholder { color: var(--soft); opacity: .8; }
-.fb-env { border: 0; border-top: 1px solid var(--line); margin: 8px 0 0; padding: 18px 0 0; min-width: 0; }
-.fb-env legend { font-weight: 500; padding: 0 8px 0 4px; }
-.fb-env legend + .fb-field { margin-top: 10px; }
-.fb-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 12px; }
-@media (max-width: 680px) { .fb-row { grid-template-columns: 1fr; } }
-.fb-note { color: var(--soft); font-size: .9rem; margin: 4px 0 18px; }
-.fb-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; }
-.fb-actions .st-sub { flex-basis: 100%; margin: 0; }
-.fb-card [hidden] { display: none; }
-.fb-card button { font-family: inherit; }

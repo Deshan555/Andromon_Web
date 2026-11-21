@@ -53,7 +53,7 @@ const guide = !!site.includeGuide && fs.existsSync(path.join(guideSrc, 'index.ht
 
 const ctx = { site, content: require('./src/content')(site), release, css, base, abs, images, guide,
   analytics: !previewDeploy && site.goatcounter ? site.goatcounter : '' };
-const { home, notFound, compare, androidPage, statsPage, feedbackPage } = require('./src/page');
+const { home, notFound, compare, androidPage, statsPage, feedbackPage, feedbackWidget } = require('./src/page');
 
 // ---------- write ----------
 fs.rmSync(DIST, { recursive: true, force: true });
@@ -109,7 +109,9 @@ if (guide) {
     .replace(brand, `<a class="brand" href="${base}" title="${attr(site.name)} home">`)
     .replace(/<title>[^<]*<\/title>/, `<title>${attr(gTitle)}</title>`)
     .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${attr(gDesc)}">`)
-    .replace('<link rel="icon"', meta + '\n<link rel="icon"'));
+    .replace('<link rel="icon"', meta + '\n<link rel="icon"')
+    // The floating Feedback button and popup, as on the other pages (feedbackWidget() in src/page.js).
+    .replace('</body>', feedbackWidget(ctx, { guide: true }) + '\n</body>'));
 }
 
 // Sitemap. lastmod is when the files behind a page last changed in git (a build alone doesn't change
