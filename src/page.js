@@ -422,7 +422,6 @@ function earlyFeedback(ctx) {
       </div>
     </div>
     <script>${EF_SCRIPT}</script>
-    <p class="ef-more">Have an idea too? <a href="${ctx.base}feedback/#feedback">Send feedback</a></p>
   </div>
 </section>`;
 }
@@ -544,9 +543,9 @@ ${header(ctx, true)}
   </div>
 </section>
 
-${earlyFeedback(ctx)}
-
 ${downloads(ctx)}
+
+${earlyFeedback(ctx)}
 
 <section class="faq" id="faq" aria-labelledby="faq-h">
   <div class="wrap faq-grid">

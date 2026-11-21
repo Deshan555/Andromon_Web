@@ -486,7 +486,8 @@ table.st-table { width: 100%; min-width: 560px; border-collapse: collapse; font-
 
 /* ---------- early feedback (home page): a slider, 3 cards at a time on a wide screen ---------- */
 section.ef { padding-block: clamp(20px, 3vw, 40px); }
-#how-it-works { padding-bottom: clamp(20px, 3vw, 40px); }
+section.download:has(+ section.ef) { padding-bottom: clamp(20px, 3vw, 40px); }
+section.ef + section.faq { padding-top: clamp(32px, 4vw, 56px); }
 .ef .head .lead { max-width: 40em; }
 .ef-slider { margin-top: 28px; }
 .ef-list { list-style: none; padding: 2px; margin: 0; display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 32px) / 3); gap: 16px;
@@ -516,5 +517,3 @@ section.ef { padding-block: clamp(20px, 3vw, 40px); }
 .ef-btn .ic { width: 18px; height: 18px; transform: rotate(90deg); }
 .ef-btn[data-dir="1"] .ic { transform: rotate(-90deg); }
 .ef-count { min-width: 7em; text-align: center; color: var(--soft); font-size: .9rem; font-variant-numeric: tabular-nums; }
-.ef-more { margin-top: 10px; text-align: center; color: var(--soft); }
-.ef-more a { color: var(--accent); font-weight: 500; text-underline-offset: 3px; }
