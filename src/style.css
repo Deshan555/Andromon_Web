@@ -443,3 +443,42 @@ img.sk { background-color: var(--line); background-image: linear-gradient(100deg
   img.sk { animation: sk 1.3s linear infinite; }
   @keyframes sk { from { background-position: 120% 0; } to { background-position: -120% 0; } }
 }
+
+/* ---------- Download stats (/stats/, linked from the footer's "dev" tag) ---------- */
+.dev-tag { display: inline-block; margin-left: 8px; padding: 0 8px; border: 1px solid #45464A; border-radius: 999px; font-size: .72rem; line-height: 1.6; letter-spacing: .06em; text-transform: uppercase; color: var(--dark-soft); vertical-align: 1px; }
+footer .dev-tag:hover { color: #292A2C; background: var(--lime); border-color: var(--lime); text-decoration: none; }
+.st-hero { text-align: left; padding-bottom: 8px; }
+.st-hero h1, .st-hero .lead { margin-inline: 0; }
+.st-hero .lead a { color: var(--accent); text-underline-offset: 3px; }
+.st-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 24px; }
+.st-bar button:disabled { opacity: .55; cursor: progress; }
+.st-body { padding-top: 28px; }
+.st-sub { color: var(--soft); font-size: .88rem; }
+.st-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.st-tile, .st-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 24px; min-width: 0; }
+.st-k { font-size: .78rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
+.st-n { font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.15; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.st-tile .st-sub { margin-top: 4px; overflow-wrap: anywhere; }
+.st-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.st-card h2, .st-files h2 { font-size: 1.35rem; font-weight: 500; }
+.st-bars { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 4px; }
+.st-bars li { display: grid; grid-template-columns: minmax(90px, 9em) 1fr 4.5em; align-items: center; gap: 12px; padding: 6px 0; border-radius: 8px; }
+.st-bars li:hover .st-track i { filter: brightness(1.12); }
+.st-name { font-size: .92rem; line-height: 1.25; overflow-wrap: anywhere; }
+.st-name small { display: block; color: var(--soft); font-size: .76rem; }
+.st-track { height: 14px; }
+.st-track i { display: block; height: 100%; border-radius: 0 4px 4px 0; background: var(--accent); }
+.st-val { text-align: right; font-size: .92rem; font-variant-numeric: tabular-nums; }
+.st-files { margin-top: 40px; padding: 0; }
+.st-files details { margin-top: 14px; }
+.st-files summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; cursor: pointer; padding: 10px 4px; font-weight: 500; }
+.st-files .cmp-wrap { margin-top: 6px; }
+table.st-table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: .9rem; }
+.st-table th, .st-table td { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left; }
+.st-table thead th { background: var(--surface); font-weight: 600; font-size: .82rem; }
+.st-table tbody th { font-weight: 400; overflow-wrap: anywhere; }
+.st-table tbody tr:last-child > * { border-bottom: 0; }
+.st-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.st-table .st-meta { color: var(--soft); }
+@media (max-width: 960px) { .st-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .st-grid { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .st-tiles { grid-template-columns: 1fr; } }

@@ -52,7 +52,7 @@ const guideSrc = [path.join(WEB, 'guide'), path.join(ROOT, 'user-guide')].find((
 const guide = !!site.includeGuide && fs.existsSync(path.join(guideSrc, 'index.html'));
 
 const ctx = { site, content: require('./src/content')(site), release, css, base, abs, images, guide };
-const { home, notFound, compare, androidPage } = require('./src/page');
+const { home, notFound, compare, androidPage, statsPage } = require('./src/page');
 
 // ---------- write ----------
 fs.rmSync(DIST, { recursive: true, force: true });
@@ -70,6 +70,10 @@ fs.writeFileSync(path.join(DIST, 'compare/index.html'), compareHtml);
 const androidHtml = androidPage(ctx);
 fs.mkdirSync(path.join(DIST, 'android'), { recursive: true });
 fs.writeFileSync(path.join(DIST, 'android/index.html'), androidHtml);
+// Download stats for the developer: not in the sitemap, not indexed (the footer's "dev" tag links to it).
+const statsHtml = statsPage(ctx);
+fs.mkdirSync(path.join(DIST, 'stats'), { recursive: true });
+fs.writeFileSync(path.join(DIST, 'stats/index.html'), statsHtml);
 
 // The user guide, copied in as /guide/ with a canonical address of its own.
 if (guide) {
@@ -227,6 +231,7 @@ function check(name, html) {
 const { title, desc } = check('index.html', homeHtml);
 const cmp = check('compare/index.html', compareHtml);
 const and = check('android/index.html', androidHtml);
+check('stats/index.html', statsHtml);
 if (!fs.existsSync(path.join(DIST, 'img/og.png'))) problems.push('img/og.png is missing (run: npm run images).');
 
 const kb = (f) => (fs.statSync(path.join(DIST, f)).size / 1024).toFixed(1) + ' KB';

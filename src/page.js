@@ -167,7 +167,7 @@ function footer(ctx) {
         </ul>
       </div>
     </nav>
-    <p class="legal">© ${new Date().getFullYear()} ${esc(site.name)}. Android is a trademark of Google LLC. Windows, macOS and Linux are trademarks of their owners.</p>
+    <p class="legal">© ${new Date().getFullYear()} ${esc(site.name)}. Android is a trademark of Google LLC. Windows, macOS and Linux are trademarks of their owners. <a class="dev-tag" href="${base}stats/" rel="nofollow" title="Download stats">dev</a></p>
   </div>
 </footer>`;
 }
@@ -817,4 +817,87 @@ ${footer(ctx)}
 `;
 }
 
-module.exports = { home, notFound, compare, androidPage };
+
+// ---------- /stats/: download counts for the developer (noindex, linked from the "dev" tag in the footer) ----------
+// The counts are GitHub's own per-file download counters, read live from the releases API in the
+// browser (no build step, no server, nothing about visitors is collected). GitHub allows 60 API calls an
+// hour per network without signing in, so a result is kept in sessionStorage for 5 minutes; Refresh
+// skips that.
+const STATS_SCRIPT = (repo) => `(function(){
+var d=document,API='https://api.github.com/repos/${repo}/releases?per_page=100',KEY='dl-stats',TTL=3e5;
+var out=d.getElementById('stats'),msg=d.getElementById('stats-msg'),btn=d.getElementById('stats-refresh');
+var PLAT=[['Windows',/\\.exe$/i],['macOS',/\\.dmg$/i],['Linux',/\\.(appimage|deb|rpm)$/i],['Android',/\\.apk$/i],['Web version',/web.*\\.zip$/i]];
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function n(x){return Number(x).toLocaleString()}
+function mb(b){return b>=1e6?Math.round(b/1e6)+' MB':Math.max(1,Math.round(b/1e3))+' KB'}
+function day(t){return new Date(t).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})}
+function plat(name){for(var i=0;i<PLAT.length;i++)if(PLAT[i][1].test(name))return PLAT[i][0];return null}
+function bars(rows,label){var max=Math.max.apply(null,rows.map(function(r){return r[1]}).concat(1));
+  return '<ul class="st-bars" aria-label="'+esc(label)+'">'+rows.map(function(r){var pct=r[1]/max*100;
+    return '<li title="'+esc(r[0])+': '+n(r[1])+' downloads"><span class="st-name">'+esc(r[0])+(r[2]?'<small>'+esc(r[2])+'</small>':'')+'</span><span class="st-track"><i style="width:'+(r[1]?Math.max(pct,1.5):0)+'%"></i></span><span class="st-val">'+n(r[1])+'</span></li>'}).join('')+'</ul>'}
+function paint(rels,when){
+  rels=rels.filter(function(r){return !r.draft});
+  var total=0,byPlat={},per=[];
+  PLAT.forEach(function(p){byPlat[p[0]]=0});
+  rels.forEach(function(r){var sum=0;r.assets.forEach(function(a){var p=plat(a.name);if(p){byPlat[p]+=a.download_count;sum+=a.download_count}});total+=sum;per.push([r.tag_name,sum,day(r.published_at||r.created_at)])});
+  var latest=rels[0],top=null;
+  rels.forEach(function(r){r.assets.forEach(function(a){if(plat(a.name)&&(!top||a.download_count>top.download_count))top=a})});
+  var tiles=[['All downloads',n(total),'installers, APK and web zip'],['Latest release',latest?n(per[0][1]):'0',latest?latest.tag_name+', '+per[0][2]:'none yet'],['Releases',n(rels.length),latest?'since '+per[per.length-1][2]:''],['Most downloaded file',top?n(top.download_count):'0',top?top.name:'']];
+  var h='<div class="st-tiles">'+tiles.map(function(t){return '<div class="st-tile"><p class="st-k">'+esc(t[0])+'</p><p class="st-n">'+t[1]+'</p><p class="st-sub">'+esc(t[2])+'</p></div>'}).join('')+'</div>';
+  h+='<div class="st-grid"><section class="st-card" aria-labelledby="st-plat"><h2 id="st-plat">By system</h2><p class="st-sub">All releases together</p>'+bars(PLAT.map(function(p){return [p[0],byPlat[p[0]]]}).sort(function(a,b){return b[1]-a[1]}),'Downloads by system')+'</section>';
+  h+='<section class="st-card" aria-labelledby="st-rel"><h2 id="st-rel">By release</h2><p class="st-sub">Newest first</p>'+bars(per,'Downloads by release')+'</section></div>';
+  h+='<section class="st-files" aria-labelledby="st-files"><h2 id="st-files">Every file</h2>'+rels.map(function(r,i){
+    var files=r.assets.slice().sort(function(a,b){return b.download_count-a.download_count});
+    return '<details'+(i?'':' open')+'><summary><span>'+esc(r.tag_name)+'</span><span class="st-sub">'+esc(per[i][2])+' · '+n(per[i][1])+' downloads</span></summary><div class="cmp-wrap"><table class="st-table"><thead><tr><th scope="col">File</th><th scope="col">System</th><th scope="col" class="num">Size</th><th scope="col" class="num">Downloads</th></tr></thead><tbody>'+
+      files.map(function(a){var p=plat(a.name);return '<tr'+(p?'':' class="st-meta"')+'><th scope="row">'+esc(a.name)+'</th><td>'+esc(p||'Release file, not counted')+'</td><td class="num">'+mb(a.size)+'</td><td class="num">'+n(a.download_count)+'</td></tr>'}).join('')+'</tbody></table></div></details>'}).join('')+'</section>';
+  out.innerHTML=h;
+  msg.textContent='Checked '+new Date(when).toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'})+'. Counts come straight from GitHub.';
+}
+function load(force){
+  if(!force){try{var c=JSON.parse(sessionStorage.getItem(KEY)||'null');if(c&&Date.now()-c.t<TTL)return paint(c.r,c.t)}catch(e){}}
+  msg.textContent='Loading the counts from GitHub…';btn.disabled=true;
+  fetch(API,{headers:{Accept:'application/vnd.github+json'}}).then(function(res){
+    if(res.ok)return res.json();
+    var reset=Number(res.headers.get('x-ratelimit-reset'))*1e3;
+    throw new Error(res.status===403||res.status===429?'GitHub allows 60 checks an hour from one network. Try again'+(reset?' after '+new Date(reset).toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}):' later')+'.':'GitHub answered '+res.status+'.');
+  }).then(function(r){var t=Date.now();try{sessionStorage.setItem(KEY,JSON.stringify({t:t,r:r}))}catch(e){}paint(r,t)})
+  .catch(function(e){msg.textContent=(e&&e.message&&!/fetch/i.test(e.message))?e.message:'Couldn\\'t reach GitHub. Check the connection and try again.'})
+  .then(function(){btn.disabled=false});
+}
+btn.addEventListener('click',function(){load(true)});
+load(false);
+})();`;
+
+function statsPage(ctx) {
+  const { site, abs } = ctx;
+  const repo = (String(site.releases).match(/github\.com\/([^/]+\/[^/]+)/) || [])[1];
+  if (!repo) throw new Error('site.config.json: "releases" must be a GitHub releases address');
+  return head(ctx, { title: `Download stats | ${site.name}`, description: `How many times each ${site.name} release and file has been downloaded, live from GitHub.`, canonical: abs('stats/'), index: false }) +
+`</head>
+<body>
+${header(ctx, false)}
+<main id="main">
+<section class="hero st-hero" aria-labelledby="st-h">
+  <div class="wrap">
+    <p class="kicker">Dev</p>
+    <h1 id="st-h">Download stats</h1>
+    <p class="lead">Every download of every file in the <a href="${site.releases}" rel="noopener">GitHub releases</a>: from this site, the README, the app's update check and direct links alike.</p>
+    <div class="st-bar"><p id="stats-msg" class="st-sub" role="status">Loading the counts from GitHub…</p><button id="stats-refresh" class="btn btn-light btn-sm" type="button">Refresh</button></div>
+  </div>
+</section>
+<section class="st-body" aria-label="Download counts">
+  <div class="wrap">
+    <noscript><p class="lead">This page reads the counts from GitHub in the browser, so it needs JavaScript. The same numbers are in the <a href="https://api.github.com/repos/${repo}/releases">releases API</a>.</p></noscript>
+    <div id="stats"></div>
+    <p class="cmp-note">Totals count the installers, the phone app and the web version. Checksums, the changelog and latest.json are listed but not counted. GitHub doesn't say where a download came from.</p>
+  </div>
+</section>
+</main>
+${footer(ctx)}
+<script>${STATS_SCRIPT(repo)}${THEME_SCRIPT}</script>
+</body>
+</html>
+`;
+}
+
+module.exports = { home, notFound, compare, androidPage, statsPage };

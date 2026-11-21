@@ -27,6 +27,8 @@ The download section (`downloads()` in `src/page.js`) is built from `release.jso
 
 `"releases"` is where "all files" and the structured data point.
 
+**Download stats** are at `/stats/` (`statsPage()` in `src/page.js`), linked from the small **dev** tag at the end of the footer. The page isn't in the sitemap and tells search engines not to index it. It reads GitHub's own per-file download counts for the `"releases"` repository in the browser, so it needs no build step, server or tracking. GitHub allows 60 of these checks an hour per network, so a result is kept for 5 minutes (**Refresh** skips that). Totals leave out the checksums, changelog and `latest.json`.
+
 ## Where things are
 
 | File | What it holds |
